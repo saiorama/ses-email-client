@@ -30,11 +30,13 @@
         <div class="grid-x grid-margin-x grid-padding-x">
           <div class="cell medium-3 p-2">
             <h5 class="subheader">Email List</h5>
-            <ul class="vertical menu"> 
-              <li v-for="(email, idx) in emailSet" style='cursor: pointer' :key="`email-idx-`+idx" :id="idx" @click="showEmail(email.Key)">
-                {{ email.subject }}
-              </li>
-            </ul>
+            <dl v-for="(email, idx) in emailSet" style='cursor: pointer' :key="`email-idx-`+idx" :id="idx" @click="showEmail(email.Key)">
+              <dt>{{ email.emailContent.subject }} <span class="badge warning" v-if="email.emailContent.headers['X-SES-Spam-Verdict'] !== 'PASS'">spam</span>
+                <span class="badge alert" v-if="email.emailContent.headers['X-SES-Virus-Verdict'] !== 'PASS'">virus</span></dt>
+              <dd><p class="h6 text-right subheader"> (to {{ email.emailContent.to.email}} from {{email.emailContent.from.email}})</p>
+              </dd>
+              <hr>
+            </dl>
           </div>
           <div class="cell auto">
             <h5 class="subheader">Email Preview</h5>
@@ -45,8 +47,9 @@
       </div>
     </form>
     <script>
-      const EMAIL_CONTENT_URL = 'https://api.zeer0.com/v001/email';
-      const EMAILS_LIST_URL = 'https://api.zeer0.com/v001/email/today'; //just today's emails
+      const BASEURL = 'https://api.zeer0.com/v001';
+      const EMAIL_CONTENT_URL = `${BASEURL}/email`;
+      const EMAILS_LIST_URL = `${BASEURL}/email/today`; //just today's emails
       const DEFAULT_FQDN = 'zeer0.com';
       $(document).foundation();
       var app = new Vue({
@@ -65,6 +68,11 @@
           emailContent: function() {
             const blob = new Blob([this.emailContent], { type: 'text/html' });
             this.iframeSrc = URL.createObjectURL(blob);
+          },
+          emailSet: function(neww, old) {
+            if(!old && neww){
+              this.showEmail(neww[0].Key);
+            }
           }
         },
         methods:{
@@ -79,7 +87,7 @@
               let vm = this;
               let x = emlId.substring(this.fqdn.length + 1);
               return await axios({
-                url: `${EMAIL_CONTENT_URL}?domain=${this.fqdn}&id=${x}&type=html`,
+                url: `${EMAIL_CONTENT_URL}?domain=${this.fqdn}&id=${x}`,
                 headers: {'x-api-key': this.apiKey}
               })
               .then( (response) => {
@@ -100,7 +108,6 @@
                 if(response.data.Contents.length > 0){
                   return await Promise.all(response.data.Contents.map(async (email) => {
                     email.emailContent = await vm.getEmail(email.Key);
-                    email.subject = email.emailContent.headers.Subject;
                     return email;
                   }));
                 }
