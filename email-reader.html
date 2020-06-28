@@ -1,0 +1,118 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zeer0 Emails | Welcome</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/css/foundation.min.css" integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/js/foundation.min.js" integrity="sha256-pRF3zifJRA9jXGv++b06qwtSqX1byFQOLjqa2PTEb2o=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <form id="email-contents">
+      <div class="top-bar">
+        <div class="top-bar-left">
+          <ul class="dropdown menu" data-dropdown-menu>
+            <li class="menu-text">Email Magicker</li>
+          </ul>
+        </div>
+        <div class="top-bar-right">
+          <ul class="menu">
+            <li><input type="text" v-model="apiKey" placeholder="AWS api key"></li>
+            <li><input type="text" v-model="fqdn" placeholder="(e.g. zeer0.com)"></li>
+            <li><button type="button" v-on:click="getEmails" class="success button expanded">Get emails</button></li>
+          </ul>
+        </div>
+      </div>
+      <div class="grid-container fluid">
+        <div class="grid-x grid-margin-x grid-padding-x">
+          <div class="cell medium-3 p-2">
+            <h5 class="subheader">Email List</h5>
+            <ul class="vertical menu"> 
+              <li v-for="(email, idx) in emailSet" style='cursor: pointer' :key="`email-idx-`+idx" :id="idx" @click="showEmail(email.Key)">
+                {{ email.subject }}
+              </li>
+            </ul>
+          </div>
+          <div class="cell auto">
+            <h5 class="subheader">Email Preview</h5>
+            <span v-if="!iframeSrc" class="lead text-center">{{ statusMsg }}</span>
+            <iframe frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="iframeSrc" v-else></iframe>
+          </div>
+        </div>
+      </div>
+    </form>
+    <script>
+      const EMAIL_CONTENT_URL = 'https://api.zeer0.com/v001/email';
+      const EMAILS_LIST_URL = 'https://api.zeer0.com/v001/email/today'; //just today's emails
+      const DEFAULT_FQDN = 'zeer0.com';
+      $(document).foundation();
+      var app = new Vue({
+        el: '#email-contents',
+        data(){
+          return {
+            apiKey: undefined,
+            fqdn: DEFAULT_FQDN,
+            statusMsg: 'Email contents will appear here',
+            emailContent: undefined,
+            iframeSrc: undefined,
+            emailSet: undefined,
+          }
+        },
+        watch: {
+          emailContent: function() {
+            const blob = new Blob([this.emailContent], { type: 'text/html' });
+            this.iframeSrc = URL.createObjectURL(blob);
+          }
+        },
+        methods:{
+          showEmail: function(emlId){
+            let x = this.emailSet.find((e) => e.Key === emlId);
+            if(x){
+              this.emailContent = x.emailContent.html;
+            }
+          },
+          getEmail: async function(emlId) {
+            if(this.apiKey && this.fqdn && emlId){
+              let vm = this;
+              let x = emlId.substring(this.fqdn.length + 1);
+              return await axios({
+                url: `${EMAIL_CONTENT_URL}?domain=${this.fqdn}&id=${x}&type=html`,
+                headers: {'x-api-key': this.apiKey}
+              })
+              .then( (response) => {
+                return response.data;
+              });
+            }
+          },
+          getEmails: async function() {
+            this.statusMsg = 'Retrieving...';
+            if(this.apiKey && this.fqdn){
+              let vm = this;
+              vm.emailSet = undefined;
+              await axios({
+                url: `${EMAILS_LIST_URL}?domain=${vm.fqdn}`,
+                headers: {'x-api-key': vm.apiKey}
+              })
+              .then(async (response) => {
+                if(response.data.Contents.length > 0){
+                  return await Promise.all(response.data.Contents.map(async (email) => {
+                    email.emailContent = await vm.getEmail(email.Key);
+                    email.subject = email.emailContent.headers.Subject;
+                    return email;
+                  }));
+                }
+                vm.statusMsg = "Hooray! You haven't received any emails today. Lucky you!";
+              })
+              .then(values => vm.emailSet = values);
+            } else {
+              this.statusMsg = 'Either the apiKey or domain is missing';
+            }
+          },
+        }
+      })
+    </script>
+  </body>
+</html>
