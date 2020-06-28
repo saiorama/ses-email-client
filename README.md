@@ -4,6 +4,8 @@ Since AWS SES does not natively provide an email client to read emails neither d
 
 *A note on verbiage: below you will find references to **emails*, *email files**, and **eml files**. An email is basically a text file sitting somewhere. Therefore, all three words refer to the what you would commonly call an email. I have tried to minimize confusion where possible but if you find yourself not understanding some of the content in this readme, feel free to raise an issue.*
 
+![](docs/email-magicker.gif)
+
 ## The Problem
 
 I have a domain (example.com) with it's MX records configured to point to AWS SES. Being a transactional email service provider, SES does not provide a client to read emails. 
