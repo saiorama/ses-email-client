@@ -16,11 +16,11 @@
         <div class="top-bar-left">
           <ul class="dropdown menu" data-dropdown-menu>
             <li class="menu-text">Email Magicker</li>
+            <li><a href="https://login.zeer0.com/login?client_id=7iia3e63t239ul2el9vrqfkb3v&response_type=token&scope=email+openid&redirect_uri=https://zeer0.com/email">Login</a></li>
           </ul>
         </div>
         <div class="top-bar-right">
           <ul class="menu">
-            <li><input type="text" v-model="apiKey" placeholder="AWS api key"></li>
             <li><input type="text" v-model="fqdn" placeholder="(e.g. zeer0.com)"></li>
             <li><button type="button" v-on:click="getEmails" class="success button expanded">Get emails</button></li>
           </ul>
@@ -56,26 +56,57 @@
         el: '#email-contents',
         data(){
           return {
-            apiKey: undefined,
             fqdn: DEFAULT_FQDN,
             statusMsg: 'Email contents will appear here',
             emailContent: undefined,
-            iframeSrc: undefined,
             emailSet: undefined,
+            authDetails: undefined,
+          }
+        },
+        mounted(){
+          this.setAuthDetails();
+        },
+        computed: {
+          iframeSrc: function(){
+            if(this.emailContent){
+              const blob = new Blob([this.emailContent], { type: 'text/html' });
+              return URL.createObjectURL(blob);
+            }
+            return undefined;
           }
         },
         watch: {
-          emailContent: function() {
-            const blob = new Blob([this.emailContent], { type: 'text/html' });
-            this.iframeSrc = URL.createObjectURL(blob);
-          },
           emailSet: function(neww, old) {
             if(!old && neww){
               this.showEmail(neww[0].Key);
             }
+          },
+          authDetails: function(neww, old){
+            if(!old && neww){
+              this.getEmails();
+            }
           }
         },
         methods:{
+          setAuthDetails: function(){
+            this.authDetails = undefined;
+            let hash = (new URL(document.location)).hash;
+            let loc = hash ? document.location.href.replace(/#/, '?') : document.location;
+            let params = (new URL(loc)).searchParams;
+            if(params.get('id_token') && params.get('access_token') && params.get('expires_in')){
+              this.authDetails = {
+                'id_token': params.get('id_token'),
+                'access_token': params.get('id_token'),
+                'expires_in': params.get('expires_in'),
+                'start': Date.now(),
+              }
+            }
+          },
+          authTokenIsValid: function(){
+            let now = Date.now();
+            return this.authDetails && this.authDetails.id_token && 
+              this.authDetails.start + this.authDetails.expires_in > now;
+          },
           showEmail: function(emlId){
             let x = this.emailSet.find((e) => e.Key === emlId);
             if(x){
@@ -83,12 +114,12 @@
             }
           },
           getEmail: async function(emlId) {
-            if(this.apiKey && this.fqdn && emlId){
+            if(this.authTokenIsValid() && this.fqdn && emlId){
               let vm = this;
               let x = emlId.substring(this.fqdn.length + 1);
               return await axios({
                 url: `${EMAIL_CONTENT_URL}?domain=${this.fqdn}&id=${x}`,
-                headers: {'x-api-key': this.apiKey}
+                headers: {'Authorization': this.authDetails.id_token}
               })
               .then( (response) => {
                 return response.data;
@@ -97,12 +128,13 @@
           },
           getEmails: async function() {
             this.statusMsg = 'Retrieving...';
-            if(this.apiKey && this.fqdn){
+            this.emailContent = undefined
+;            if(this.authTokenIsValid() && this.fqdn){
               let vm = this;
               vm.emailSet = undefined;
               await axios({
                 url: `${EMAILS_LIST_URL}?domain=${vm.fqdn}`,
-                headers: {'x-api-key': vm.apiKey}
+                headers: {'Authorization': this.authDetails.id_token},
               })
               .then(async (response) => {
                 if(response.data.Contents.length > 0){
@@ -115,7 +147,7 @@
               })
               .then(values => vm.emailSet = values);
             } else {
-              this.statusMsg = 'Either the apiKey or domain is missing';
+              this.statusMsg = 'Either access token or domain is missing';
             }
           },
         }
