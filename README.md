@@ -1,4 +1,4 @@
-# email-magicker
+# SES Email Client
 
 Since AWS SES does not natively provide an email client to read emails neither does it provide IMAP which would let you use a mail client like Thunderbird, I decided to spin up my own email reader just for SES.
 
@@ -22,7 +22,7 @@ Additionally, the entire purpose to moving away from Google - i.e. to avoid givi
 
 ## The Solution
 
-Email Magicker is the v0.0.1 of a client for SES!
+SES Email Client is the v0.0.1 of a client for SES!
 
 ## The Architecture 
 
@@ -32,8 +32,9 @@ Before I started working on email-magicker, the lay of the land of my email set 
 2. SNS - When an email is received by SES, I fire off a notification to a different email account I own to let me know that an email was received.
 3. Auto-forward - I use [this github project](https://github.com/arithmetric/aws-lambda-ses-forwarder) to forward emails to my gmail inbox
 
-After implementing email-magicker, my architecture has evolved a little.
+After implementing ses-email-client, my architecture has evolved a little. The overview is as below.
 
+![](docs/ses-email-client.png)
 ### New Lambdas Functions
 
 #### Rename email (.eml) file name: 
