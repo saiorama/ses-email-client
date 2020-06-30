@@ -1,4 +1,4 @@
-# email-magicker
+# SES Email Client
 
 Since AWS SES does not natively provide an email client to read emails neither does it provide IMAP which would let you use a mail client like Thunderbird, I decided to spin up my own email reader just for SES.
 
@@ -22,7 +22,7 @@ Additionally, the entire purpose to moving away from Google - i.e. to avoid givi
 
 ## The Solution
 
-Email Magicker is the v0.0.1 of a client for SES!
+SES Email Client is the v0.0.1 of a client for SES!
 
 ## The Architecture 
 
