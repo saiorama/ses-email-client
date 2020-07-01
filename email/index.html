@@ -16,11 +16,12 @@
         <div class="top-bar-left">
           <ul class="dropdown menu" data-dropdown-menu>
             <li class="menu-text">SES Email Client</li>
+            <li><button @click="getEmails" v-if="authTokenIsValid()" type="button" class="hollow button">Refresh</button></li>
+            <li><a href="#" class="secondary hollow button" @click="loginLogoutAction">{{this.authTokenIsValid() ? 'Logout' : 'Login'}}</a></li>
           </ul>
         </div>
         <div class="top-bar-right">
           <ul class="menu">
-            <li><a href="#" @click="loginLogoutAction">{{this.authDetails ? 'Logout' : 'Login'}}</a></li>
           </ul>
         </div>
       </div>
@@ -75,7 +76,6 @@
         mounted(){
           this.setAuthDetails();
           if(!this.authDetails) this.redirectToLogin();
-          this.getEmails();
         },
         computed: {
           iframeSrc: function(){
@@ -107,19 +107,22 @@
             let hash = (new URL(document.location)).hash;
             let loc = hash ? document.location.href.replace(/#/, '?') : document.location;
             let params = (new URL(loc)).searchParams;
-            if(params.get('id_token') && params.get('access_token') && params.get('expires_in')){
+            if(params.get('id_token') && params.get('access_token') && params.get('expires_in') && this.tokenIsValid(params.get('id_token'))){
               this.authDetails = {
                 'id_token': params.get('id_token'),
                 'access_token': params.get('access_token'),
               };
             }
           },
-          authTokenIsValid: function(){
+          tokenIsValid: function(idToken){
             try{
-              let x = JSON.parse(atob(this.authDetails.id_token.split('.')[1]));
+              let x = JSON.parse(atob(idToken.split('.')[1]));
               return Date.now() < x.exp * 1000;//converting exp to msec
             } catch(e){}
             return false;
+          },
+          authTokenIsValid: function(){
+            return this.authDetails && this.tokenIsValid(this.authDetails.id_token);
           },
           redirectToLogin: function(){
             window.location.href = this.loginUrl;
@@ -171,7 +174,9 @@
                 }
                 vm.statusMsg = "Hooray! You haven't received any emails today. Lucky you!";
               })
-              .then(values => vm.emailSet = values);
+              .then(values => {
+                vm.emailSet = values.sort((a, b) => -a.Key.localeCompare(b.Key));
+              });
             } else {
               this.statusMsg = 'Either access token or domain is missing. Have you forgotten to log in?';
             }
