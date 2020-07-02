@@ -30,14 +30,16 @@
           <div class="cell medium-3 p-2">
             <h5 class="subheader">Email List</h5>
             <dl v-for="(email, idx) in emailSet" style='cursor: pointer' :key="`email-idx-`+idx" :id="idx" @click="showEmail(email.Key)">
-              <dt>{{ email.emailContent.subject }} <span class="badge warning" v-if="email.emailContent.headers['X-SES-Spam-Verdict'] !== 'PASS'">spam</span>
-                <span class="badge alert" v-if="email.emailContent.headers['X-SES-Virus-Verdict'] !== 'PASS'">virus</span></dt>
-              <dd><p class="h6 text-right subheader"> (to {{ email.emailContent.to.email}} from {{email.emailContent.from.email}})</p>
-              </dd>
-              <hr>
+              <a href="#email-content">
+                <dt data-magellan>{{ email.emailContent.subject }} <span class="badge warning" v-if="email.emailContent.headers['X-SES-Spam-Verdict'] !== 'PASS'">spam</span>
+                  <span class="badge alert" v-if="email.emailContent.headers['X-SES-Virus-Verdict'] !== 'PASS'">virus</span></dt>
+                <dd><p class="h6 text-right subheader"> (to {{ email.emailContent.to.email}} from {{email.emailContent.from.email}})</p>
+                </dd>
+                <hr>
+              </a>
             </dl>
           </div>
-          <div class="cell auto">
+          <div class="cell auto" id="email-content">
             <h5 class="subheader">Email Preview</h5>
             <span v-if="!iframeSrc" class="lead text-center">{{ statusMsg }}</span>
             <iframe frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="iframeSrc" v-else></iframe>
