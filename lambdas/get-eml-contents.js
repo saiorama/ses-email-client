@@ -1,5 +1,7 @@
 var AWS = require('aws-sdk');
 var emlformat = require('eml-format');
+var URL = require('url').URL;
+
 AWS.config.update({region: 'us-east-1'});
 
 var s3 = new AWS.S3();
@@ -17,12 +19,20 @@ let processEml = async (emlBody) => {
 };
 
 const RESPONSE = {
-    statusCode: 200,
+    statusCode: 400,
     headers: {
         "Access-Control-Allow-Origin" : "*", // Required for CORS support to work
         'Access-Control-Allow-Credentials': true
     },
-    body: 'no data',
+    body: JSON.stringify({'msg': 'no data'}),
+};
+
+let getHostnameFromUrl = (url) => {
+    return (new URL(url)).hostname;
+};
+
+let getHostFromUrl = (url) => {
+    return (new URL(url)).host;
 };
 
 exports.handler = async (event, context, callback) => {
@@ -30,6 +40,12 @@ exports.handler = async (event, context, callback) => {
     
     //domain=zeer0.com&id=82vundohoan4rb4poes26r8rda5sb5vbgh9s3vo1&type=html&format=raw
     const params = event.queryStringParameters;
+    
+    // don't allow web based clients to read emails from any domain other than localhost
+    // allow curl-type clients to query random domains by including domain=xyz in querystring
+    if((event.headers.origin || event.headers.referrer) && getHostnameFromUrl(event.headers.origin || event.headers.referrer) !== 'localhost'){
+        params.domain = getHostFromUrl(event.headers.origin || event.headers.referrer);
+    }
     if(params.domain && ALLOWED_DOMAINS.includes(params.domain) && params.id){
         var getParams = {
             Bucket: BUCKET_NAME,
@@ -42,8 +58,8 @@ exports.handler = async (event, context, callback) => {
             return processEml(emlBody);
         })
         .then(d => {
-            console.log(Object.keys(d), d.headers);
             let x = JSON.parse(JSON.stringify(RESPONSE));
+            x.statusCode = 200;
             x.body = JSON.stringify(d);
             if(params.type && d[params.type.toLowerCase()]){
                 let y = {headers: d.headers};
@@ -55,8 +71,9 @@ exports.handler = async (event, context, callback) => {
             }
             return x;
         })
-        .catch(e => console.log(e));
+        .catch(e => {
+            console.log(e);
+            return RESPONSE;
+        });
     }
-    
-    return RESPONSE;
 };
