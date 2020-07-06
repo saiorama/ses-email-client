@@ -3,12 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Zeer0 Emails | Welcome</title>
+    <title>Emails</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/css/foundation.min.css" integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/js/foundation.min.js" integrity="sha256-pRF3zifJRA9jXGv++b06qwtSqX1byFQOLjqa2PTEb2o=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script>
   </head>
   <body>
     <form id="email-contents">
@@ -33,7 +34,7 @@
               <a href="#email-content" v-if="email.emailContent">
                 <dt data-magellan>{{ email.emailContent.subject }} <span class="badge warning" v-if="email.emailContent.headers['x-ses-spam-verdict'] && email.emailContent.headers['x-ses-spam-verdict'] !== 'PASS'">spam</span>
                   <span class="badge alert" v-if="email.emailContent.headers['x-ses-virus-verdict'] && email.emailContent.headers['x-ses-virus-verdict'] !== 'PASS'">virus</span></dt>
-                <dd><p class="h6 text-right subheader"> (to {{ email.emailContent.to.text}} from {{email.emailContent.from.text}})</p>
+                <dd><p class="h6 text-right subheader"> (to {{ email.emailContent.to.text}} from {{email.emailContent.from.text}} | {{ friendlyDate(email.emailContent.date)}})</p>
                 </dd>
                 <hr>
               </a>
@@ -54,12 +55,14 @@
       </div>
     </form>
     <script>
+      const ORIGIN = (new URL(document.location)).origin;
+      const HOST = (new URL(document.location)).host;
       const API_GW_URL = 'https://api.zeer0.com/v001';
       const EMAIL_CONTENT_URL = `${API_GW_URL}/email`;
       const EMAILS_LIST_URL = `${API_GW_URL}/email/today`; //just today's emails
-      const DEFAULT_FQDN = (new URL(document.location)).host;
-      const LOGIN_REDIRECT_URL = `${(new URL(document.location)).origin}/email`;
-      const LOGOUT_REDIRECT_URL = `${(new URL(document.location)).origin}/email`;
+      const DEFAULT_FQDN = HOST.startsWith('localhost') ? 'ramachandr.in' : HOST;
+      const LOGIN_REDIRECT_URL = `${ORIGIN}/email`;
+      const LOGOUT_REDIRECT_URL = `${ORIGIN}/email`;
       const COGNITO_URL1 = 'https://auth.zeer0.com'; 
       const COGNITO_URL = 'https://zeer0.auth.ap-south-1.amazoncognito.com/';
       const CLIENT_ID = '7iia3e63t239ul2el9vrqfkb3v';
@@ -110,6 +113,9 @@
           }
         },
         methods:{
+          friendlyDate: function(d){
+            return moment(d).fromNow();
+          },
           setAuthDetails: function(){
             this.authDetails = undefined;
             let hash = (new URL(document.location)).hash;
