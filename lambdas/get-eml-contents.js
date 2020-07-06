@@ -1,21 +1,17 @@
 var AWS = require('aws-sdk');
-var emlformat = require('eml-format');
+const simpleParser = require('mailparser').simpleParser;
 var URL = require('url').URL;
 
 AWS.config.update({region: 'us-east-1'});
 
 var s3 = new AWS.S3();
 
-var BUCKET_NAME = "mx.sairamachandr.in";
-const ALLOWED_DOMAINS = process.env.ALLOWED_DOMAINS ? process.env[`ALLOWED_DOMAINS`].split(","): ["example.com"];
+var BUCKET_NAME = process.env.BUCKET_NAME;
+const ALLOWED_DOMAINS = process.env.ALLOWED_DOMAINS ? process.env[`ALLOWED_DOMAINS`].split(","): ["zeer0.com"];
 
 let processEml = async (emlBody) => {
-  return new Promise((resolve, reject) => {
-    emlformat.read(emlBody, (e, d) => {
-      if(e) reject(e);
-      resolve(d);
-      });   
-    });
+    return simpleParser(emlBody)
+      .then( d => d);
 };
 
 const RESPONSE = {
@@ -43,7 +39,7 @@ exports.handler = async (event, context, callback) => {
     
     // don't allow web based clients to read emails from any domain other than localhost
     // allow curl-type clients to query random domains by including domain=xyz in querystring
-    if((event.headers.origin || event.headers.referrer) && getHostnameFromUrl(event.headers.origin || event.headers.referrer) !== 'localhost'){
+    if((event.headers.origin || event.headers.referrer) && getHostnameFromUrl(event.headers.origin || event.headers.referer) !== 'localhost'){
         params.domain = getHostFromUrl(event.headers.origin || event.headers.referrer);
     }
     if(params.domain && ALLOWED_DOMAINS.includes(params.domain) && params.id){
@@ -53,14 +49,19 @@ exports.handler = async (event, context, callback) => {
         };
         return await s3.getObject(getParams)
         .promise()
-        .then(data => {
+        .then(async data => {
             let emlBody = data.Body.toString('ascii');
-            return processEml(emlBody);
+            return await processEml(emlBody);
         })
         .then(d => {
             let x = JSON.parse(JSON.stringify(RESPONSE));
             x.statusCode = 200;
-            x.body = JSON.stringify(d);
+            let y = JSON.parse(JSON.stringify(d));
+            y.headers = {};
+            for(let [key, value] of d.headers) {
+              y.headers[key] = value;
+            }
+            x.body = JSON.stringify(y);
             if(params.type && d[params.type.toLowerCase()]){
                 let y = {headers: d.headers};
                 y[params.type] = d[params.type.toLowerCase()];
