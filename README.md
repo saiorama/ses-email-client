@@ -65,12 +65,12 @@ Sample usage: *GET /email?domain=example.com&id=2020-06-26-1593165600-abcdefghij
 
 ### Email UI
 
-Obviously, I can't be building an email client without, well, building a UI which is ```email-reader.html```.
+Obviously, I can't be building an email client without, well, building a UI which is ```email/index.html```.
 
 This client uses Foundation CSS, axios, and Vuejs to 
-1. ask the user to enter the api-key to be used with the API gateway
-2. ask the user to enter the domain for which they want to see their emails
+1. authenticate the user using AWS Cognito. Force log in if the user is not logged in.
+2. read the domain for which the user wants to retrieve emails from the website URL
 3. retrieve the list of emails (up to 100 emails) received today
 4. retrieve the content of each email
 5. display email subject on the screen
-6. on clicking on the subject, the selected email is displayed
+6. when the user clicks on the an email, show the email content
