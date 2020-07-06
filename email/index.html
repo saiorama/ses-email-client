@@ -31,9 +31,9 @@
             <h5 class="subheader">Email List</h5>
             <dl v-for="(email, idx) in emailSet" style='cursor: pointer' :key="`email-idx-`+idx" :id="idx" @click="showEmail(email.Key)">
               <a href="#email-content" v-if="email.emailContent">
-                <dt data-magellan>{{ email.emailContent.subject }} <span class="badge warning" v-if="email.emailContent.headers['X-SES-Spam-Verdict'] !== 'PASS'">spam</span>
-                  <span class="badge alert" v-if="email.emailContent.headers['X-SES-Virus-Verdict'] !== 'PASS'">virus</span></dt>
-                <dd><p class="h6 text-right subheader"> (to {{ email.emailContent.to.email}} from {{email.emailContent.from.email}})</p>
+                <dt data-magellan>{{ email.emailContent.subject }} <span class="badge warning" v-if="email.emailContent.headers['x-ses-spam-verdict'] && email.emailContent.headers['x-ses-spam-verdict'] !== 'PASS'">spam</span>
+                  <span class="badge alert" v-if="email.emailContent.headers['x-ses-virus-verdict'] && email.emailContent.headers['x-ses-virus-verdict'] !== 'PASS'">virus</span></dt>
+                <dd><p class="h6 text-right subheader"> (to {{ email.emailContent.to.text}} from {{email.emailContent.from.text}})</p>
                 </dd>
                 <hr>
               </a>
@@ -148,10 +148,11 @@
           },
           showEmail: function(emlId){
             let x = this.emailSet.find((e) => e.Key === emlId);
-            if(x && x.emailContent && x.emailContent.html){
-              this.emailContent = x.emailContent.html;
-            } else {
-              this.emailContent = `We could not download the contents of this email ${emlId}. This usually means the email isn't properly formatted. Your email admin should be able to help.`;
+            this.emailContent = `We could not download the contents of this email ${emlId}.<br> This usually means the email isn't properly formatted. Your email admin should be able to help.`;
+            if(x && x.emailContent){
+              this.emailContent = x.emailContent.text;
+              if(x.emailContent.html) this.emailContent = x.emailContent.html;
+              else if(x.emailContent.textAsHtml) this.emailContent = x.emailContent.textAsHtml;
             }
           },
           getEmail: async function(emlId) {
