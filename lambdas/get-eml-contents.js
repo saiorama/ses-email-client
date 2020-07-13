@@ -8,7 +8,8 @@ var s3 = new AWS.S3();
 
 var BUCKET_NAME = process.env.BUCKET_NAME;
 const ALLOWED_DOMAINS = process.env.ALLOWED_DOMAINS ? process.env[`ALLOWED_DOMAINS`].split(","): ["zeer0.com"];
-
+const EMAIL_ATTACHMENTS_FOLDER_KEY = process.env.EMAIL_ATTACHMENTS_FOLDER_KEY;
+const DELIM ='/';
 let processEml = async (emlBody) => {
     return simpleParser(emlBody)
       .then( d => d);
@@ -29,6 +30,19 @@ let getHostnameFromUrl = (url) => {
 
 let getHostFromUrl = (url) => {
     return (new URL(url)).host;
+};
+
+let getKeyPrefixFromKey = (key) => key.split(DELIM).slice(0, -1).join(DELIM);
+let getEmlFilenameFromKey = (key) => key.split(DELIM).pop();
+let getKeyForAttachments = (key, filename) => `${getKeyPrefixFromKey(key)}${DELIM}${process.env.EMAIL_ATTACHMENTS_FOLDER_KEY}${DELIM}${getEmlFilenameFromKey(key)}${DELIM}${filename}`;
+
+let attachmentsMetadata = (bucket, key, attachments) => {
+    return attachments.map(a => {
+        let x = Object.assign({}, a);
+        delete(x.content);
+        x.contentLocation = `${BUCKET_NAME}${DELIM}${getKeyForAttachments(key, a.filename)}`;
+        return x;
+    });
 };
 
 exports.handler = async (event, context, callback) => {
@@ -61,6 +75,7 @@ exports.handler = async (event, context, callback) => {
             for(let [key, value] of d.headers) {
               y.headers[key] = value;
             }
+            y.attachments = attachmentsMetadata(BUCKET_NAME, `${params.domain}/${params.id}`, y.attachments);
             x.body = JSON.stringify(y);
             if(params.type && d[params.type.toLowerCase()]){
                 let y = {headers: d.headers};
