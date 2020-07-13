@@ -46,10 +46,18 @@
               </a>
             </dl>
           </div>
-          <div class="cell auto" id="email-content">
+          <div class="cell medium-6" id="email-content">
             <h5 class="subheader">Email Preview</h5>
             <span v-if="!iframeSrc" class="lead text-center">{{ statusMsg }}</span>
-            <iframe frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="iframeSrc" v-else></iframe>
+            <div v-else>
+              <h6 class="subheader" v-if="attachments.length > 0">Attachments</h6>
+              <ul class="menu">
+                <li v-for="(attachment, idx) in attachments" style='cursor: pointer' :key="`attachment-idx-`+idx" :id="`attachment-idx-`+idx">
+                  <a :href="`${attachment.contentLocation}`" download>{{attachment.filename}}</a>
+                </li>
+              </ul>
+              <iframe frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="iframeSrc"></iframe>
+            </div>
           </div>
         </div>
       </div>
@@ -82,6 +90,7 @@
             authDetails: undefined,
             loginUrl: COGNITO_LOGIN_URL,
             logoutUrl: COGNITO_LOGOUT_URL,
+            currentEmail: undefined,
           }
         },
         mounted(){
@@ -95,6 +104,10 @@
               return URL.createObjectURL(blob);
             }
             return undefined;
+          },
+          attachments: function(){
+            console.log(`looking for attachments @ emailContent.attachments ${Object.keys(this.currentEmail.emailContent)}`);
+            return this.currentEmail.emailContent.attachments;
           }
         },
         watch: {
@@ -153,12 +166,12 @@
             if(this.authTokenIsValid()) this.logout();
           },
           showEmail: function(emlId){
-            let x = this.emailSet.find((e) => e.Key === emlId);
+            this.currentEmail = this.emailSet.find((e) => e.Key === emlId);
             this.emailContent = `We could not download the contents of this email ${emlId}.<br> This usually means the email isn't properly formatted. Your email admin should be able to help.`;
-            if(x && x.emailContent){
-              this.emailContent = x.emailContent.text;
-              if(x.emailContent.html) this.emailContent = x.emailContent.html;
-              else if(x.emailContent.textAsHtml) this.emailContent = x.emailContent.textAsHtml;
+            if(this.currentEmail && this.currentEmail.emailContent){
+              this.emailContent = this.currentEmail.emailContent.text;
+              if(this.currentEmail.emailContent.html) this.emailContent = this.currentEmail.emailContent.html;
+              else if(x.emailContent.textAsHtml) this.emailContent = this.currentEmail.emailContent.textAsHtml;
             }
           },
           getEmail: async function(emlId) {
