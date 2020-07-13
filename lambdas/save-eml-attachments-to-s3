@@ -58,8 +58,10 @@ exports.handler = async (event, context, callback) => {
         })
         .then(d => {
             return Promise.all(d.attachments.map((a) => {
-                return putEmlAttachmentObject(emlDetails.Bucket, getKeyForAttachments(emlDetails.Key, a.filename), a.content, a.contentType)
-                    .then(d => d);
+                if(a.contentDisposition === 'attachment'){
+                    return putEmlAttachmentObject(emlDetails.Bucket, getKeyForAttachments(emlDetails.Key, a.filename), a.content, a.contentType)
+                        .then(d => d);   
+                }
             }));
         })
         .then(vals => console.log(JSON.stringify(vals)))
