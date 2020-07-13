@@ -40,7 +40,7 @@ let attachmentsMetadata = (bucket, key, attachments) => {
     return attachments.map(a => {
         let x = Object.assign({}, a);
         delete(x.content);
-        x.contentLocation = `${BUCKET_NAME}${DELIM}${getKeyForAttachments(key, a.filename)}`;
+        x.contentLocation = `https://s3.amazonaws.com/${BUCKET_NAME}${DELIM}${getKeyForAttachments(key, a.filename)}`;
         return x;
     });
 };
