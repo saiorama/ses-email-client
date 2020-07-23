@@ -32,9 +32,9 @@
             <h5 class="subheader">Email List</h5>
             <dl v-for="(email, idx) in emailSet" style='cursor: pointer' :key="`email-idx-`+idx" :id="idx" @click="showEmail(email.Key)">
               <a href="#email-content" v-if="email.emailContent">
-                <dt data-magellan>{{ email.emailContent.subject }} <span class="badge warning" v-if="email.emailContent.headers['x-ses-spam-verdict'] && email.emailContent.headers['x-ses-spam-verdict'] !== 'PASS'">spam</span>
+                <dt data-magellan>{{ email.emailContent.subject || "(no subject)"}} <span class="badge warning" v-if="email.emailContent.headers['x-ses-spam-verdict'] && email.emailContent.headers['x-ses-spam-verdict'] !== 'PASS'">spam</span>
                   <span class="badge alert" v-if="email.emailContent.headers['x-ses-virus-verdict'] && email.emailContent.headers['x-ses-virus-verdict'] !== 'PASS'">virus</span></dt>
-                <dd><p class="h6 text-right subheader"> (to {{ email.emailContent.to.text}} from {{email.emailContent.from.text}} | {{ friendlyDate(email.emailContent.date)}})</p>
+                <dd><p class="h6 text-right subheader"> (to {{ email.emailContent.to ? email.emailContent.to.text : '[undefined]'}} from {{email.emailContent.from.text}} | {{ friendlyDate(email.emailContent.date)}})</p>
                 </dd>
                 <hr>
               </a>
@@ -69,7 +69,7 @@
       const API_GW_URL = 'https://api.zeer0.com/v001';
       const EMAIL_CONTENT_URL = `${API_GW_URL}/email`;
       const EMAILS_LIST_URL = `${API_GW_URL}/email/today`; //just today's emails
-      const DEFAULT_FQDN = HOST.startsWith('localhost') ? 'ramachandr.in' : HOST;
+      const DEFAULT_FQDN = HOST.startsWith('localhost') ? 'zeer0.com' : HOST;
       const LOGIN_REDIRECT_URL = `${ORIGIN}${PATHNAME}`;
       const LOGOUT_REDIRECT_URL = `${ORIGIN}${PATHNAME}`;
       const COGNITO_URL1 = 'https://auth.zeer0.com'; 
@@ -172,7 +172,7 @@
             if(this.currentEmail && this.currentEmail.emailContent){
               this.emailContent = this.currentEmail.emailContent.text;
               if(this.currentEmail.emailContent.html) this.emailContent = this.currentEmail.emailContent.html;
-              else if(x.emailContent.textAsHtml) this.emailContent = this.currentEmail.emailContent.textAsHtml;
+              else if(this.currentEmail.emailContent.textAsHtml) this.emailContent = this.currentEmail.emailContent.textAsHtml;
             }
           },
           getEmail: async function(emlId) {
