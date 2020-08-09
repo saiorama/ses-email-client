@@ -55,9 +55,11 @@ exports.handler = async (event, context, callback) => {
     
     //domain=zeer0.com&id=82vundohoan4rb4poes26r8rda5sb5vbgh9s3vo1&type=html&format=raw
     const params = event.queryStringParameters;
+    let todayMinus = params.todayMinus ? parseInt(params.todayMinus, 10) : 0;
+    todayMinus = todayMinus > 0 ? -todayMinus : todayMinus;
     if(params.domain && ALLOWED_DOMAINS.includes(params.domain)){
-        let todayPrefix = `${calculateDatePrefix(0)}`;
-        let yestPrefix = `${calculateDatePrefix(-1)}`;
+        let todayPrefix = `${calculateDatePrefix(todayMinus)}`;
+        let yestPrefix = `${calculateDatePrefix(todayMinus - 1)}`;
         let p1 = await getS3Objects(`${params.domain}${DELIM}${todayPrefix}`);
         let p2 = await getS3Objects(`${params.domain}${DELIM}${yestPrefix}`);
         
