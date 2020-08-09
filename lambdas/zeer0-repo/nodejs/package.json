@@ -1,0 +1,31 @@
+{
+  "name": "zeer0-lambda-layer",
+  "version": "0.0.1",
+  "description": "utils and npm modules used by zeer0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sai Ramachandran",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saiorama/ses-email-client.git"
+  },
+  "keywords": [
+    "nodejs",
+    "lambda",
+    "aws"
+  ],
+  "bugs": {
+    "url": "https://github.com/saiorama/ses-email-client/issues"
+  },
+  "homepage": "https://github.com/saiorama/ses-email-client#readme",
+  "devDependencies": {
+    "mailparser": "^2.8.0",
+    "zeer0-repo": "git+https://github.com/saiorama/zeer0-repo.git"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.719.0"
+  }
+}
