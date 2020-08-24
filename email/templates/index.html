@@ -24,7 +24,7 @@
             </div>
             <div class="field">
               <div class="control">
-                <input class="input is-medium" type="text" placeholder="AWS Secret Access Key" v-model="secretAccessKey">
+                <input class="input is-medium" type="text" placeholder="AWS Secret Access " v-model="secretAccessKey">
               </div>
             </div>
             <div class="field">
@@ -37,24 +37,28 @@
                 </div>
               </div>
             </div>
-            <div><button class="button is-medium is-primary is-outlined" :disabled="buttonShouldBeDisabled" @click="getTemplates">Get my SES templates</button></div>
-            <div>
+            <div><button class="button is-medium is-primary is-outlined" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates">Get my SES templates</button>
+              <progress class="progress is-small is-primary" :class="templateIsLoading ? '':'is-invisible'" max="100"></progress>
+            </div>
             <div v-if="templatesLength === 0">SES templates will appear here...</div>
-              <div v-else>
-                <div class="columns is-multiline is-mobile">
-                  <div v-for="templateData in this.templates.TemplatesMetadata">
-                    <button class="column is-one-quarter button is-text" @click="getTemplate(templateData.Name)">{{templateData.Name}}</button>
-                  </div>
+            <div v-else>
+              <div class="columns is-mobile content">
+                <div class="column">
+                  <ol>
+                    <li v-for="templateData in this.templates.TemplatesMetadata" @click="getTemplate(templateData.Name)">{{templateData.Name}}</li>
+                  </ol>
                 </div>
               </div>
             </div>
           </div>
-      </div>
-      <div class="column" >
-        <span v-if="!iframeSrc" class="lead text-center">Template will appear here...</span>
-          <div v-else>
-            <iframe frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="iframeSrc"></iframe>
-          </div>
+        </div>
+        <div class="column">
+          <div class="notification"><span>{{currentTemplateName}}</span></div>
+          <span v-if="!iframeSrc" class="lead text-center">Template will appear here...</span>
+            <div v-else>
+              <iframe frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="iframeSrc"></iframe>
+            </div>
+        </div>
       </div>
     </div>
   </div>
@@ -73,6 +77,9 @@
         nextTokenBecameNull: false,
         iframeSrc: undefined,
         sesRegions: undefined,
+        templateIsLoading: undefined,
+        templatesAreLoading: undefined,
+        currentTemplateName: "Template name will appear here...",
       },
       watch: {
         accessKeyId: function(n, o){
@@ -123,14 +130,16 @@
         },
         getTemplate: _.throttle(
           async function(tName){
-            console.log(`async ${tName}`);
             if(this.ses){
               var params = { TemplateName: tName };
               let vm = this;
+              vm.templateIsLoading = true;
+              vm.currentTemplateName = tName;
               await this.ses.getTemplate(params).promise()
                 .then(template => {
                   const blob = new Blob([template.Template.HtmlPart], { type: 'text/html' });
                   vm.iframeSrc = URL.createObjectURL(blob);
+                  vm.templateIsLoading = false;
                 })
             }
           }, 2000, {'leading': true}),
@@ -142,12 +151,14 @@
                 params.NextToken = this.templates.NextToken;
               }
               let vm = this;
+              vm.templatesAreLoading = true;
               await this.ses.listTemplates(params).promise()
                 .then(templates => {
                   if(!vm.templates.TemplatesMetadata) vm.setTemplateMetadataReactive([]);
                   vm.setTemplateMetadataReactive(_.union(vm.templates.TemplatesMetadata, templates.TemplatesMetadata));
                   Vue.set(vm.templates, 'NextToken', templates.NextToken ? templates.NextToken : undefined);
                   this.nextToken = templates.NextToken ? templates.NextToken : undefined;
+                  vm.templatesAreLoading = false;
                 })
             }
           }, 2000, {'leading': true})
