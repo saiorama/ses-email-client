@@ -45,7 +45,7 @@
               <div class="columns is-mobile content">
                 <div class="column">
                   <ol>
-                    <li v-for="templateData in this.templates.TemplatesMetadata" @click="getTemplate(templateData.Name)">{{templateData.Name}}</li>
+                    <li v-for="templateData in this.templates.TemplatesMetadata" @click="getTemplate(templateData.Name)"><a :class="templateData.Name === currentTemplateName && templateIsLoading? 'is-loading' :''" class="button">{{templateData.Name}}</a></li>
                   </ol>
                 </div>
               </div>
