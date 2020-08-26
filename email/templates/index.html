@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="is-clipped">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -38,9 +38,14 @@
               </div>
             </div>
             <div>
-              <div><label class="checkbox">
-                <input type="checkbox" v-model="dataMustBeSavedLocally">Remember key, secret, and region
-              </label></div>
+              <div>
+                <label class="checkbox">
+                  <input type="checkbox" v-model="dataMustBeSavedLocally">Remember key, secret, and region
+                </label>
+                <br>
+                <div><button class="is-link has-text-info"  @click="privacyPolicyModalIsVisible = true">Privacy Policy</button></div>
+                <br>
+              </div>
               <button class="button is-medium is-primary is-outlined" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates">Get my SES templates</button>
               <progress class="progress is-small is-primary" :class="templateIsLoading ? '':'is-invisible'" max="100"></progress>
             </div>
@@ -64,8 +69,26 @@
             </div>
         </div>
       </div>
+      <div class="modal" :class="privacyPolicyModalIsVisible ? 'is-active':''">
+        <div class="modal-background" @click="privacyPolicyModalIsVisible = false"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title is-large">Privacy Policy</p>
+            <button class="modal-close is-large" aria-label="close" @click="privacyPolicyModalIsVisible = false"></button>
+          </header>
+          <section class="modal-card-body">
+            <div class="content is-medium">
+              <p>- We don't ever receive or store your AWS Key, secret, and region information. It is saved in your browser and sent directly to Amazon AWS to download information relevant to YOU!</p>
+              <p>- We use Google Analytics to see how our site is being used, not for advertising.</p>
+              <p>- That's it!</p>
+            </div>
+          </section>
+          <footer class="modal-card-foot">
+            <button class="button is-medium is-primary is-outlined" @click="privacyPolicyModalIsVisible = false">Okay!</button>
+          </footer>
+        </div>
+      </div>
     </div>
-  </div>
   </body>
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-176392311-1"></script>
@@ -94,6 +117,7 @@
         templatesAreLoading: undefined,
         currentTemplateName: "Template name will appear here...",
         dataMustBeSavedLocally: false,
+        privacyPolicyModalIsVisible: false,
       },
       watch: {
         accessKeyId: function(n, o){
@@ -130,6 +154,9 @@
         }
       },
       methods: {
+        showPrivacyPolicyModal: function(){
+          this.privacyPolicyModalIsVisible = true;
+        },
         updateLocalData: function(){
           localStorage.accessKeyId = this.dataMustBeSavedLocally ? (this.accessKeyId ? this.accessKeyId : '') : '';
           localStorage.secretAccessKey = this.dataMustBeSavedLocally ? (this.secretAccessKey ? this.secretAccessKey : '') : '';
