@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="is-clipped">
+<html lang="en" class="has-navbar-fixed-top">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,19 +14,26 @@
   </head>
   <body>
     <div id="app">
-      <div class="columns">
-        <div class="column is-one-third notification box">
-          <div class="container">
+      <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a class="navbar-item is-small title" href="#">Cloud Tools</a>
+        </div>
+        <div class="navbar-start">
+          <div class="navbar-item">
             <div class="field">
               <div class="control">
-                <input class="input is-medium" type="text" placeholder="AWS Key Id" v-model="accessKeyId">
+                <input class="input" type="text" placeholder="AWS Key Id" v-model="accessKeyId">
               </div>
             </div>
+          </div>
+          <div class="navbar-item">
             <div class="field">
               <div class="control">
-                <input class="input is-medium" type="text" placeholder="AWS Secret Access " v-model="secretAccessKey">
+                <input class="input" type="text" placeholder="AWS Secret Access " v-model="secretAccessKey">
               </div>
             </div>
+          </div>
+          <div class="navbar-item">
             <div class="field">
               <div class="control">
                 <div class="select is-primary" v-if="this.sesRegions">
@@ -37,33 +44,34 @@
                 </div>
               </div>
             </div>
-            <div>
-              <div>
-                <label class="checkbox">
-                  <input type="checkbox" v-model="dataMustBeSavedLocally">Remember key, secret, and region
-                </label>
-                <br>
-                <div><button class="is-link has-text-info"  @click="privacyPolicyModalIsVisible = true">Privacy Policy</button></div>
-                <br>
-              </div>
-              <button class="button is-medium is-primary is-outlined" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates">Get my SES templates</button>
-              <progress class="progress is-small is-primary" :class="templateIsLoading ? '':'is-invisible'" max="100"></progress>
-            </div>
-            <div v-if="templatesLength === 0">SES templates will appear here...</div>
-            <div v-else>
-              <div class="columns is-mobile content">
-                <div class="column">
-                  <ol>
-                    <li v-for="templateData in this.templates.TemplatesMetadata" @click="getTemplate(templateData.Name)"><a :class="templateData.Name === currentTemplateName && templateIsLoading? 'is-loading' :''" class="button">{{templateData.Name}}</a></li>
-                  </ol>
+          </div>
+          <div class="navbar-item">
+            <label class="checkbox">
+              <input type="checkbox" v-model="dataMustBeSavedLocally"> Remember key, secret, and region
+            </label>
+          </div>
+          <div class="navbar-item">
+            <button class="button is-medium is-primary is-outlined" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates">Get my SES templates</button>
+          </div>
+        </div>
+      </nav>
+
+      <div class="columns">
+        <div class="column is-one-quarter notification box" v-if="templatesLength > 0">
+          <div class="container">
+            <div class="columns is-mobile content">
+              <div class="column">
+                <div v-if="templatesLength === 0">SES templates will appear here...</div>
+                <div v-else>
+                  <button v-for="templateData in this.templates.TemplatesMetadata" @click="getTemplate(templateData.Name)"><a :class="templateData.Name === currentTemplateName && templateIsLoading? 'is-loading' :''" class="button">{{templateData.Name}}</a></button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="column">
-          <div class="notification"><span>{{currentTemplateName}}</span></div>
-          <span v-if="!iframeSrc" class="lead text-center">Template will appear here...</span>
+        <div class="column" v-if="templatesLength > 0">
+          <div class="notification text-center subtitle is-size-4 has-text-primary-dark"><span>{{currentTemplateName}}</span></div>
+          <div class="text-center" v-if="!iframeSrc"><span>Template will appear here...</span></div>
             <div v-else>
               <iframe frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="iframeSrc"></iframe>
             </div>
@@ -88,6 +96,17 @@
           </footer>
         </div>
       </div>
+      <footer class="footer">
+        <div class="content has-text-centered">
+          <div v-if="templatesLength === 0">
+            <p>
+              <strong>Welcome!</strong> Enter your AWS Key, Secret, and select your AWS SES Region to see your SES Templates.
+            </p>
+          </div>
+          <p>Your AWS Key, Secret, and region are never transmitted to our server. Here is the rest of our very short <a @click="privacyPolicyModalIsVisible = true">privacy policy</a>.
+          <p>
+        </div>
+      </footer>
     </div>
   </body>
   <!-- Global site tag (gtag.js) - Google Analytics -->
