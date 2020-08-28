@@ -1,0 +1,47 @@
+.block-39 {
+  --block-background: white;
+  --block-text-color: var(--text-primary);
+  background: var(--block-background);
+  color: var(--block-text-color);
+}
+
+.block__header {
+  margin-bottom: 4rem;
+}
+
+.block__title {
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1.4;
+}
+
+@media(min-width: 992px) {
+  .block__title {
+    font-size: 2.5rem;
+  }
+}
+
+.content-block {
+  text-align: initial;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.content-block__title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+@media(min-width: 992px) {
+  .content-block__title {
+    font-size: 1.5rem;
+  }
+}
+
+.content-block__paragraph {
+  font-size: 1rem;
+  opacity: .9;
+  line-height: 1.7;
+}

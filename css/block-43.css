@@ -1,0 +1,41 @@
+.block-43 {
+  --block-background: white;
+  --block-text-color: var(--text-primary);
+  background: var(--block-background);
+  color: var(--block-text-color);
+  font-size: .87rem;
+}
+
+.block-43__list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.block-43__li-1 {
+  font-weight: 600;
+  margin: 0 1.2rem;
+  margin-bottom: .6rem;
+}
+
+@media(min-width: 992px) {
+  .block-43__li-1 {
+    margin: 0 1.8rem;
+  }
+}
+
+.block-43__link {
+  color: var(--text-primary);
+  opacity: .8;
+}
+
+.block-43__link:hover,
+.block-43__link:focus {
+  color: var(--primary);
+}
+
+.block-43__copyrights {
+  color: var(--text-primary);
+  font-size: .87rem;
+  line-height: 1.7;
+  opacity: .8;
+}
