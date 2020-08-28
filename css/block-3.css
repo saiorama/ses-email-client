@@ -1,0 +1,80 @@
+.block-3 {
+  --block-background: white;
+  --block-text-color: var(--text-primary);
+  background: var(--block-background);
+  color: var(--block-text-color);
+}
+
+.block__header {
+  margin-bottom: 4rem;
+}
+
+.block__pre-title {
+  color: var(--primary);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.block__title {
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1.4;
+}
+
+@media(min-width: 992px) {
+  .block__title {
+    font-size: 2.5rem;
+  }
+}
+
+.block__paragraph {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  opacity: .9;
+}
+
+.card-3 {
+  padding: 2rem 1rem;
+  margin-bottom: 2.1rem;
+  border-radius: 5px;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+.card-3:hover,
+.card-3:focus {
+  background: rgba(0,0,0,0.02);
+  border-color: var(--primary);
+  cursor: pointer;
+}
+
+.card-3__symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  height: 3.25rem;
+  width: 3.25rem;
+  background: white;
+  border: 1px solid var(--primary);
+  border-radius: var(--elements-roundness);
+  color: var(--primary);
+}
+
+@media(min-width: 992px) {
+  .card-3__symbol {
+    height: 4.25rem;
+    width: 4.25rem;
+  }
+}
+
+.card-3__title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.46;
+}
+
+.card-3__paragraph {
+  font-size: .9rem;
+  line-height: 1.4;
+  opacity: .8;
+}

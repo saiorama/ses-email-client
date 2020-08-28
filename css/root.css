@@ -1,0 +1,91 @@
+:root {
+  --primary: #5e22e6;
+  --secondary: #0a1f44;
+  --primary-invert: #fff;
+  --secondary-invert: #fff;
+
+  /* DEFAULT COLOR OF TEXTS */
+  --text-primary: #0a1f44;
+  
+  /* FOR BUTTONS & INPUTS */
+  --elements-roundness: 10rem;
+
+  --space-between-blocks: 5.3rem;
+  /* for mobiles */
+  --space-between-blocks-small-screens: 3rem;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  color: var(--text-primary);
+}
+
+.space-between-blocks {
+  padding-top: var(--space-between-blocks-small-screens);
+  padding-bottom: var(--space-between-blocks-small-screens);
+}
+
+@media(min-width: 992px) {
+  .space-between-blocks {
+    padding-top: var(--space-between-blocks);
+    padding-bottom: var(--space-between-blocks);
+  }
+}
+
+/* ----------------- BUTTONS ------------------- */
+
+button {
+  color: inherit;
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.btn {
+  font-size: .87rem;
+  padding: .8rem 1.6rem;
+  border-radius: var(--elements-roundness);
+  transition: .2s all;
+}
+
+@media(min-width: 992px) {
+  .btn {
+    padding: .8rem 2rem;
+  }
+}
+
+.btn,
+.btn:hover,
+.btn:focus {
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.btn:hover,
+.btn:focus {
+  transform: scale(1.05);
+}
+
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:focus {
+  background: var(--primary);
+  color: var(--primary-invert);
+}
+
+.btn-secondary,
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background: var(--secondary);
+  color: var(--secondary-invert);
+}
+
+.btn-sm {
+  padding: .8rem;
+}
