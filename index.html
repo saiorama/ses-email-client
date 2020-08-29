@@ -1,531 +1,530 @@
 <!doctype html>
 <html lang="en" style="scroll-behavior: smooth;">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-<head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
+    <!-- font awesome 5 free -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
-  <!-- font awesome 5 free -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- Poppins font from Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-  <!-- Poppins font from Google -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/root.css">
+    <link rel="stylesheet" href="./css/block-2.css">
+    <link rel="stylesheet" href="./css/block-3.css">
+    <link rel="stylesheet" href="./css/block-39.css">
+    <link rel="stylesheet" href="./css/block-43.css">
+    <link rel="stylesheet" href="./css/block-28.css">
+    <link rel="stylesheet" href="./css/block-29.style-3.css">
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-MQ28N2K');</script>
+    <!-- End Google Tag Manager -->
+    <title>Cool utilities for AWS SES®</title>
+  </head>
 
-  <link rel="stylesheet" href="./css/root.css">
-  <link rel="stylesheet" href="./css/block-2.css">
-  <link rel="stylesheet" href="./css/block-3.css">
-  <link rel="stylesheet" href="./css/block-39.css">
-  <link rel="stylesheet" href="./css/block-43.css">
-  <link rel="stylesheet" href="./css/block-28.css">
-  <link rel="stylesheet" href="./css/block-29.style-3.css">
-  <title>Cool utilities for AWS SES®</title>
-</head>
+  <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MQ28N2K"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <div id="main-div">
+      <div class="hero-with-shape overflow-hidden">
+        <header class="hero container-fluid position-relative">
+          <nav class="hero-nav position-relative container mx-auto px-0">
+            <ul class="nav w-100 list-unstyled align-items-center p-0">
+              <li class="hero-nav__item">
+                <img class="hero-nav__logo" src="./images/logo-shape.svg" alt="our logo">
+              </li>
+              <li id="hero-menu" class="flex-grow-1 hero__nav-list hero__nav-list--mobile-menu ft-menu">
+                <ul
+                  class="hero__menu-content nav flex-column flex-lg-row ft-menu__slider animated list-unstyled p-2 p-lg-0">
+                  <!-- YOU CAN UNCOMMENT THIS -->
+                  <!--<li class="hero-nav__item">
+                        <a href="#" class="hero-nav__link">Product</a>
+                      </li> -->
+                  <li class="flex-grow-1">
+                    <ul
+                      class="nav nav--lg-side flex-column-reverse flex-lg-row-reverse list-unstyled align-items-center p-0">
+                      <li class="hero-nav__item">
+                        <a href="/templates" class="btn btn-primary">
+                          See your SES Templates &nbsp;
+                          <i class="fas fa-arrow-right"></i>
+                        </a>
+                      </li>
+                      <li class="hero-nav__item">
+                        <a href="#products" class="hero-nav__link">Products</a>
+                      </li>
+                      <li class="hero-nav__item">
+                        <a href="#" class="hero-nav__link" data-toggle="modal" data-target="#pricingModal">Pricing</a>
+                      </li>
+                      <li class="hero-nav__item">
+                        <a href="#faqs" class="hero-nav__link">FAQs</a>
+                      </li>
+                      <li class="hero-nav__item">
+                        <a href="#contact" class="hero-nav__link">Contact</a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+                <button onclick="document.querySelector('#hero-menu').classList.toggle('ft-menu--js-show')"
+                  class="ft-menu__close-btn animated">
+                  <svg class="bi bi-x" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                      d="M11.854 4.146a.5.5 0 010 .708l-7 7a.5.5 0 01-.708-.708l7-7a.5.5 0 01.708 0z" clip-rule="evenodd" />
+                    <path fill-rule="evenodd" d="M4.146 4.146a.5.5 0 000 .708l7 7a.5.5 0 00.708-.708l-7-7a.5.5 0 00-.708 0z"
+                      clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </li>
+              <li class="d-lg-none flex-grow-1 d-flex flex-row-reverse hero-nav__item">
+                <button onclick="document.querySelector('#hero-menu').classList.toggle('ft-menu--js-show')"
+                  class="text-center px-2">
+                  <i class="fas fa-bars"></i>
+                </button>
+              </li>
+            </ul>
+          </nav>
+          <div class="hero__content container px-0 flex-grow-1 d-flex align-items-center mx-auto">
+            <div class="text-center col-lg-8 px-0 mx-auto">
+              <h1 class="hero__title mb-3">
+                Why does working with <span class="highlight">AWS SES<super>®</super></span> suck so bad?
+              </h1>
+              <p class="hero__paragraph mb-5">
+                Simple, intuitive, and safe AWS SES<super>®</super> tools that even <span class="highlight">Becky from Biz Dev</span> and <span class="highlight">Paulie from Product Management</span> can use.
+              </p>
+              <div>
+                <a class="btn btn-primary" href="/templates">
+                  See your SES Templates &nbsp;
+                  <i class="fas fa-arrow-right"></i>
+                </a>
+                <p><a href="#products">View our other SES utilities</a></p>
+              </div>
+              <div><br><p style="font-size: .8rem"><super><em>(Hey, fyi, this website is not affliated to AWS or to AWS SES)</em></super></p></div>
+            </div>
+          </div>
+          <div class="d-none d-lg-block pattern pattern--primary pattern--left-bottom">
+            <!-- SVG Pattern generated by 𝕭𝖊𝖆𝖚𝖙𝖎𝖋𝖚𝖑 𝕯𝖎𝖓𝖌𝖇𝖆𝖙𝖘 -->
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%">
+              <defs>
+                <pattern id="pattern" width="19" height="19" viewBox="0 0 40 40" patternUnits="userSpaceOnUse"
+                  patternTransform="rotate(90)">
+                  <rect id="pattern-background" x="0" y="0" width="400%" height="400%" fill="transparent" />
+                  <circle cx="20" cy="20" r="4" fill="currentColor" stroke="currentColor" stroke-width="0" />
+                  <circle cx="20" cy="20" r="0" fill="currentColor" stroke="currentColor" stroke-width="0" />
+                </pattern>
+              </defs>
+              <rect fill="url(#pattern)" height="100%" width="100%" y="0" x="0" />
+            </svg>
+          </div>
+          <div class="d-none d-lg-block pattern pattern--primary pattern--right">
+            <!-- SVG Pattern generated by 𝕭𝖊𝖆𝖚𝖙𝖎𝖋𝖚𝖑 𝕯𝖎𝖓𝖌𝖇𝖆𝖙𝖘 -->
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%">
+              <defs>
+                <pattern id="pattern" width="19" height="19" viewBox="0 0 40 40" patternUnits="userSpaceOnUse"
+                  patternTransform="rotate(90)">
+                  <rect id="pattern-background" x="0" y="0" width="400%" height="400%" fill="transparent" />
+                  <circle cx="20" cy="20" r="4" fill="currentColor" stroke="currentColor" stroke-width="0" />
+                  <circle cx="20" cy="20" r="0" fill="currentColor" stroke="currentColor" stroke-width="0" />
+                </pattern>
+              </defs>
+              <rect fill="url(#pattern)" height="100%" width="100%" y="0" x="0" />
+            </svg>
+          </div>
+        </header>
+        <svg class="svg-shape" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1366.3 106.742">
+          <path fill="currentColor"
+            d="M1366.3 40.982q-183.405 50.177-274.4 34.984c-90.992-15.193-181.984-45.58-272.975-35.419-90.993 9.78-181.984 61.058-272.976 65.806S363.967 71.218 272.976 50.612C181.983 30.387 90.991 30.387 45.495 30.387L0 26.33V0h1366.3z"
+            opacity="0.149" />
+          <path fill="currentColor"
+            d="M0 40.982q183.405 50.177 274.4 34.984c90.992-15.193 181.984-45.58 272.975-35.419 90.993 9.78 181.984 61.058 272.976 65.806s181.984-35.135 272.975-55.741c90.992-20.226 181.984-20.226 227.48-20.226h45.5V0H0z"
+            opacity="0.296" />
+          <path fill="currentColor"
+            d="M0 27.041q183.405 33.124 274.4 23.1c90.989-10.031 181.981-30.086 272.972-23.379 90.993 6.454 181.984 40.3 272.976 43.431S1002.332 47 1093.324 33.4c90.992-13.35 181.984-13.35 227.48-13.35h45.5V0H0z" />
+        </svg>
+      </div>
 
-<body>
-  <div id="main-div">
-    <div class="hero-with-shape overflow-hidden">
-      <header class="hero container-fluid position-relative">
-        <nav class="hero-nav position-relative container mx-auto px-0">
-          <ul class="nav w-100 list-unstyled align-items-center p-0">
-            <li class="hero-nav__item">
-              <img class="hero-nav__logo" src="./images/logo-shape.svg" alt="our logo">
-            </li>
-            <li id="hero-menu" class="flex-grow-1 hero__nav-list hero__nav-list--mobile-menu ft-menu">
-              <ul
-                class="hero__menu-content nav flex-column flex-lg-row ft-menu__slider animated list-unstyled p-2 p-lg-0">
-                <!-- YOU CAN UNCOMMENT THIS -->
-                <!--<li class="hero-nav__item">
-                      <a href="#" class="hero-nav__link">Product</a>
-                    </li> -->
-                <li class="flex-grow-1">
-                  <ul
-                    class="nav nav--lg-side flex-column-reverse flex-lg-row-reverse list-unstyled align-items-center p-0">
-                    <li class="hero-nav__item">
-                      <a href="/templates" class="btn btn-primary">
-                        See your SES Templates &nbsp;
-                        <i class="fas fa-arrow-right"></i>
-                      </a>
-                    </li>
-                    <li class="hero-nav__item">
-                      <a href="#products" class="hero-nav__link">Products</a>
-                    </li>
-                    <li class="hero-nav__item">
-                      <a href="#" class="hero-nav__link" data-toggle="modal" data-target="#pricingModal">Pricing</a>
-                    </li>
-                    <li class="hero-nav__item">
-                      <a href="#faqs" class="hero-nav__link">FAQs</a>
-                    </li>
-                    <li class="hero-nav__item">
-                      <a href="#contact" class="hero-nav__link">Contact</a>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
-              <button onclick="document.querySelector('#hero-menu').classList.toggle('ft-menu--js-show')"
-                class="ft-menu__close-btn animated">
-                <svg class="bi bi-x" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <path fill-rule="evenodd"
-                    d="M11.854 4.146a.5.5 0 010 .708l-7 7a.5.5 0 01-.708-.708l7-7a.5.5 0 01.708 0z" clip-rule="evenodd" />
-                  <path fill-rule="evenodd" d="M4.146 4.146a.5.5 0 000 .708l7 7a.5.5 0 00.708-.708l-7-7a.5.5 0 00-.708 0z"
-                    clip-rule="evenodd" />
-                </svg>
+      <div class="block-3 container space-between-blocks" id="products">
+        <div class="col-lg-8 col-xl-7 mx-auto text-center mb-5">
+          <h2 class="block__title">Tools for AWS SES<super>®</super></h2>
+        </div>
+        <div class="row align-items-center">
+          <div class="col-lg-3">
+            <div class="card-3 text-center" @click="openViewTemplates()">
+              <span class="card-3__symbol mx-auto mb-4">
+                <i class="fas fa-align-center"></i>
+              </span>
+              <h3 class="card-3__title mb-2">View Templates</h3>
+              <p class="card-3__paragraph">
+                View your email Templates in the browser
+              </p>
+            </div>
+            <div class="card-3 text-center" data-toggle="modal" data-target="#comingSoonModal">
+              <span class="card-3__symbol mx-auto mb-4">
+                <i class="fas fa-sync-alt"></i>
+              </span>
+              <h3 class="card-3__title mb-2">Test a Template</h3>
+              <p class="card-3__paragraph">
+                Dry run a template. See how it looks in the browser with real data
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-5 mx-auto">
+            <div class="col-lg-7 px-0 pb-5 mx-auto">
+              <div class="card-3 text-center" @click="gotoContactSection()">
+                <span class="card-3__symbol mx-auto mb-4">
+                  <i class="fas fa-paper-plane"></i>
+                </span>
+                <h3 class="card-3__title mb-2">Unlimited email IDs</h3>
+                <p class="card-3__paragraph">
+                  Get unlimited email ids on your own domain...like a private Mailinator. <p><a href="#contact"> Contact us using the form below</a>.</p>
+                  <p><span class="highlight"><em>This service is not FREE!</em></span></p>
+                </p>
+              </div>
+            </div>
+            <div class="col-lg-11 px-0 my-5 mx-auto text-center">
+              <p class="block__pre-title mb-2">SAFE, FUNCTIONAL</p>
+              <!-- <h1 class="block__title mb-3">UIs for AWS SES</h1> -->
+              <p class="block__paragraph mb-5">
+                Don't let the unusable AWS SES<super>®</super> UI slow you down
+              </p>
+            </div>
+            <div class="col-lg-7 px-0 pt-5 mx-auto">
+              <div class="card3__disabled text-center">
+                <span class="card-3__symbol mx-auto mb-4">
+                  <i class="fas fa-globe"></i>
+                </span>
+                <h3 class="card-3__title mb-2">Other SES functions</h3>
+                <p class="card-3__paragraph">
+                  Lorem ipsum buddy
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3">
+            <div class="card-3 text-center">
+              <span class="card-3__symbol mx-auto mb-4">
+                <i class="fas fa-question"></i>
+              </span>
+              <h3 class="card-3__title mb-2">Need a new SES tool?</h3>
+              <p class="card-3__paragraph">
+                <a href="#contact"> Contact us using the form below</a>.
+              </p>
+            </div>
+            <div class="card-3 text-center" data-toggle="modal" data-target="#comingSoonModal">
+              <span class="card-3__symbol mx-auto mb-4">
+                <i class="fas fa-pen"></i>
+              </span>
+              <h3 class="card-3__title mb-2">Update a Template</h3>
+              <p class="card-3__paragraph">
+                Update a template right here in the browser.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block-39 space-between-blocks" id="faqs">
+        <div class="container">
+          <!-- HEADER -->
+          <div class="col-lg-8 col-xl-7 mx-auto text-center mb-5">
+            <h1 class="block__title">Frequently Asked Questions</h1>
+          </div>
+          <div class="row px-2">
+            <div class="col-lg-6">
+              <div class="content-block">
+                <h4 class="content-block__title">
+                  Why did you build this?
+                </h4>
+                <p class="content-block__paragraph">
+                  <p>In my day job, I help manage a startup's AWS infrastructure. </p>
+                  <p>While I want to have my non-tech colleagues do things on their own, I find that that AWS's web interface is basically impossible to safely navigate. At times, the AWS web interface has limited functionality. </p>
+                  <p>For example, AWS's Simple Email Service does not have a place where you can see your email templates in the browser. You have to download the template, then open it in your browser as a <code>file://</code>. Talk about annoying.</p>
+                </p>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="content-block">
+                <h4 class="content-block__title">
+                  Can I request a specific utility for my team?
+                </h4>
+                <p class="content-block__paragraph">
+                  Sure. You can request a UI by <a href="#contact">emailing us</a>. I'll build the more popular ones.
+                </p>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="content-block">
+                <h4 class="content-block__title">
+                  How secure are my keys?
+                </h4>
+                <p class="content-block__paragraph">
+                  <p>As secure as the device you use it on. Let me explain. </p>
+
+                  <p>This entire website is serverless. I serve it from an S3 bucket so there is no server as such to log your data. I use the AWS javascript sdk to directly connect to AWS without any intermediate hops to perform actions on your behalf.</p>
+
+                  <p>So, if your browser is safe, e.g., you are not a public workstation, your AWS credentials are also absolutely safe. Here's our <a href="#" data-toggle="modal" data-target="#privacyModal"> privacy policy</a>.</p>
+                </p>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="content-block">
+                <h4 class="content-block__title">
+                  Can I duplicate this?
+                </h4>
+                <p class="content-block__paragraph">
+                  <p>Of course!</p> <p>My source code is hosted on <a href="https://github.com/saiorama/ses-email-client" target="_blank">Github</a> here. Just clone the repo, run <code>http-server .</code> (or any such webserver for static files) on the command line and you'll be good to go.</p>
+                </p>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="content-block">
+                <h4 class="content-block__title">
+                  Can I contribute?
+                </h4>
+                <p class="content-block__paragraph">
+                  <p>Of course!</p> <p>Check out the issues page on my <a href="https://github.com/saiorama/ses-email-client" target="_blank">Github</a> for this project and send me a PR for any issue that you can help with.</p>
+                </p>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="content-block">
+                <h4 class="content-block__title">
+                  Why is the website called Zeer0?
+                </h4>
+                <p class="content-block__paragraph">
+                  <p>Zeer0 because it matches the number of hassles you will face in using these utilities!</p>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="block-28" id="contact">
+        <div class="container">
+          <div class="row h-100">
+            <div class="col-lg-6 h-100 block-28__content-side">
+              <div class="contact-info">
+                <h5 class="contact-info__title mb-3">Get in Touch</h5>
+                <p class="contact-info__paragraph mb-5">
+                  Contact me using this form...
+                  <iframe src="https://giphy.com/embed/l3vR7u6HBBrAvzb9e" width="480" height="294" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/roma-football-soccer-l3vR7u6HBBrAvzb9e">via GIPHY</a></p>
+                </p>
+                <!-- <div class="mb-5">
+                  <h6 class="contact-info__title-2 mb-3">COLLABORATE</h6>
+                  <p class="d-flex flex-column">
+                    <span class="contact-info__item mb-2">Support@example.com</span>
+                    <span class="contact-info__item">Fax: (099) 453-1357</span>
+                  </p>
+                </div>
+                <div class="mb-5">
+                  <h6 class="contact-info__title-2 mb-3">COLLABORATE</h6>
+                  <p class="d-flex flex-column">
+                    <span class="contact-info__item mb-2">
+                      <i class="fas fa-phone"></i><span class="mx-2">Support@example.com</span>
+                    </span>
+                    <span class="contact-info__item">
+                      <i class="fas fa-envelope"></i><span class="mx-2">Fax: (099) 453-1357</span>
+                    </span>
+                  </p>
+                </div> -->
+              </div>
+            </div>
+            <div class="col-lg-6 h-100 block-28__form-side">
+              <form action="https://formspree.io/mrgywpvg" class="contact-form text-center" method="POST">
+                <div class="contact-form__header mb-5">
+                  <h6 class="contact-form__title mb-3">This form</h6>
+                  <p class="contact-form__paragraph mb-0 mx-auto">
+                    How can I help?
+                  </p>
+                </div>
+                <input type="text" class="contact-form__input" name="name" placeholder="Full Name">
+                <input type="email" class="contact-form__input" name="_replyto"  placeholder="Email">
+                <textarea class="contact-form__input" name="message" placeholder="Message"></textarea>
+                <button class="btn btn-primary w-100">SEND MESSAGE</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Modal -->
+      <div class="modal fade" id="comingSoonModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Ooops!</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
               </button>
-            </li>
-            <li class="d-lg-none flex-grow-1 d-flex flex-row-reverse hero-nav__item">
-              <button onclick="document.querySelector('#hero-menu').classList.toggle('ft-menu--js-show')"
-                class="text-center px-2">
-                <i class="fas fa-bars"></i>
+            </div>
+            <div class="modal-body">
+              <div class="py-5 container px-4 px-sm-5">
+                <div class="row justify-content-center">
+                  <div class="col-lg-6 col-xl-7 mx-auto mb-3 mb-lg-0">
+                    <p class="block-29__paragraph">
+                      This feature is not yet built BUT I have recorded your interest in this.
+                    </p>
+                    <p class="block-29__paragraph">I'll work on it once I get enough votes!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="pricingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Pricing</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
               </button>
+            </div>
+            <div class="modal-body">
+              <div class="block-29 py-5 container px-4 px-sm-5">
+                <div class="row justify-content-center">
+                  <div class="col-lg-6 col-xl-7 mx-auto mb-3 mb-lg-0">
+                    <h4 class="block-29__title mb-3">
+                      It's FREE!
+                    </h4>
+                    <p class="block-29__paragraph">Yup, seriously. It's free!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="privacyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Privacy Policy</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="py-5 container px-1 px-sm-5">
+                <div class="row">
+                  <div class="col-lg-6 col-xl-7 mx-auto mb-3 mb-lg-0">
+                      <p>- We don't ever receive or store your AWS Key, secret, and region information. It is saved in your browser and sent directly to Amazon AWS to download information relevant to YOU!</p>
+                      <p>- We use Google Analytics to see how our site is being used, not for advertising.</p>
+                      <p>- That's it!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="block-43 text-center py-5">
+        <div class="container">
+          <ul class="block-43__list list-unstyled justify-content-center mb-4">
+            <li class="block-43__li-1">
+              <a href="#!" class="block-43__link" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>
+            </li>
+            <!-- <li class="block-43__li-1">
+              <a href="#!" class="block-43__link">Enterprise</a>
+            </li>
+            <li class="block-43__li-1">
+              <a href="#!" class="block-43__link">Products</a>
+            </li>
+            <li class="block-43__li-1">
+              <a href="#!" class="block-43__link">Account</a>
             </li>
           </ul>
-        </nav>
-        <div class="hero__content container px-0 flex-grow-1 d-flex align-items-center mx-auto">
-          <div class="text-center col-lg-8 px-0 mx-auto">
-            <h1 class="hero__title mb-3">
-              Why does working with <span class="highlight">AWS SES<super>®</super></span> suck so bad?
-            </h1>
-            <p class="hero__paragraph mb-5">
-              Simple, intuitive, and safe AWS SES<super>®</super> tools that even <span class="highlight">Becky from Biz Dev</span> and <span class="highlight">Paulie from Product Management</span> can use.
-            </p>
-            <div>
-              <a class="btn btn-primary" href="/templates">
-                See your SES Templates &nbsp;
-                <i class="fas fa-arrow-right"></i>
+          <ul class="d-flex justify-content-center list-unstyled p-0">
+            <li class="mx-2">
+              <a href="#!" class="block-43__link m-0">
+                <i class="fab fa-twitter"></i>
               </a>
-              <p><a href="#products">View our other SES utilities</a></p>
-            </div>
-            <div><br><p style="font-size: .8rem"><super><em>(Hey, fyi, this website is not affliated to AWS or to AWS SES)</em></super></p></div>
-          </div>
-        </div>
-        <div class="d-none d-lg-block pattern pattern--primary pattern--left-bottom">
-          <!-- SVG Pattern generated by 𝕭𝖊𝖆𝖚𝖙𝖎𝖋𝖚𝖑 𝕯𝖎𝖓𝖌𝖇𝖆𝖙𝖘 -->
-          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%">
-            <defs>
-              <pattern id="pattern" width="19" height="19" viewBox="0 0 40 40" patternUnits="userSpaceOnUse"
-                patternTransform="rotate(90)">
-                <rect id="pattern-background" x="0" y="0" width="400%" height="400%" fill="transparent" />
-                <circle cx="20" cy="20" r="4" fill="currentColor" stroke="currentColor" stroke-width="0" />
-                <circle cx="20" cy="20" r="0" fill="currentColor" stroke="currentColor" stroke-width="0" />
-              </pattern>
-            </defs>
-            <rect fill="url(#pattern)" height="100%" width="100%" y="0" x="0" />
-          </svg>
-        </div>
-        <div class="d-none d-lg-block pattern pattern--primary pattern--right">
-          <!-- SVG Pattern generated by 𝕭𝖊𝖆𝖚𝖙𝖎𝖋𝖚𝖑 𝕯𝖎𝖓𝖌𝖇𝖆𝖙𝖘 -->
-          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%">
-            <defs>
-              <pattern id="pattern" width="19" height="19" viewBox="0 0 40 40" patternUnits="userSpaceOnUse"
-                patternTransform="rotate(90)">
-                <rect id="pattern-background" x="0" y="0" width="400%" height="400%" fill="transparent" />
-                <circle cx="20" cy="20" r="4" fill="currentColor" stroke="currentColor" stroke-width="0" />
-                <circle cx="20" cy="20" r="0" fill="currentColor" stroke="currentColor" stroke-width="0" />
-              </pattern>
-            </defs>
-            <rect fill="url(#pattern)" height="100%" width="100%" y="0" x="0" />
-          </svg>
-        </div>
-      </header>
-      <svg class="svg-shape" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1366.3 106.742">
-        <path fill="currentColor"
-          d="M1366.3 40.982q-183.405 50.177-274.4 34.984c-90.992-15.193-181.984-45.58-272.975-35.419-90.993 9.78-181.984 61.058-272.976 65.806S363.967 71.218 272.976 50.612C181.983 30.387 90.991 30.387 45.495 30.387L0 26.33V0h1366.3z"
-          opacity="0.149" />
-        <path fill="currentColor"
-          d="M0 40.982q183.405 50.177 274.4 34.984c90.992-15.193 181.984-45.58 272.975-35.419 90.993 9.78 181.984 61.058 272.976 65.806s181.984-35.135 272.975-55.741c90.992-20.226 181.984-20.226 227.48-20.226h45.5V0H0z"
-          opacity="0.296" />
-        <path fill="currentColor"
-          d="M0 27.041q183.405 33.124 274.4 23.1c90.989-10.031 181.981-30.086 272.972-23.379 90.993 6.454 181.984 40.3 272.976 43.431S1002.332 47 1093.324 33.4c90.992-13.35 181.984-13.35 227.48-13.35h45.5V0H0z" />
-      </svg>
-    </div>
-
-    <div class="block-3 container space-between-blocks" id="products">
-      <div class="col-lg-8 col-xl-7 mx-auto text-center mb-5">
-        <h2 class="block__title">Tools for AWS SES<super>®</super></h2>
-      </div>
-      <div class="row align-items-center">
-        <div class="col-lg-3">
-          <div class="card-3 text-center" @click="openViewTemplates()">
-            <span class="card-3__symbol mx-auto mb-4">
-              <i class="fas fa-align-center"></i>
-            </span>
-            <h3 class="card-3__title mb-2">View Templates</h3>
-            <p class="card-3__paragraph">
-              View your email Templates in the browser
-            </p>
-          </div>
-          <div class="card-3 text-center" data-toggle="modal" data-target="#comingSoonModal">
-            <span class="card-3__symbol mx-auto mb-4">
-              <i class="fas fa-sync-alt"></i>
-            </span>
-            <h3 class="card-3__title mb-2">Test a Template</h3>
-            <p class="card-3__paragraph">
-              Dry run a template. See how it looks in the browser with real data
-            </p>
-          </div>
-        </div>
-        <div class="col-lg-5 mx-auto">
-          <div class="col-lg-7 px-0 pb-5 mx-auto">
-            <div class="card-3 text-center" @click="gotoContactSection()">
-              <span class="card-3__symbol mx-auto mb-4">
-                <i class="fas fa-paper-plane"></i>
-              </span>
-              <h3 class="card-3__title mb-2">Unlimited email IDs</h3>
-              <p class="card-3__paragraph">
-                Get unlimited email ids on your own domain...like a private Mailinator. <p><a href="#contact"> Contact us using the form below</a>.</p>
-                <p><span class="highlight"><em>This service is not FREE!</em></span></p>
-              </p>
-            </div>
-          </div>
-          <div class="col-lg-11 px-0 my-5 mx-auto text-center">
-            <p class="block__pre-title mb-2">SAFE, FUNCTIONAL</p>
-            <!-- <h1 class="block__title mb-3">UIs for AWS SES</h1> -->
-            <p class="block__paragraph mb-5">
-              Don't let the unusable AWS SES<super>®</super> UI slow you down
-            </p>
-          </div>
-          <div class="col-lg-7 px-0 pt-5 mx-auto">
-            <div class="card3__disabled text-center">
-              <span class="card-3__symbol mx-auto mb-4">
-                <i class="fas fa-globe"></i>
-              </span>
-              <h3 class="card-3__title mb-2">Other SES functions</h3>
-              <p class="card-3__paragraph">
-                Lorem ipsum buddy
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-3">
-          <div class="card-3 text-center">
-            <span class="card-3__symbol mx-auto mb-4">
-              <i class="fas fa-question"></i>
-            </span>
-            <h3 class="card-3__title mb-2">Need a new SES tool?</h3>
-            <p class="card-3__paragraph">
-              <a href="#contact"> Contact us using the form below</a>.
-            </p>
-          </div>
-          <div class="card-3 text-center" data-toggle="modal" data-target="#comingSoonModal">
-            <span class="card-3__symbol mx-auto mb-4">
-              <i class="fas fa-pen"></i>
-            </span>
-            <h3 class="card-3__title mb-2">Update a Template</h3>
-            <p class="card-3__paragraph">
-              Update a template right here in the browser.
-            </p>
-          </div>
+            </li>
+            <li class="mx-2">
+              <a href="#!" class="block-43__link m-0">
+                <i class="fab fa-instagram"></i>
+              </a>
+            </li>
+            <li class="mx-2">
+              <a href="#!" class="block-43__link m-0">
+                <i class="fas fa-envelope"></i>
+              </a>
+            </li> -->
+          </ul>
+          <p class="block-43__copyrights">© 2020 Zeer0.com.</p>
         </div>
       </div>
     </div>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" 
+      integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" 
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+    <script type="text/javascript">
+      let app = new Vue({
+        el: "#main-div",
+        methods: {
+          openViewTemplates: function(){
+            window.location.href = "/templates";
+          },
+          gotoContactSection: function(){
+            window.location.href = window.location.href.substring(0, window.location.href.indexOf("#")) + "#contact";
+          },
+        }
+      })
+      $(document).ready(function(){
+        // Add smooth scrolling to all links
+        $("a").on('click', function(event) {
 
-    <div class="block-39 space-between-blocks" id="faqs">
-      <div class="container">
-        <!-- HEADER -->
-        <div class="col-lg-8 col-xl-7 mx-auto text-center mb-5">
-          <h1 class="block__title">Frequently Asked Questions</h1>
-        </div>
-        <div class="row px-2">
-          <div class="col-lg-6">
-            <div class="content-block">
-              <h4 class="content-block__title">
-                Why did you build this?
-              </h4>
-              <p class="content-block__paragraph">
-                <p>In my day job, I help manage a startup's AWS infrastructure. </p>
-                <p>While I want to have my non-tech colleagues do things on their own, I find that that AWS's web interface is basically impossible to safely navigate. At times, the AWS web interface has limited functionality. </p>
-                <p>For example, AWS's Simple Email Service does not have a place where you can see your email templates in the browser. You have to download the template, then open it in your browser as a <code>file://</code>. Talk about annoying.</p>
-              </p>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <div class="content-block">
-              <h4 class="content-block__title">
-                Can I request a specific utility for my team?
-              </h4>
-              <p class="content-block__paragraph">
-                Sure. You can request a UI by <a href="#contact">emailing us</a>. I'll build the more popular ones.
-              </p>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <div class="content-block">
-              <h4 class="content-block__title">
-                How secure are my keys?
-              </h4>
-              <p class="content-block__paragraph">
-                <p>As secure as the device you use it on. Let me explain. </p>
+          // Make sure this.hash has a value before overriding default behavior
+          if (this.hash !== "") {
+            // Prevent default anchor click behavior
+            event.preventDefault();
 
-                <p>This entire website is serverless. I serve it from an S3 bucket so there is no server as such to log your data. I use the AWS javascript sdk to directly connect to AWS without any intermediate hops to perform actions on your behalf.</p>
+            // Store hash
+            var hash = this.hash;
 
-                <p>So, if your browser is safe, e.g., you are not a public workstation, your AWS credentials are also absolutely safe. Here's our <a href="#" data-toggle="modal" data-target="#privacyModal"> privacy policy</a>.</p>
-              </p>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <div class="content-block">
-              <h4 class="content-block__title">
-                Can I duplicate this?
-              </h4>
-              <p class="content-block__paragraph">
-                <p>Of course!</p> <p>My source code is hosted on <a href="https://github.com/saiorama/ses-email-client" target="_blank">Github</a> here. Just clone the repo, run <code>http-server .</code> (or any such webserver for static files) on the command line and you'll be good to go.</p>
-              </p>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <div class="content-block">
-              <h4 class="content-block__title">
-                Can I contribute?
-              </h4>
-              <p class="content-block__paragraph">
-                <p>Of course!</p> <p>Check out the issues page on my <a href="https://github.com/saiorama/ses-email-client" target="_blank">Github</a> for this project and send me a PR for any issue that you can help with.</p>
-              </p>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <div class="content-block">
-              <h4 class="content-block__title">
-                Why is the website called Zeer0?
-              </h4>
-              <p class="content-block__paragraph">
-                <p>Zeer0 because it matches the number of hassles you will face in using these utilities!</p>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="block-28" id="contact">
-      <div class="container">
-        <div class="row h-100">
-          <div class="col-lg-6 h-100 block-28__content-side">
-            <div class="contact-info">
-              <h5 class="contact-info__title mb-3">Get in Touch</h5>
-              <p class="contact-info__paragraph mb-5">
-                Contact me using this form...
-                <iframe src="https://giphy.com/embed/l3vR7u6HBBrAvzb9e" width="480" height="294" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/roma-football-soccer-l3vR7u6HBBrAvzb9e">via GIPHY</a></p>
-              </p>
-              <!-- <div class="mb-5">
-                <h6 class="contact-info__title-2 mb-3">COLLABORATE</h6>
-                <p class="d-flex flex-column">
-                  <span class="contact-info__item mb-2">Support@example.com</span>
-                  <span class="contact-info__item">Fax: (099) 453-1357</span>
-                </p>
-              </div>
-              <div class="mb-5">
-                <h6 class="contact-info__title-2 mb-3">COLLABORATE</h6>
-                <p class="d-flex flex-column">
-                  <span class="contact-info__item mb-2">
-                    <i class="fas fa-phone"></i><span class="mx-2">Support@example.com</span>
-                  </span>
-                  <span class="contact-info__item">
-                    <i class="fas fa-envelope"></i><span class="mx-2">Fax: (099) 453-1357</span>
-                  </span>
-                </p>
-              </div> -->
-            </div>
-          </div>
-          <div class="col-lg-6 h-100 block-28__form-side">
-            <form action="https://formspree.io/mrgywpvg" class="contact-form text-center" method="POST">
-              <div class="contact-form__header mb-5">
-                <h6 class="contact-form__title mb-3">This form</h6>
-                <p class="contact-form__paragraph mb-0 mx-auto">
-                  How can I help?
-                </p>
-              </div>
-              <input type="text" class="contact-form__input" name="name" placeholder="Full Name">
-              <input type="email" class="contact-form__input" name="_replyto"  placeholder="Email">
-              <textarea class="contact-form__input" name="message" placeholder="Message"></textarea>
-              <button class="btn btn-primary w-100">SEND MESSAGE</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="comingSoonModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Ooops!</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="py-5 container px-4 px-sm-5">
-              <div class="row justify-content-center">
-                <div class="col-lg-6 col-xl-7 mx-auto mb-3 mb-lg-0">
-                  <p class="block-29__paragraph">
-                    This feature is not yet built BUT I have recorded your interest in this.
-                  </p>
-                  <p class="block-29__paragraph">I'll work on it once I get enough votes!</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal fade" id="pricingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Pricing</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="block-29 py-5 container px-4 px-sm-5">
-              <div class="row justify-content-center">
-                <div class="col-lg-6 col-xl-7 mx-auto mb-3 mb-lg-0">
-                  <h4 class="block-29__title mb-3">
-                    It's FREE!
-                  </h4>
-                  <p class="block-29__paragraph">Yup, seriously. It's free!</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal fade" id="privacyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Privacy Policy</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="py-5 container px-1 px-sm-5">
-              <div class="row">
-                <div class="col-lg-6 col-xl-7 mx-auto mb-3 mb-lg-0">
-                    <p>- We don't ever receive or store your AWS Key, secret, and region information. It is saved in your browser and sent directly to Amazon AWS to download information relevant to YOU!</p>
-                    <p>- We use Google Analytics to see how our site is being used, not for advertising.</p>
-                    <p>- That's it!</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="block-43 text-center py-5">
-      <div class="container">
-        <ul class="block-43__list list-unstyled justify-content-center mb-4">
-          <li class="block-43__li-1">
-            <a href="#!" class="block-43__link" data-toggle="modal" data-target="#privacyModal">Privacy Policy</a>
-          </li>
-          <!-- <li class="block-43__li-1">
-            <a href="#!" class="block-43__link">Enterprise</a>
-          </li>
-          <li class="block-43__li-1">
-            <a href="#!" class="block-43__link">Products</a>
-          </li>
-          <li class="block-43__li-1">
-            <a href="#!" class="block-43__link">Account</a>
-          </li>
-        </ul>
-        <ul class="d-flex justify-content-center list-unstyled p-0">
-          <li class="mx-2">
-            <a href="#!" class="block-43__link m-0">
-              <i class="fab fa-twitter"></i>
-            </a>
-          </li>
-          <li class="mx-2">
-            <a href="#!" class="block-43__link m-0">
-              <i class="fab fa-instagram"></i>
-            </a>
-          </li>
-          <li class="mx-2">
-            <a href="#!" class="block-43__link m-0">
-              <i class="fas fa-envelope"></i>
-            </a>
-          </li> -->
-        </ul>
-        <p class="block-43__copyrights">© 2020 Zeer0.com.</p>
-      </div>
-    </div>
-  </div>
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" 
-    integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" 
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-    crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
-  <script type="text/javascript">
-    let app = new Vue({
-      el: "#main-div",
-      methods: {
-        openViewTemplates: function(){
-          window.location.href = "/templates";
-        },
-        gotoContactSection: function(){
-          window.location.href = window.location.href.substring(0, window.location.href.indexOf("#")) + "#contact";
-        },
-      }
-    })
-    $(document).ready(function(){
-      // Add smooth scrolling to all links
-      $("a").on('click', function(event) {
+            // Using jQuery's animate() method to add smooth page scroll
+            // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
+            $('html, body').animate({
+              scrollTop: $(hash).offset().top
+            }, 800, function(){
 
-        // Make sure this.hash has a value before overriding default behavior
-        if (this.hash !== "") {
-          // Prevent default anchor click behavior
-          event.preventDefault();
-
-          // Store hash
-          var hash = this.hash;
-
-          // Using jQuery's animate() method to add smooth page scroll
-          // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
-          $('html, body').animate({
-            scrollTop: $(hash).offset().top
-          }, 800, function(){
-
-            // Add hash (#) to URL when done scrolling (default click behavior)
-            window.location.hash = hash;
-          });
-        } // End if
+              // Add hash (#) to URL when done scrolling (default click behavior)
+              window.location.hash = hash;
+            });
+          } // End if
+        });
       });
-    });
-  </script>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-176392311-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'UA-176392311-1');
-  </script>
-
-</body>
-
+    </script>
+  </body>
 </html>
