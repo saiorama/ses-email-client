@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Hosting on Landen.co | Zeer0 Blog</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Hosting on Landen.co" />
+<meta name="author" content="Sai Ramachandran" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This blog uses Stackedit, an open-source markdown editor. I love it and I’m sure you will too." />
+<meta property="og:description" content="This blog uses Stackedit, an open-source markdown editor. I love it and I’m sure you will too." />
+<link rel="canonical" href="https://zeer0.com/b/2019/08/27/hosting-on-landen.co.html" />
+<meta property="og:url" content="https://zeer0.com/b/2019/08/27/hosting-on-landen.co.html" />
+<meta property="og:site_name" content="Zeer0 Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-08-27T18:18:25+05:30" />
+<script type="application/ld+json">
+{"headline":"Hosting on Landen.co","dateModified":"2019-08-27T18:18:25+05:30","datePublished":"2019-08-27T18:18:25+05:30","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://zeer0.com/b/2019/08/27/hosting-on-landen.co.html"},"url":"https://zeer0.com/b/2019/08/27/hosting-on-landen.co.html","author":{"@type":"Person","name":"Sai Ramachandran"},"description":"This blog uses Stackedit, an open-source markdown editor. I love it and I’m sure you will too.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/b/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zeer0.com/b/feed.xml" title="Zeer0 Blog" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/b/">Zeer0 Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/b/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Hosting on Landen.co</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-08-27T18:18:25+05:30" itemprop="datePublished">Aug 27, 2019
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">Sai Ramachandran</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p><img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/rUHHfQcVEWTZHNIF.svg?w=880" alt="enter image description here" /></p>
+
+<p>Until very recently, the Zeer0.com website was hosted on Landen which provides easy to use tools to create and quickly deploy beautiful landing pages for your startup.</p>
+
+<p>As Zeer0 grew in complexity, it became more and more apparent that it would soon outgrow a simple landing page service and would need tighter integrations with a middle tier of some sort.</p>
+
+<p>Obviously, this is a good problem to have. It means that the Zeer0 landing page served its purpose of converting site visitors into interested customers. It was now a matter of retaining those customers with great workflows while maintaining the excellent pagespeed performance of the original Landen website.</p>
+
+<p>The first order of business for this rearchitecting project was to expose our services hosted on Wix as RESTful APIs. I will cover our RESTful middle tier in a later blog post.</p>
+
+<p>In this post, I want to discuss the migration away from Landen.</p>
+
+<h1 id="what-landen-gets-right">What Landen gets right?</h1>
+
+<p><a href="https://www.landen.co/">Landen</a> is a fantastic landing page service. If Net Promoter Scores were still a thing, my score for Landen would be 100.</p>
+
+<p>While their free version is great to play around with, if you want to connect a custom domain to a Landen website, you have to buy their $29/month plan which lets you host three custom domains on their service. If you have just one landing page to host, you will still find yourself paying $29 to host it on Landen.</p>
+
+<p>If you, like many entrepreneurs are working on more than one idea at the same time, the monthly $29 fee might motivate you to try up to three ideas in parallel to see which one gains traction first.</p>
+
+<h2 id="landens-uiux-options-are-top-notch">Landen’s UI/UX options are top notch</h2>
+
+<p>I am as far from being a competent designer as one can be but even I was able to create a nice looking website with complementary fonts, pleasing colors, and nifty touches like sloping lines and shading.</p>
+
+<p>The number of choices available are sufficient to create a non-boxy, non-Bootstrappy like website without becoming overwhelming.</p>
+
+<p>Compared to website builders like Wix, Landen errs on the side of simplicity. To be fair, Wix et al have far a loftier goal of helping you build ANY website while Landen is primarily for building landing pages.</p>
+
+<p>This choice seems to work really well for Landen. As I was evaluating other landing page template, I kept coming back to Landen. With Landen, I was able to express my ideas about the Zeer0 website much faster and more smoothly than with any other website builder.</p>
+
+<h2 id="landen-is-fast">Landen is fast</h2>
+
+<p>Landen is fast.</p>
+
+<p>I discovered Landen through posts on IndieHackers where people were looking for reviews on their Landen landing pages. I invariably found that these landing pages scored 90+ on Google Pagespeed Insights - both mobile and desktop. Since page speeds are an important ranking factor to rank well in search results, entrepreneurs would do well to invest in trying to minimise their load speeds.</p>
+
+<p>Somehow, Landen gets this correct right out of the box.</p>
+
+<p>In fact, the search ranking for Chicshop - Zeer0’s sister website - went up significantly as soon as I switched to Landen. Now, chicshop.in appears on the first page of Google when you search for <strong><code class="language-plaintext highlighter-rouge">chicshop</code></strong>  where it used to earlier languish in the second or third page.</p>
+
+<p>Since nothing significant has changed about ChicShop other than the migration to Landen, I attribute it to Landen’s blazing fast load speeds.</p>
+
+<h2 id="easy-deployment">Easy Deployment</h2>
+
+<p>Landen also makes it very easy to link custom domains to their website. It is practically idiot proof with just two DNS settings to worry about - one A record and one CNAME record.</p>
+
+<p>The other thing I liked about Landen is that they auto-resolve people away from <strong><code class="language-plaintext highlighter-rouge">www.website.com</code></strong> to the naked <strong><code class="language-plaintext highlighter-rouge">website.com</code></strong> URL. The <strong><code class="language-plaintext highlighter-rouge">www</code></strong> subdomain has outlived its utility as a crutch for new internet users and Landen, to its credit, recognizes that.</p>
+
+<p>In fact, if I hadn’t figured out how to self-host a naked url outside Landen, I would have probably continued hosting Zeer0.com on Landen.</p>
+
+<h2 id="custom-code-sections">Custom Code Sections</h2>
+
+<p>This is an experimental feature within Landen which lets you add custom code blocks to a landing page. I used this custom code section to add rich snippets to my Landen website. These rich snippets are obviously not visible to users but are consumed by Google to better contextualize my website.</p>
+
+<h2 id="in-built-analytics">In-built Analytics</h2>
+
+<p>Landen websites come with built-in analytics which ad-blockers aren’t equipped to block. This means you get a much clearer picture of how much traffic your website received compared to tools like Google Analytics and Google Tag Manager which can be blocked by blockers like Ghostery or UBlock Origin.</p>
+
+<h1 id="what-landen-does-not-get-right">What Landen does not get right?</h1>
+
+<p>I think Landen missed a trick by not having a cheaper option for a single domain. $29/month for three custom domains is definitely pricey for an entrepreneur who often don’t have use for all three available custom domains.</p>
+
+<p>Here are a few other places where Landen could improve.</p>
+
+<h2 id="terrible-blogpost-interface">Terrible blog/post interface</h2>
+
+<p>The blogging/posting experience leaves a lot to be desired.</p>
+
+<p>For example, the text box used to insert URL anchored by visible text looks like something copied from a W3C tutorial.</p>
+
+<p>Maybe blogging isn’t really a big priority for entrepreneurs but for me, content forms a big part of my marketing strategy so the blogging experience left my cold.</p>
+
+<h2 id="limited-options-for-emaillead-capture">Limited options for Email/Lead Capture</h2>
+
+<p>Email capture forms a critical function a landing page service but Landen does not have great tools or integrations to facilitate this function.</p>
+
+<p>For example, leads can be dropped into a custom Landen email list, into a Mailchimp list, or posted to a URL you control. Of these, Mailchimp is only half-decent option.</p>
+
+<p>Using Landen’s inbuilt email list means you will have to monitor yet another email list to see if any one has subscribed to your website.</p>
+
+<p>Building and deploying a URL just to manage leads is wasted time/effort, IMHO.</p>
+
+<p>Contact forms on Landen can either be emailed or posted to Slack. Receiving contact form data via email seems far more reasonable than building an inbound webhook in Slack.</p>
+
+<h2 id="confused-header-navigation">Confused Header Navigation</h2>
+
+<p>Landen’s header breaks down if your site has more than one page while also deep linking into sections within the home page.</p>
+
+<p>For example, if your home page has a <strong><code class="language-plaintext highlighter-rouge">#pricing</code></strong> section linked in the header and a separate <strong>About</strong> page, the <strong><code class="language-plaintext highlighter-rouge">#pricing</code></strong> link won’t work from the <strong>About</strong> page out of the box. You will have to link the Pricing menu option to <strong><code class="language-plaintext highlighter-rouge">/#pricing</code></strong> (note the leading /) which is a little awkard to see.</p>
+
+<h1 id="and-so">And so?</h1>
+
+<p>IMHO, the benefits of Landen far outstrip its negatives. You could do much worse than using it to host your next landing page. Like I said above, even as I was looking for landing page templates, I kept going back to Landen despite their price and even though I didn’t have a need for three custom domains.</p>
+
+<p>If you need any help with your Landen site, feel free to email me from the Zeer0.com homepage.</p>
+
+<blockquote>
+  <p>Written with <a href="https://stackedit.io/">StackEdit</a>.</p>
+</blockquote>
+
+  </div><a class="u-url" href="/b/2019/08/27/hosting-on-landen.co.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/b/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Zeer0 Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Zeer0 Blog</li><li><a class="u-email" href="mailto:sai@zeer0.com">sai@zeer0.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/saiorama"><svg class="svg-icon"><use xlink:href="/b/assets/minima-social-icons.svg#github"></use></svg> <span class="username">saiorama</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>This blog uses Stackedit, an open-source markdown editor. I love it and I&#39;m sure you will too.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
