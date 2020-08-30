@@ -33,6 +33,9 @@ plugins:
   - jekyll-feed
 
 show_excerpts: true
+source: _posts
+include:
+   - _posts/
 
 exclude:
    - css/
