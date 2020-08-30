@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Adding Rich Snippets to Shopify | Zeer0 Blog</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Adding Rich Snippets to Shopify" />
+<meta name="author" content="Sai Ramachandran" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This blog post is going to be quite technical but the subject it deals with - rich snippets - is very important so you would do well to not let your eyes glaze over. Rich snippets can really boost your search performance and bring you lots of eyeballs which would otherwise go to your competitors." />
+<meta property="og:description" content="This blog post is going to be quite technical but the subject it deals with - rich snippets - is very important so you would do well to not let your eyes glaze over. Rich snippets can really boost your search performance and bring you lots of eyeballs which would otherwise go to your competitors." />
+<link rel="canonical" href="https://zeer0.com/b/2019/08/03/adding-rich-snippets.html" />
+<meta property="og:url" content="https://zeer0.com/b/2019/08/03/adding-rich-snippets.html" />
+<meta property="og:site_name" content="Zeer0 Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-08-03T15:33:19+05:30" />
+<script type="application/ld+json">
+{"headline":"Adding Rich Snippets to Shopify","dateModified":"2019-08-03T15:33:19+05:30","datePublished":"2019-08-03T15:33:19+05:30","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://zeer0.com/b/2019/08/03/adding-rich-snippets.html"},"url":"https://zeer0.com/b/2019/08/03/adding-rich-snippets.html","author":{"@type":"Person","name":"Sai Ramachandran"},"description":"This blog post is going to be quite technical but the subject it deals with - rich snippets - is very important so you would do well to not let your eyes glaze over. Rich snippets can really boost your search performance and bring you lots of eyeballs which would otherwise go to your competitors.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/b/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zeer0.com/b/feed.xml" title="Zeer0 Blog" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/b/">Zeer0 Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/b/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Adding Rich Snippets to Shopify</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-08-03T15:33:19+05:30" itemprop="datePublished">Aug 3, 2019
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">Sai Ramachandran</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p><img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/zwrLGdBtMzIDJvwo.jpg?w=880" alt="enter image description here" />
+This blog post is going to be quite technical but the subject it deals with - rich snippets - is very important so you would do well to not let your eyes glaze over. Rich snippets can really boost your search performance and bring you lots of eyeballs which would otherwise go to your competitors.</p>
+
+<h1 id="what-is-a-rich-snippet">What is a Rich Snippet?</h1>
+
+<p>The dirty little secret of all the fancy technology that people like me and the thousands of engineers sitting in Silicon Valley make is that it is quite dumb. Even the most amazing AI or machine learning models cannot hold a candle to your average 10 year old…<em>for anything that needs inferential and deductive reasoning</em>.</p>
+
+<h2 id="why-search-engines-have-it-hard">Why search engines have it hard?</h2>
+
+<p>Search engines have it harder than almost any other technology. Their inputs are, by definition, written text - often badly - placed inside markup that no one would be able to easily read and digest at length.</p>
+
+<p>(<em>Aside</em> - <em>Markup allows you format and display content. HTML is a type of markup. Without markup, the entire internet would like text written in Notepad.</em>)</p>
+
+<p>What is worse is that browsers - whose job it is to digest this markup and show it to humans - are very forgiving. They will try their hardest to make sense of the markup given to them to show <em>something</em> to the human.</p>
+
+<p>Further, humans are very, very good at inferring patterns and working with sparse data. So even if a browser breaks down while trying to process a piece of content, humans can still make some sense of whatever gobbledygook the browser throws up on the screen.</p>
+
+<p>Search engines don’t have the luxury of reading in poorly formed content and asking humans to fill in any gaps they may encounter. This is because search engines index millions upon millions of pages each of which is likely to have one or more errors. They have to independently figure out as much about the internet as they can.</p>
+
+<h2 id="why-rich-snippets-were-invented">Why rich snippets were invented?</h2>
+
+<p>Faced with this difficulty, the companies behind these search engines got together and came up with a way to help content creators (i.e., website owners) help them.</p>
+
+<h3 id="defining-entities">Defining entities</h3>
+
+<p>They first identified a set of entities and relationships between those entities. E.g., a website and its founder are both entities whose interrelationship could be defined as <code class="language-plaintext highlighter-rouge">&lt;website&gt;</code> was <code class="language-plaintext highlighter-rouge">&lt;founded&gt;</code> by <code class="language-plaintext highlighter-rouge">&lt;person&gt;</code>.</p>
+
+<h3 id="inventing-a-format">Inventing a format</h3>
+
+<p>Then they defined a format using which a person could identify themselves as the founder of a website. Of course, this format is not limited to just this above interrelationship. There are a whole host of entities and interrelationships covered in great, though in a very dry and technical manner, detail on <a href="https://schema.org/">Schema.org</a></p>
+
+<h3 id="making-the-format-public">Making the format public</h3>
+
+<p>Finally, they made this format public and asked website owners to insert such formatted information into their website’s markup so that search engines could make better sense of the entities which make up the Internet.</p>
+
+<p>Each such formatted information is a Rich Snippet.</p>
+
+<p>An entity on the internet can have any number of rich snippets explaining to Google, Bing, Yandex, and every other search engine how exactly this entity fits into whatever else these search engines know about the Internet.</p>
+
+<p>For example, I run both <a href="https://zeer0.com/">Zeer0</a> and <a href="https://chicshop.in/">Chicshop</a>. Once the search engines read in both Zeer0’s and Chicshop’s rich snippets, they can easily work out that Zeer0 and Chicshop are siblings belonging to someone named <a href="https://ramachandr.in/">Sai Ramachandran</a>.</p>
+
+<p>Now that you have a 10,000 ft view of Rich Snippets, let us see how Shopify handles them.</p>
+
+<h1 id="does-shopify-even-support-rich-snippets">Does Shopify even support Rich Snippets?</h1>
+
+<p>Yes, Shopify does handle Rich Snippets but how do we find out what your Shopify store’s default rich snippet looks like?</p>
+
+<p>To do this,</p>
+
+<ol>
+  <li>go to Google’s <a href="https://search.google.com/structured-data/testing-tool/u/0/">Structured Data Testing Tool</a></li>
+  <li>enter your Shopify store’s URL here</li>
+  <li>click <code class="language-plaintext highlighter-rouge">Run Test</code></li>
+</ol>
+
+<p>Google will proceed to show you your store’s source code and any snippets if it finds them. For example, Google read these two entities from my Shopify store - namely an <code class="language-plaintext highlighter-rouge">Organization</code> and a <code class="language-plaintext highlighter-rouge">Website</code></p>
+
+<p><img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/weKgrdaeKAAJJkIR.png" alt="enter image description here" /></p>
+<h1 id="so-where-are-these-rich-snippets-located">So where are these Rich Snippets located?</h1>
+
+<p>Before I tell you where these rich snippets are located, I want to take a brief detour into the world of web technologies.</p>
+
+<p>There used to be a time when HTML files were written as monoliths. I’m talking about a really long time ago, circa mid-nineties Internet.</p>
+
+<p>Web technology has evolved since then. Today, web pages are composed of blocks of functionality. For example, the search box shown on the top of the page may be a block. The header, the footer, the hero section, everything you see on the screen is built independently. Web developers then mix and match these blocks to come up with a look and layout they like. Once done, they write a single file which contains all the blocks they need to define a page.</p>
+
+<h2 id="themeliquid">Theme.liquid</h2>
+
+<p>In Shopify’s case, that single page is <code class="language-plaintext highlighter-rouge">theme.liquid</code>.</p>
+
+<h3 id="experiment-adding-a-new-rich-snippet-at-the-bottom-of-themeliquid">Experiment: adding a new rich snippet at the bottom of theme.liquid</h3>
+
+<p>Therefore, our first experiment will be to insert our Rich Snippet into theme.liquid to see how it affects how Google reads our page.</p>
+
+<p><em>[Here is my</em> <a href="https://youtu.be/wlDhtC-5tRE?t=127"><em>video showing you where to paste your rich snippet</em></a> <em>inside</em> <em><code class="language-plaintext highlighter-rouge">theme.liquid</code>__.]</em></p>
+
+<p>This is what that would look like.</p>
+
+<p><img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/NvSgbpvoqTddcdDr.png" alt="enter image description here" />
+And here’s how Google Structured Data Testing Tool sees our rich snippet.
+<img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/gjtRYGPEwcVDpfdT.png" alt="enter image description here" />
+As you can see, Google thinks there are two <code class="language-plaintext highlighter-rouge">Organization</code> rich snippets on that page. This is clearly wrong. It’s poor Internet hygiene to leave duplicated and possibly conflicting data lying around.</p>
+
+<h3 id="experiment-outcome">Experiment: Outcome</h3>
+
+<p>This means that the place where we inserted our new rich snippet inside <code class="language-plaintext highlighter-rouge">theme.liquid</code> is incorrect.</p>
+
+<h3 id="experiment-more-digging">Experiment: More digging</h3>
+
+<p>The Structured Data Testing Tool actually helps us figure out where exactly the default Shopify rich snippet related to Organization and Website are located. Clicking on any portion of the output of the Structured Data Testing Tool takes you to the corresponding link of content displayed on the left.</p>
+
+<p><em>[See how to use the use</em> <a href="https://youtu.be/wlDhtC-5tRE?t=201"><em>the output of the Structured Data Testing Tool</em></a> <em>to figure out where your rich snippet is located.]</em></p>
+
+<h3 id="headerliquid">Header.liquid</h3>
+
+<p>They’re located inside <code class="language-plaintext highlighter-rouge">sections/header.liquid</code> which looks like this.</p>
+
+<p><img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/tltfSTpbnwozFKyw.png" alt="enter image description here" /></p>
+<h3 id="two-approaches-to-updating-rich-snippets">Two approaches to updating rich snippets</h3>
+
+<p>Now that you know which file to edit to insert the correct, long form rich snippet, you have two choices. You could either replace the old rich snippets with the snippets emailed to you by <code class="language-plaintext highlighter-rouge">Zeer0</code> or simply add the extra fields you need to the existing snippets.</p>
+
+<p>In my case, I plan to replace the old rich snippets with Zeer0’s snippets which have a lot more detail. Both approaches are equally valid.</p>
+
+<p>The choice is yours.</p>
+
+<blockquote>
+  <p>Written with <a href="https://stackedit.io/">StackEdit</a>.</p>
+</blockquote>
+
+
+  </div><a class="u-url" href="/b/2019/08/03/adding-rich-snippets.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/b/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Zeer0 Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Zeer0 Blog</li><li><a class="u-email" href="mailto:sai@zeer0.com">sai@zeer0.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/saiorama"><svg class="svg-icon"><use xlink:href="/b/assets/minima-social-icons.svg#github"></use></svg> <span class="username">saiorama</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>This blog uses Stackedit, an open-source markdown editor. I love it and I&#39;m sure you will too.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

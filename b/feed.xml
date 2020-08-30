@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="https://zeer0.com/b/feed.xml" rel="self" type="application/atom+xml" /><link href="https://zeer0.com/b/" rel="alternate" type="text/html" /><updated>2020-08-30T13:19:35+05:30</updated><id>https://zeer0.com/b/feed.xml</id><title type="html">Zeer0 Blog</title><subtitle>This blog uses Stackedit, an open-source markdown editor. I love it and I'm sure you will too.</subtitle><entry><title type="html">Disposable Emails on your own domain</title><link href="https://zeer0.com/b/2020/08/29/disposable-emails-on-your-own-domain.html" rel="alternate" type="text/html" title="Disposable Emails on your own domain" /><published>2020-08-29T12:06:39+05:30</published><updated>2020-08-29T12:06:39+05:30</updated><id>https://zeer0.com/b/2020/08/29/disposable-emails-on-your-own-domain</id><content type="html" xml:base="https://zeer0.com/b/2020/08/29/disposable-emails-on-your-own-domain.html">&lt;h1 id=&quot;get-disposable-emails-for-your-domain-in-minutes&quot;&gt;Get disposable emails for your domain in minutes&lt;/h1&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Protect your privacy and save some serious cash by setting up
+disposable emails for your domain&lt;/p&gt;
+
+  &lt;p&gt;If you have been on the Internet for more than a day, you have probably heard about &lt;a href=&quot;https://mailinator.com&quot;&gt;Mailinator&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://images.unsplash.com/photo-1581349437898-cebbe9831942?ixlib=rb-1.2.1&amp;amp;auto=format&amp;amp;fit=crop&amp;amp;w=1350&amp;amp;q=80&quot; alt=&quot;Email&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Mailinator, for the one dude at the back who has never heard of it, is a service that lets you use any, yes &lt;em&gt;any&lt;/em&gt;, email id so long as it is @mailinator.com.&lt;/p&gt;
+
+&lt;p&gt;Of course, like I have &lt;a href=&quot;https://medium.com/@ssr233/use-mailinator-at-your-own-risk-fb84db4f79c1&quot;&gt;written&lt;/a&gt; before, no good deed goes unpunished, so too with Mailinator.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;It became a victim of its own success — as more and more people have started using Mailinator, website owners have started blocking people from signing up with an &lt;strong&gt;@mailinator.com&lt;/strong&gt; email address.&lt;/li&gt;
+  &lt;li&gt;Your information could leak. Like I showed in the &lt;a href=&quot;https://medium.com/@ssr233/use-mailinator-at-your-own-risk-fb84db4f79c1&quot;&gt;other article&lt;/a&gt;, our friend P. Sai of Orlando, FL, likes to order burgers and has an 889 area code phone number.&lt;/li&gt;
+  &lt;li&gt;Finally, Mailinator is someone else’s property. They may be well meaning today but no one should put all their eggs in someone else’s basket. As the adage goes, if the product is free, &lt;em&gt;YOU&lt;/em&gt; are the product.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Mailinator, for all its above problems, had a purpose and a role to play in the progression of the Internet to where it is today.&lt;/p&gt;
+
+&lt;p&gt;In this article, I describe how to set up a service similar to Mailinator for your own domain.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-you-will-need-to-make-this-happen&quot;&gt;What you will need to make this happen&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;A domain for which you want to configure disposable emails&lt;/li&gt;
+  &lt;li&gt;Some very basic familiarity with configuring DNS records&lt;/li&gt;
+  &lt;li&gt;An AWS account with credit card SES is a paid service)&lt;/li&gt;
+  &lt;li&gt;Access to git and &lt;a href=&quot;https://github.com/psiCode/ses-email-client&quot;&gt;github&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;We will set up our private Mailinator clone in three parts.&lt;/p&gt;
+
+&lt;p&gt;In &lt;strong&gt;Part 1&lt;/strong&gt; — consisting of Steps 1 and 2, we will set up our domain and configure SES to start receiving emails. If you want, you can even stop after Part 1 because technically, at this point, you have successfully set up a system to use disposable emails. The issue with stopping after Part 1 is that the emails are not in a very human readable form.&lt;/p&gt;
+
+&lt;p&gt;In &lt;strong&gt;Part 2&lt;/strong&gt; — Steps 3 to 7 — we will expose two API endpoints to i) download a list of emails ii) and to get the content of those emails.&lt;/p&gt;
+
+&lt;p&gt;In &lt;strong&gt;Part 3&lt;/strong&gt; — Step 8 — which is left incomplete, you will have to implement a browser or app based UI to use the APIs created in Part 2 to download and display emails in a human friendly manner.&lt;/p&gt;
+
+&lt;h1 id=&quot;step-1--setting-up-your-domain-in-ses&quot;&gt;Step 1 — Setting up your domain in SES&lt;/h1&gt;
+
+&lt;p&gt;The first thing you need to do to start receiving emails at your domain is to tell SES about your domain.&lt;/p&gt;
+
+&lt;h2 id=&quot;an-aside-about-mx-records&quot;&gt;An aside about MX records&lt;/h2&gt;
+
+&lt;p&gt;MX stands for &lt;strong&gt;M&lt;/strong&gt;ail e&lt;strong&gt;X&lt;/strong&gt;change.&lt;/p&gt;
+
+&lt;p&gt;The designers of the Internet, in the interest of decoupling as many parts as possible of a domain’s functionality, made it so that you could tell people where to access your website (through A records) and how to reach you by email (through MX records). This way, even if your website is down, you will be able to communicate with the world via email.&lt;/p&gt;
+
+&lt;p&gt;In fact, you do not even need to have a website if all you want to do is to receive emails.&lt;/p&gt;
+
+&lt;p&gt;For example, I own a domain called &lt;a href=&quot;https://sairamachandr.in&quot;&gt;sairamachandr.in&lt;/a&gt; which till date does not have a website. Clicking on that link takes you to &lt;a href=&quot;https://www.ramachandr.in&quot;&gt;www.ramachandr.in&lt;/a&gt; owned by, you guessed it, ME. I use sairamachandr.in purely to receive emails.&lt;/p&gt;
+
+&lt;h2 id=&quot;configuring-ses-the-dns-records-way&quot;&gt;Configuring SES (the DNS records way)&lt;/h2&gt;
+
+&lt;p&gt;On the SES home page, navigate to the &lt;strong&gt;Domains&lt;/strong&gt; section below Identity Management. This is where you will inform SES that you in fact, own your domain and would like to use SES as your mail provider.&lt;/p&gt;
+
+&lt;p&gt;Now click the bright blue &lt;strong&gt;Verify a New&lt;/strong&gt; &lt;strong&gt;Domain&lt;/strong&gt; button.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://miro.medium.com/max/425/1*hD0iw1eKTjUYqDiJgedBPw.png&quot; alt=&quot;enter image description here&quot; /&gt;
+After you have entered your domain name, you will see a screen telling you how you need to configure the DNS records so that SES knows that you indeed own your domain name.&lt;/p&gt;
+
+&lt;p&gt;![https://miro.medium.com/max/700/1&lt;em&gt;jO3zWyn_8XwWhMtA4CRp3Q.png](https://miro.medium.com/max/700/1&lt;/em&gt;jO3zWyn_8XwWhMtA4CRp3Q.png)&lt;/p&gt;
+
+&lt;p&gt;SES achieves this by asking you create the following DNS records&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;MX — to tell the world where emails sent to your domain are received&lt;/li&gt;
+  &lt;li&gt;TXT — to verify your ownership of your domain&lt;/li&gt;
+  &lt;li&gt;CNAME (for DKIM) — DKIM stands for DomainKeys Identified Mail. You will create multiple CNAME records to finish this step.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Once the DNS records have been configured, SES automatically verifies the records and tells you that your ownership of your domain has been confirmed. In my experience, this step usually takes less than five minutes but don’t be too alarmed if it takes a little longer.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Caveat&lt;/em&gt;&lt;/strong&gt;: Here is a bit of a gotcha with setting up MX records. Technically, due to DNS rules, you cannot have both CNAME and MX records with the same domain name.&lt;/p&gt;
+
+&lt;p&gt;I.e., in my case, I would not be allowed to configure an MX and a CNAME record whose host was ramachandr.in.&lt;/p&gt;
+
+&lt;p&gt;The typical workaround I have seen is to have your website hosted on &lt;a href=&quot;http://www.example.com&quot;&gt;www.example.com&lt;/a&gt; (CNAME) while your MX record uses example.com. This allows you to receive @example.com emails while people can visit your website on &lt;a href=&quot;http://www.example.com.&quot;&gt;www.example.com.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;If you like bare domain names, this can be annoying but it isn’t the end of the world, in my opinion.&lt;/p&gt;
+
+&lt;h1 id=&quot;step-2--creating-a-rule-set-for-emails-sent-to-your-newly-configured-domain&quot;&gt;Step 2 — Creating a rule set for emails sent to your newly configured domain&lt;/h1&gt;
+
+&lt;p&gt;Since SES is a transactional email service, it does not provide a UI to let you read emails sent to you. In fact, it goes so far as to not provide any POP or IMAP access to your emails.&lt;/p&gt;
+
+&lt;p&gt;It does let you configure certain actions that you can perform when an email is received, namely&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Save emails to an S3 bucket&lt;/li&gt;
+  &lt;li&gt;Notify a downstream system via SNS&lt;/li&gt;
+  &lt;li&gt;Trigger a lambda function&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;You can also combine these actions in any order you want. In our case, we will save the emails to S3.&lt;/p&gt;
+
+&lt;h2 id=&quot;make-an-s3-bucket&quot;&gt;Make an S3 bucket&lt;/h2&gt;
+
+&lt;p&gt;To achieve this, go to S3 and make a bucket with any name you want. You do not have to give any special permissions to this bucket to make it work with SES.&lt;/p&gt;
+
+&lt;p&gt;You could also create a folder inside this bucket if you want to receive emails from multiple domains in that same bucket.&lt;/p&gt;
+
+&lt;p&gt;While the folder name can be anything, it is typically advisable to name the folder after the domain whose emails you will be storing inside that folder.&lt;/p&gt;
+
+&lt;h2 id=&quot;create-new-email-handling-rule&quot;&gt;Create new email handling rule&lt;/h2&gt;
+
+&lt;p&gt;Then, go back to SES, and click on Rule Sets under Receiving Emails.&lt;/p&gt;
+
+&lt;p&gt;Click on the Blue button titled &lt;strong&gt;View Active Rule Set&lt;/strong&gt;.
+&lt;img src=&quot;https://miro.medium.com/max/488/1*kom_iCAhvz5jrXIFeJjfpA.png&quot; alt=&quot;enter image description here&quot; /&gt;
+Create a new rule.&lt;/p&gt;
+
+&lt;p&gt;In the first step, enter the domain name for which you want to receive emails.&lt;/p&gt;
+
+&lt;p&gt;In the next step, choose Action Type as S3.
+&lt;img src=&quot;https://miro.medium.com/max/687/1*67piB16yxFHB5xcXQ_ODvw.png&quot; alt=&quot;enter image description here&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Name the bucket where you wish to send these emails. In the field titled &lt;strong&gt;Prefix&lt;/strong&gt;, enter the name of the folder within the bucket where you want to store these emails. If you have not created a folder inside the bucket, you can leave the &lt;strong&gt;Prefix&lt;/strong&gt; field empty.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://miro.medium.com/max/700/1*zfTPLtN6kEtRBE09rc0ZJA.png&quot; alt=&quot;enter image description here&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;testing-part-1--steps-1-and-2&quot;&gt;Testing Part 1 — Steps 1 and 2&lt;/h2&gt;
+
+&lt;p&gt;Great! Now you are done with Part 1 of the setup.&lt;/p&gt;
+
+&lt;p&gt;You should be able to send yourself an email @yourdomain.com and see that email appear in S3 as a file with a random long alphanumeric string name like so.
+&lt;img src=&quot;https://miro.medium.com/max/700/1*Ky-COphYFHAg4ulDZmWRxA.png&quot; alt=&quot;enter image description here&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;step-3--renaming-the-email-file&quot;&gt;Step 3 — Renaming the email file&lt;/h2&gt;
+
+&lt;p&gt;S3, being a “simple” storage solution, does not provide a way to get a filtered list of files names. When you are talking about emails, which are inherently LIFO in how we access them, this lack of filterability can prove to be a deal breaker.&lt;/p&gt;
+
+&lt;p&gt;Fortunately, the solution is quite straightforward though you will have to&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;create a lambda function which prefixes a date and unix epoch timestamp to each email file name; and&lt;/li&gt;
+  &lt;li&gt;trigger the lambda created above for each email file inserted into S3.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;To create the lambda, go to my &lt;a href=&quot;https://github.com/psiCode/ses-email-client&quot;&gt;project github&lt;/a&gt; and copy the source code of &lt;a href=&quot;https://github.com/psiCode/ses-email-client/rename-eml-file-s3.js&quot;&gt;this lambda function&lt;/a&gt;. Then go to AWS Lambda and recreate this lambda there.&lt;/p&gt;
+
+&lt;p&gt;Once the Lambda is created, go back to your S3 bucket created in Step 2.&lt;/p&gt;
+
+&lt;p&gt;At the bucket level, you will see a tab called &lt;strong&gt;Properties&lt;/strong&gt;. The Properties tab has a section called &lt;strong&gt;Events&lt;/strong&gt;. Here, add a new event.
+&lt;img src=&quot;https://miro.medium.com/max/700/1*fR5p93FCGclxXPR7SgkhXg.png&quot; alt=&quot;enter image description here&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Every time a new object is PUT into the S3 bucket (along with an optional prefix representing the email folder), you should trigger the lambda function created above.&lt;/p&gt;
+
+&lt;p&gt;You must be wondering why we prefix the email file name with date. This step makes it easy for us to tell S3 to return objects belonging to the same date. Attaching the Unix epoch to the prefix allows us to sort the file names received on a certain date by receipt time.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-4--create-a-lambda-to-return-emails-received-today&quot;&gt;Step 4 — Create a lambda to return emails received “today”&lt;/h2&gt;
+
+&lt;p&gt;Our next step is to create a lambda which returns a list of email file names “today”.&lt;/p&gt;
+
+&lt;p&gt;You will need this because, as the days go by, the number of emails in your S3 bucket will keep increasing. So, either you show a filtered list of emails, or paginate your results so that older emails are shown on demand.&lt;/p&gt;
+
+&lt;p&gt;In either case, you will need a lambda to filter by date. While the given lambda does not, by default, let your filter by date, the code can easily be extended to support date based filtering.&lt;/p&gt;
+
+&lt;p&gt;The source code for this lambda is &lt;a href=&quot;https://github.com/psiCode/ses-email-client/get-eml-file-ids-s3.js&quot;&gt;here&lt;/a&gt;. Recreate this lambda in your own AWS account.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-5--create-a-lambda-layer-for-the-eml-format-npm-module&quot;&gt;Step 5 — Create a Lambda layer for the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;eml-format&lt;/code&gt; npm module&lt;/h2&gt;
+
+&lt;p&gt;SES email files are in .eml format which you will have to parse to extract actionable information such as the email’s subject, from address, and attachments, if any.&lt;/p&gt;
+
+&lt;p&gt;&lt;del&gt;Fortunately, the excellent &lt;a href=&quot;https://www.npmjs.com/package/eml-format&quot;&gt;eml-format npm module&lt;/a&gt; does the job for us.&lt;/del&gt;&lt;/p&gt;
+
+&lt;p&gt;Fortunately, the excellent &lt;a href=&quot;https://nodemailer.com/about/&quot;&gt;nodemailer npm module&lt;/a&gt; does the job for us.&lt;/p&gt;
+
+&lt;p&gt;The only thing you need to do is to create a Lambda layer which packages up this module for use inside AWS.&lt;/p&gt;
+
+&lt;p&gt;Just pick one of the many tutorials online on how to create Lambda layers to complete this step. I &lt;a href=&quot;https://medium.com/@anjanava.biswas/nodejs-runtime-environment-with-aws-lambda-layers-f3914613e20e&quot;&gt;followed this one&lt;/a&gt; to make my first Lambda layer.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-6--create-a-lambda-to-parse-eml-files&quot;&gt;Step 6 — Create a Lambda to parse eml files&lt;/h2&gt;
+
+&lt;p&gt;Once again, the source code to &lt;a href=&quot;https://github.com/psiCode/ses-email-client/blob/master/lambdas/get-eml-contents.js&quot;&gt;parse eml files&lt;/a&gt; is on my github. Recreate this lambda in your own AWS account.&lt;/p&gt;
+
+&lt;p&gt;Make sure you add a reference to the layer created in Step 5 while creating this lambda.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-7--wiring-up-the-lambdas-to-api-gateway&quot;&gt;Step 7 — Wiring up the lambdas to API Gateway&lt;/h2&gt;
+
+&lt;p&gt;Once the three lambdas in steps 4 and 6 have been created, you need to wire them up to API gateway.&lt;/p&gt;
+
+&lt;p&gt;You DO NOT need to expose the Lambda created in Step 3 — to rename eml files — to API gateway.&lt;/p&gt;
+
+&lt;p&gt;Make sure you “Enable CORS” on these two API endpoints.&lt;/p&gt;
+
+&lt;h2 id=&quot;testing-part-2--steps-3-to-7&quot;&gt;Testing Part 2 — Steps 3 to 7&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Send yourself an email. That email should appear in your S3 bucket/folder with a file name which is prefixed with a &lt;em&gt;yyyy-mm-dd-unix_epoch&lt;/em&gt;. If this does not work, make sure you check the your S3 triggers, Lambda code, and Cloudwatch output.&lt;/li&gt;
+  &lt;li&gt;Make a curl call to the API endpoint which returns a list of emails. This should return the id of the the email received above. The API call should be like this. Of course, your endpoint will have a different URL and path.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;curl -g ‘&lt;a href=&quot;https://api.zeer0.com/v001/email?domain=zeer0.com&amp;amp;id=2020-07-4-1593879519853-v8gjj7mekqedlorqiqnjo3h95b5o84a51k7pr8o1&quot;&gt;https://api-gateway-abcd.amazonaws.com/email/today?domain=example.com&lt;/a&gt;’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Make a curl call to the API endpoint which returns the contents of the email identified by the id returned in the test above.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;curl -g ‘&lt;a href=&quot;https://api-gateway-abcd.amazonaws.com/email&quot;&gt;https://api-gateway-abcd.amazonaws.com/email&lt;/a&gt;?domain=zeer0.com&amp;amp;id=2020-07-4-1593879519853-v8gjj7abcdeedcbaiqnjo3h95b5o84a51k7pr8o1’&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;step-8-&quot;&gt;Step 8 —&lt;/h2&gt;
+
+&lt;p&gt;By completing Step 7, you have made your backend and middle tier to support disposable emails.&lt;/p&gt;
+
+&lt;p&gt;The last and final part left is to create a UI to show those all emails flowing into S3.&lt;/p&gt;
+
+&lt;p&gt;Broadly, here is what you will have to do.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Make an API call to get the list of emails to be shown to the user&lt;/li&gt;
+  &lt;li&gt;Download the contents and metadata of each email&lt;/li&gt;
+  &lt;li&gt;(Optionally) Protect your inbox using a tool like AWS Cognito which is what I have done.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;Voila! You have a way to create disposable email addresses on the fly. What’s more, you also have a way to interact with your email inbox programmatically. You can use this facility to mine your inbox for insights or build workflows specific to your needs around your email.&lt;/p&gt;
+
+&lt;p&gt;If you would like to discuss further, please do drop me a line at sai@ramachandr.in. Looking forward to hearing from you.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Written with &lt;a href=&quot;https://stackedit.io/&quot;&gt;StackEdit&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;</content><author><name>Sai Ramachandran</name></author><summary type="html">Get disposable emails for your domain in minutes</summary></entry><entry><title type="html">Hosting on Landen.co</title><link href="https://zeer0.com/b/2019/08/27/hosting-on-landen.co.html" rel="alternate" type="text/html" title="Hosting on Landen.co" /><published>2019-08-27T18:18:25+05:30</published><updated>2019-08-27T18:18:25+05:30</updated><id>https://zeer0.com/b/2019/08/27/hosting-on-landen.co</id><content type="html" xml:base="https://zeer0.com/b/2019/08/27/hosting-on-landen.co.html">&lt;p&gt;&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/rUHHfQcVEWTZHNIF.svg?w=880&quot; alt=&quot;enter image description here&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Until very recently, the Zeer0.com website was hosted on Landen which provides easy to use tools to create and quickly deploy beautiful landing pages for your startup.&lt;/p&gt;
+
+&lt;p&gt;As Zeer0 grew in complexity, it became more and more apparent that it would soon outgrow a simple landing page service and would need tighter integrations with a middle tier of some sort.&lt;/p&gt;
+
+&lt;p&gt;Obviously, this is a good problem to have. It means that the Zeer0 landing page served its purpose of converting site visitors into interested customers. It was now a matter of retaining those customers with great workflows while maintaining the excellent pagespeed performance of the original Landen website.&lt;/p&gt;
+
+&lt;p&gt;The first order of business for this rearchitecting project was to expose our services hosted on Wix as RESTful APIs. I will cover our RESTful middle tier in a later blog post.&lt;/p&gt;
+
+&lt;p&gt;In this post, I want to discuss the migration away from Landen.&lt;/p&gt;
+
+&lt;h1 id=&quot;what-landen-gets-right&quot;&gt;What Landen gets right?&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.landen.co/&quot;&gt;Landen&lt;/a&gt; is a fantastic landing page service. If Net Promoter Scores were still a thing, my score for Landen would be 100.&lt;/p&gt;
+
+&lt;p&gt;While their free version is great to play around with, if you want to connect a custom domain to a Landen website, you have to buy their $29/month plan which lets you host three custom domains on their service. If you have just one landing page to host, you will still find yourself paying $29 to host it on Landen.&lt;/p&gt;
+
+&lt;p&gt;If you, like many entrepreneurs are working on more than one idea at the same time, the monthly $29 fee might motivate you to try up to three ideas in parallel to see which one gains traction first.&lt;/p&gt;
+
+&lt;h2 id=&quot;landens-uiux-options-are-top-notch&quot;&gt;Landen’s UI/UX options are top notch&lt;/h2&gt;
+
+&lt;p&gt;I am as far from being a competent designer as one can be but even I was able to create a nice looking website with complementary fonts, pleasing colors, and nifty touches like sloping lines and shading.&lt;/p&gt;
+
+&lt;p&gt;The number of choices available are sufficient to create a non-boxy, non-Bootstrappy like website without becoming overwhelming.&lt;/p&gt;
+
+&lt;p&gt;Compared to website builders like Wix, Landen errs on the side of simplicity. To be fair, Wix et al have far a loftier goal of helping you build ANY website while Landen is primarily for building landing pages.&lt;/p&gt;
+
+&lt;p&gt;This choice seems to work really well for Landen. As I was evaluating other landing page template, I kept coming back to Landen. With Landen, I was able to express my ideas about the Zeer0 website much faster and more smoothly than with any other website builder.&lt;/p&gt;
+
+&lt;h2 id=&quot;landen-is-fast&quot;&gt;Landen is fast&lt;/h2&gt;
+
+&lt;p&gt;Landen is fast.&lt;/p&gt;
+
+&lt;p&gt;I discovered Landen through posts on IndieHackers where people were looking for reviews on their Landen landing pages. I invariably found that these landing pages scored 90+ on Google Pagespeed Insights - both mobile and desktop. Since page speeds are an important ranking factor to rank well in search results, entrepreneurs would do well to invest in trying to minimise their load speeds.&lt;/p&gt;
+
+&lt;p&gt;Somehow, Landen gets this correct right out of the box.&lt;/p&gt;
+
+&lt;p&gt;In fact, the search ranking for Chicshop - Zeer0’s sister website - went up significantly as soon as I switched to Landen. Now, chicshop.in appears on the first page of Google when you search for &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;chicshop&lt;/code&gt;&lt;/strong&gt;  where it used to earlier languish in the second or third page.&lt;/p&gt;
+
+&lt;p&gt;Since nothing significant has changed about ChicShop other than the migration to Landen, I attribute it to Landen’s blazing fast load speeds.&lt;/p&gt;
+
+&lt;h2 id=&quot;easy-deployment&quot;&gt;Easy Deployment&lt;/h2&gt;
+
+&lt;p&gt;Landen also makes it very easy to link custom domains to their website. It is practically idiot proof with just two DNS settings to worry about - one A record and one CNAME record.&lt;/p&gt;
+
+&lt;p&gt;The other thing I liked about Landen is that they auto-resolve people away from &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;www.website.com&lt;/code&gt;&lt;/strong&gt; to the naked &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;website.com&lt;/code&gt;&lt;/strong&gt; URL. The &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;www&lt;/code&gt;&lt;/strong&gt; subdomain has outlived its utility as a crutch for new internet users and Landen, to its credit, recognizes that.&lt;/p&gt;
+
+&lt;p&gt;In fact, if I hadn’t figured out how to self-host a naked url outside Landen, I would have probably continued hosting Zeer0.com on Landen.&lt;/p&gt;
+
+&lt;h2 id=&quot;custom-code-sections&quot;&gt;Custom Code Sections&lt;/h2&gt;
+
+&lt;p&gt;This is an experimental feature within Landen which lets you add custom code blocks to a landing page. I used this custom code section to add rich snippets to my Landen website. These rich snippets are obviously not visible to users but are consumed by Google to better contextualize my website.&lt;/p&gt;
+
+&lt;h2 id=&quot;in-built-analytics&quot;&gt;In-built Analytics&lt;/h2&gt;
+
+&lt;p&gt;Landen websites come with built-in analytics which ad-blockers aren’t equipped to block. This means you get a much clearer picture of how much traffic your website received compared to tools like Google Analytics and Google Tag Manager which can be blocked by blockers like Ghostery or UBlock Origin.&lt;/p&gt;
+
+&lt;h1 id=&quot;what-landen-does-not-get-right&quot;&gt;What Landen does not get right?&lt;/h1&gt;
+
+&lt;p&gt;I think Landen missed a trick by not having a cheaper option for a single domain. $29/month for three custom domains is definitely pricey for an entrepreneur who often don’t have use for all three available custom domains.&lt;/p&gt;
+
+&lt;p&gt;Here are a few other places where Landen could improve.&lt;/p&gt;
+
+&lt;h2 id=&quot;terrible-blogpost-interface&quot;&gt;Terrible blog/post interface&lt;/h2&gt;
+
+&lt;p&gt;The blogging/posting experience leaves a lot to be desired.&lt;/p&gt;
+
+&lt;p&gt;For example, the text box used to insert URL anchored by visible text looks like something copied from a W3C tutorial.&lt;/p&gt;
+
+&lt;p&gt;Maybe blogging isn’t really a big priority for entrepreneurs but for me, content forms a big part of my marketing strategy so the blogging experience left my cold.&lt;/p&gt;
+
+&lt;h2 id=&quot;limited-options-for-emaillead-capture&quot;&gt;Limited options for Email/Lead Capture&lt;/h2&gt;
+
+&lt;p&gt;Email capture forms a critical function a landing page service but Landen does not have great tools or integrations to facilitate this function.&lt;/p&gt;
+
+&lt;p&gt;For example, leads can be dropped into a custom Landen email list, into a Mailchimp list, or posted to a URL you control. Of these, Mailchimp is only half-decent option.&lt;/p&gt;
+
+&lt;p&gt;Using Landen’s inbuilt email list means you will have to monitor yet another email list to see if any one has subscribed to your website.&lt;/p&gt;
+
+&lt;p&gt;Building and deploying a URL just to manage leads is wasted time/effort, IMHO.&lt;/p&gt;
+
+&lt;p&gt;Contact forms on Landen can either be emailed or posted to Slack. Receiving contact form data via email seems far more reasonable than building an inbound webhook in Slack.&lt;/p&gt;
+
+&lt;h2 id=&quot;confused-header-navigation&quot;&gt;Confused Header Navigation&lt;/h2&gt;
+
+&lt;p&gt;Landen’s header breaks down if your site has more than one page while also deep linking into sections within the home page.&lt;/p&gt;
+
+&lt;p&gt;For example, if your home page has a &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;#pricing&lt;/code&gt;&lt;/strong&gt; section linked in the header and a separate &lt;strong&gt;About&lt;/strong&gt; page, the &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;#pricing&lt;/code&gt;&lt;/strong&gt; link won’t work from the &lt;strong&gt;About&lt;/strong&gt; page out of the box. You will have to link the Pricing menu option to &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/#pricing&lt;/code&gt;&lt;/strong&gt; (note the leading /) which is a little awkard to see.&lt;/p&gt;
+
+&lt;h1 id=&quot;and-so&quot;&gt;And so?&lt;/h1&gt;
+
+&lt;p&gt;IMHO, the benefits of Landen far outstrip its negatives. You could do much worse than using it to host your next landing page. Like I said above, even as I was looking for landing page templates, I kept going back to Landen despite their price and even though I didn’t have a need for three custom domains.&lt;/p&gt;
+
+&lt;p&gt;If you need any help with your Landen site, feel free to email me from the Zeer0.com homepage.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Written with &lt;a href=&quot;https://stackedit.io/&quot;&gt;StackEdit&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;</content><author><name>Sai Ramachandran</name></author><summary type="html"></summary></entry><entry><title type="html">Adding Rich Snippets to Shopify</title><link href="https://zeer0.com/b/2019/08/03/adding-rich-snippets.html" rel="alternate" type="text/html" title="Adding Rich Snippets to Shopify" /><published>2019-08-03T15:33:19+05:30</published><updated>2019-08-03T15:33:19+05:30</updated><id>https://zeer0.com/b/2019/08/03/adding-rich-snippets</id><content type="html" xml:base="https://zeer0.com/b/2019/08/03/adding-rich-snippets.html">&lt;p&gt;&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/zwrLGdBtMzIDJvwo.jpg?w=880&quot; alt=&quot;enter image description here&quot; /&gt;
+This blog post is going to be quite technical but the subject it deals with - rich snippets - is very important so you would do well to not let your eyes glaze over. Rich snippets can really boost your search performance and bring you lots of eyeballs which would otherwise go to your competitors.&lt;/p&gt;
+
+&lt;h1 id=&quot;what-is-a-rich-snippet&quot;&gt;What is a Rich Snippet?&lt;/h1&gt;
+
+&lt;p&gt;The dirty little secret of all the fancy technology that people like me and the thousands of engineers sitting in Silicon Valley make is that it is quite dumb. Even the most amazing AI or machine learning models cannot hold a candle to your average 10 year old…&lt;em&gt;for anything that needs inferential and deductive reasoning&lt;/em&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;why-search-engines-have-it-hard&quot;&gt;Why search engines have it hard?&lt;/h2&gt;
+
+&lt;p&gt;Search engines have it harder than almost any other technology. Their inputs are, by definition, written text - often badly - placed inside markup that no one would be able to easily read and digest at length.&lt;/p&gt;
+
+&lt;p&gt;(&lt;em&gt;Aside&lt;/em&gt; - &lt;em&gt;Markup allows you format and display content. HTML is a type of markup. Without markup, the entire internet would like text written in Notepad.&lt;/em&gt;)&lt;/p&gt;
+
+&lt;p&gt;What is worse is that browsers - whose job it is to digest this markup and show it to humans - are very forgiving. They will try their hardest to make sense of the markup given to them to show &lt;em&gt;something&lt;/em&gt; to the human.&lt;/p&gt;
+
+&lt;p&gt;Further, humans are very, very good at inferring patterns and working with sparse data. So even if a browser breaks down while trying to process a piece of content, humans can still make some sense of whatever gobbledygook the browser throws up on the screen.&lt;/p&gt;
+
+&lt;p&gt;Search engines don’t have the luxury of reading in poorly formed content and asking humans to fill in any gaps they may encounter. This is because search engines index millions upon millions of pages each of which is likely to have one or more errors. They have to independently figure out as much about the internet as they can.&lt;/p&gt;
+
+&lt;h2 id=&quot;why-rich-snippets-were-invented&quot;&gt;Why rich snippets were invented?&lt;/h2&gt;
+
+&lt;p&gt;Faced with this difficulty, the companies behind these search engines got together and came up with a way to help content creators (i.e., website owners) help them.&lt;/p&gt;
+
+&lt;h3 id=&quot;defining-entities&quot;&gt;Defining entities&lt;/h3&gt;
+
+&lt;p&gt;They first identified a set of entities and relationships between those entities. E.g., a website and its founder are both entities whose interrelationship could be defined as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;lt;website&amp;gt;&lt;/code&gt; was &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;lt;founded&amp;gt;&lt;/code&gt; by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;lt;person&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;inventing-a-format&quot;&gt;Inventing a format&lt;/h3&gt;
+
+&lt;p&gt;Then they defined a format using which a person could identify themselves as the founder of a website. Of course, this format is not limited to just this above interrelationship. There are a whole host of entities and interrelationships covered in great, though in a very dry and technical manner, detail on &lt;a href=&quot;https://schema.org/&quot;&gt;Schema.org&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;making-the-format-public&quot;&gt;Making the format public&lt;/h3&gt;
+
+&lt;p&gt;Finally, they made this format public and asked website owners to insert such formatted information into their website’s markup so that search engines could make better sense of the entities which make up the Internet.&lt;/p&gt;
+
+&lt;p&gt;Each such formatted information is a Rich Snippet.&lt;/p&gt;
+
+&lt;p&gt;An entity on the internet can have any number of rich snippets explaining to Google, Bing, Yandex, and every other search engine how exactly this entity fits into whatever else these search engines know about the Internet.&lt;/p&gt;
+
+&lt;p&gt;For example, I run both &lt;a href=&quot;https://zeer0.com/&quot;&gt;Zeer0&lt;/a&gt; and &lt;a href=&quot;https://chicshop.in/&quot;&gt;Chicshop&lt;/a&gt;. Once the search engines read in both Zeer0’s and Chicshop’s rich snippets, they can easily work out that Zeer0 and Chicshop are siblings belonging to someone named &lt;a href=&quot;https://ramachandr.in/&quot;&gt;Sai Ramachandran&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now that you have a 10,000 ft view of Rich Snippets, let us see how Shopify handles them.&lt;/p&gt;
+
+&lt;h1 id=&quot;does-shopify-even-support-rich-snippets&quot;&gt;Does Shopify even support Rich Snippets?&lt;/h1&gt;
+
+&lt;p&gt;Yes, Shopify does handle Rich Snippets but how do we find out what your Shopify store’s default rich snippet looks like?&lt;/p&gt;
+
+&lt;p&gt;To do this,&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;go to Google’s &lt;a href=&quot;https://search.google.com/structured-data/testing-tool/u/0/&quot;&gt;Structured Data Testing Tool&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;enter your Shopify store’s URL here&lt;/li&gt;
+  &lt;li&gt;click &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Run Test&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Google will proceed to show you your store’s source code and any snippets if it finds them. For example, Google read these two entities from my Shopify store - namely an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Organization&lt;/code&gt; and a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Website&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/weKgrdaeKAAJJkIR.png&quot; alt=&quot;enter image description here&quot; /&gt;&lt;/p&gt;
+&lt;h1 id=&quot;so-where-are-these-rich-snippets-located&quot;&gt;So where are these Rich Snippets located?&lt;/h1&gt;
+
+&lt;p&gt;Before I tell you where these rich snippets are located, I want to take a brief detour into the world of web technologies.&lt;/p&gt;
+
+&lt;p&gt;There used to be a time when HTML files were written as monoliths. I’m talking about a really long time ago, circa mid-nineties Internet.&lt;/p&gt;
+
+&lt;p&gt;Web technology has evolved since then. Today, web pages are composed of blocks of functionality. For example, the search box shown on the top of the page may be a block. The header, the footer, the hero section, everything you see on the screen is built independently. Web developers then mix and match these blocks to come up with a look and layout they like. Once done, they write a single file which contains all the blocks they need to define a page.&lt;/p&gt;
+
+&lt;h2 id=&quot;themeliquid&quot;&gt;Theme.liquid&lt;/h2&gt;
+
+&lt;p&gt;In Shopify’s case, that single page is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;theme.liquid&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;experiment-adding-a-new-rich-snippet-at-the-bottom-of-themeliquid&quot;&gt;Experiment: adding a new rich snippet at the bottom of theme.liquid&lt;/h3&gt;
+
+&lt;p&gt;Therefore, our first experiment will be to insert our Rich Snippet into theme.liquid to see how it affects how Google reads our page.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;[Here is my&lt;/em&gt; &lt;a href=&quot;https://youtu.be/wlDhtC-5tRE?t=127&quot;&gt;&lt;em&gt;video showing you where to paste your rich snippet&lt;/em&gt;&lt;/a&gt; &lt;em&gt;inside&lt;/em&gt; &lt;em&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;theme.liquid&lt;/code&gt;__.]&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;This is what that would look like.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/NvSgbpvoqTddcdDr.png&quot; alt=&quot;enter image description here&quot; /&gt;
+And here’s how Google Structured Data Testing Tool sees our rich snippet.
+&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/gjtRYGPEwcVDpfdT.png&quot; alt=&quot;enter image description here&quot; /&gt;
+As you can see, Google thinks there are two &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Organization&lt;/code&gt; rich snippets on that page. This is clearly wrong. It’s poor Internet hygiene to leave duplicated and possibly conflicting data lying around.&lt;/p&gt;
+
+&lt;h3 id=&quot;experiment-outcome&quot;&gt;Experiment: Outcome&lt;/h3&gt;
+
+&lt;p&gt;This means that the place where we inserted our new rich snippet inside &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;theme.liquid&lt;/code&gt; is incorrect.&lt;/p&gt;
+
+&lt;h3 id=&quot;experiment-more-digging&quot;&gt;Experiment: More digging&lt;/h3&gt;
+
+&lt;p&gt;The Structured Data Testing Tool actually helps us figure out where exactly the default Shopify rich snippet related to Organization and Website are located. Clicking on any portion of the output of the Structured Data Testing Tool takes you to the corresponding link of content displayed on the left.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;[See how to use the use&lt;/em&gt; &lt;a href=&quot;https://youtu.be/wlDhtC-5tRE?t=201&quot;&gt;&lt;em&gt;the output of the Structured Data Testing Tool&lt;/em&gt;&lt;/a&gt; &lt;em&gt;to figure out where your rich snippet is located.]&lt;/em&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;headerliquid&quot;&gt;Header.liquid&lt;/h3&gt;
+
+&lt;p&gt;They’re located inside &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sections/header.liquid&lt;/code&gt; which looks like this.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/tltfSTpbnwozFKyw.png&quot; alt=&quot;enter image description here&quot; /&gt;&lt;/p&gt;
+&lt;h3 id=&quot;two-approaches-to-updating-rich-snippets&quot;&gt;Two approaches to updating rich snippets&lt;/h3&gt;
+
+&lt;p&gt;Now that you know which file to edit to insert the correct, long form rich snippet, you have two choices. You could either replace the old rich snippets with the snippets emailed to you by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Zeer0&lt;/code&gt; or simply add the extra fields you need to the existing snippets.&lt;/p&gt;
+
+&lt;p&gt;In my case, I plan to replace the old rich snippets with Zeer0’s snippets which have a lot more detail. Both approaches are equally valid.&lt;/p&gt;
+
+&lt;p&gt;The choice is yours.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Written with &lt;a href=&quot;https://stackedit.io/&quot;&gt;StackEdit&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;</content><author><name>Sai Ramachandran</name></author><summary type="html">This blog post is going to be quite technical but the subject it deals with - rich snippets - is very important so you would do well to not let your eyes glaze over. Rich snippets can really boost your search performance and bring you lots of eyeballs which would otherwise go to your competitors.</summary></entry><entry><title type="html">About Shopify Webhooks</title><link href="https://zeer0.com/b/2019/08/03/understanding-shopify-webhooks.html" rel="alternate" type="text/html" title="About Shopify Webhooks" /><published>2019-08-03T12:06:39+05:30</published><updated>2019-08-03T12:06:39+05:30</updated><id>https://zeer0.com/b/2019/08/03/understanding-shopify-webhooks</id><content type="html" xml:base="https://zeer0.com/b/2019/08/03/understanding-shopify-webhooks.html">&lt;h1 id=&quot;what-is-a-webhook-anyway&quot;&gt;What is a webhook anyway?&lt;/h1&gt;
+
+&lt;p&gt;Before we start discussing webhooks, I want to go over a related concept - the client/server architecture.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/hYBMlbzIzMvncWEe.jpg?w=880&quot; alt=&quot;enter image description here&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;offering-a-service&quot;&gt;Offering a service&lt;/h1&gt;
+
+&lt;p&gt;So what is the client/server architecture? A server is something offering a service. For example, a dentist’s office is a server providing services like teeth cleaning, extractions, selling you Invisalign, and more.&lt;/p&gt;
+
+&lt;p&gt;If you think abstractly enough, you can classify as a lot of things as servers. A lawyer? Just a server for filing lawsuits and to watch out for you in court. A public transit system? A service aimed at getting you from point A to point B.&lt;/p&gt;
+
+&lt;h1 id=&quot;client-someone-using-a-service&quot;&gt;Client: Someone using a service&lt;/h1&gt;
+
+&lt;p&gt;A client is therefore someone who uses a service. If I were to have dental issues, I could choose to be a client of the dentist “server”.&lt;/p&gt;
+
+&lt;h2 id=&quot;a-matter-of-perspective&quot;&gt;A matter of perspective&lt;/h2&gt;
+
+&lt;p&gt;This is not to say that a client is usually a person and a server is usually a business. Far from it. Who is a client and who is a server in a relationship is merely a matter of perspective. To someone wishing to sell you (say) insurance products, you are the server. You serve out insurance premiums to them and they provide insurance coverage to you.&lt;/p&gt;
+
+&lt;h2 id=&quot;server-a-more-nuanced-definition&quot;&gt;Server: A more nuanced definition&lt;/h2&gt;
+
+&lt;p&gt;If you think even more abstractly about client/servers, it should be apparent that a server has something a client wants. It could be skills, money, information, power - all sorts of things can make you a server.&lt;/p&gt;
+
+&lt;h1 id=&quot;how-do-clients-and-servers-interact&quot;&gt;How do clients and servers interact?&lt;/h1&gt;
+
+&lt;p&gt;Now that we understand client/server architectures, let’s talk about the different ways clients and servers can interact.&lt;/p&gt;
+
+&lt;p&gt;Say you have applied to the Stanford MBA program. Every morning you open your email to find out your admission status. Did you get in? Will you soon be rubbing shoulders with the best of breed entrepreneurs of the world?&lt;/p&gt;
+
+&lt;h2 id=&quot;polling&quot;&gt;Polling&lt;/h2&gt;
+
+&lt;p&gt;This is type of interaction between the &lt;em&gt;client&lt;/em&gt; - you - and the &lt;em&gt;server&lt;/em&gt; - Stanford, which controls your admissions - is called &lt;strong&gt;polling&lt;/strong&gt;. You periodically ask the server if they have new information about your admission status.&lt;/p&gt;
+
+&lt;p&gt;Eventually, the big email from Stanford comes. You’re in! You’ve made it to the big leagues. Go YOU!&lt;/p&gt;
+
+&lt;h2 id=&quot;notificationswebhooks&quot;&gt;Notifications/Webhooks&lt;/h2&gt;
+
+&lt;p&gt;Now the roles are reversed. You no longer worry about hearing from Stanford. You go about your day without a care in the world knowing that Stanford’s admissions office will call you when need your first semester fees or student loan application on file.&lt;/p&gt;
+
+&lt;p&gt;This is state of affairs is analogous to a &lt;strong&gt;webhook&lt;/strong&gt; or a &lt;strong&gt;notification&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;A webhook is a way for a server to tell the client to take an action. Of course, the client can choose to ignore the message from the server - like you would if your backup MBA program from the community college next door asked you to fill their forms now that you’re Stanford bound.&lt;/p&gt;
+
+&lt;p&gt;It is useful to think of webhooks like the push notification you get on your phone but instead of a push notification sent to an app on your phone, it is directly sent by the server to a listener working on your behalf.&lt;/p&gt;
+
+&lt;h1 id=&quot;why-webhooks&quot;&gt;Why webhooks?&lt;/h1&gt;
+
+&lt;p&gt;So why use webhooks at all?&lt;/p&gt;
+
+&lt;p&gt;Think about &lt;strong&gt;polling&lt;/strong&gt; for a second. You, the client, ask the server if it has anything for you. The server has to check its records, determine that it doesn’t have anything for you, and then respond to you. Both you and the server are doing work in this case. Now multiply this amount of work by requests from all the clients of a server. Imagine the amount of wasted work.&lt;/p&gt;
+
+&lt;p&gt;On the other hand, when it comes to webhooks, you only start working when the server tells you that it has something for you. Until then, you’re that cool kid who is Stanford bound and burning it up with friends in the intervening months.&lt;/p&gt;
+
+&lt;p&gt;From a workload perspective, webhooks are much less wasteful. Both you and the server work just once - the server tells you that it has something for you and you respond to that notification. Much better than haranguing the server for updates, don’t you think?&lt;/p&gt;
+
+&lt;p&gt;Shopify provides both ways of interacting with them. You can keep bugging them for updates or you can wait for them to tell you when something happens.&lt;/p&gt;
+
+&lt;h3 id=&quot;webhooks-reduce-the-load-on-both-client-and-server&quot;&gt;Webhooks reduce the load on both client and server&lt;/h3&gt;
+
+&lt;p&gt;Therefore, the biggest argument in favor of webhooks is the reduced workload on both parties. The client and the server only talk to each other when necessary. Otherwise, they’re off doing their own thing.&lt;/p&gt;
+
+&lt;h3 id=&quot;webhooks-make-the-both-the-client-and-server-a-little-more-secure&quot;&gt;Webhooks make the both the client and server a little more secure&lt;/h3&gt;
+
+&lt;p&gt;Webhooks also provide an additional layer of security to both the server and the client. Servers have to open only a single point of entry - namely a way for clients to tell them how the server can reach them. On the flip side, the client too only opens a single point of entry - a place to receive notifications from the server.&lt;/p&gt;
+
+&lt;p&gt;If ever they want to stop talking to each - maybe because they no longer need to or because one party has been hacked - all they need to do is to stop using that webhook.&lt;/p&gt;
+
+&lt;h1 id=&quot;how-to-create-webhooks&quot;&gt;How to create webhooks?&lt;/h1&gt;
+
+&lt;p&gt;This is a great question. It isn’t all peaches and cream in the world of webhooks. When it comes to polling, the client can poll the server using a simple mobile phone app.&lt;/p&gt;
+
+&lt;p&gt;In the case of webhooks, the server needs to know where to send a notification which implies that the client will have to be reachable via a single location. To go back to the Stanford story, this is analogous to you giving Stanford with a working phone number where you would be reachable.&lt;/p&gt;
+
+&lt;h2 id=&quot;webhooks-in-the-case-of-shopify&quot;&gt;Webhooks in the case of Shopify&lt;/h2&gt;
+
+&lt;p&gt;When it comes to Shopify webhooks, this requirement that clients provide a permanent reachable address isn’t trivial to implement.&lt;/p&gt;
+
+&lt;p&gt;This is actually a major downside of webhooks.&lt;/p&gt;
+
+&lt;p&gt;You would have to create an entire infrastructure with a public URL in order to receive notifications from Shopify.&lt;/p&gt;
+
+&lt;h1 id=&quot;what-notifications-does-shopify-provide&quot;&gt;What notifications does Shopify provide?&lt;/h1&gt;
+
+&lt;p&gt;In any case, assuming you can use a third party service (maybe something like &lt;a href=&quot;https://zeer0.com/&quot;&gt;Zeer0&lt;/a&gt;?) to receive notifications from Shopify, what kinds of notifications does it provide?&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://help.shopify.com/en/api/reference/events/webhook&quot;&gt;Shopify has 23 categories of notifications&lt;/a&gt; ranging from creation of orders to fulfillments to customers requesting a refund.&lt;/p&gt;
+
+&lt;p&gt;What you do with them is up to you. You could choose to ignore them, respond to them, or forward them to a downstream process.&lt;/p&gt;
+
+&lt;h1 id=&quot;now-what&quot;&gt;Now what?&lt;/h1&gt;
+
+&lt;p&gt;I hope this brief overview of Webhooks (notifications) has given you a clearer understanding of what they actually are.&lt;/p&gt;
+
+&lt;p&gt;In brief, they are a safer way of listening to events happening on your Shopify store and responding to them in any way you please.&lt;/p&gt;
+
+&lt;p&gt;Businesses could use notifications to create beautiful invoices, manage their VATs or GST, tell fulfillment centers to prepare an outbound package, collect metrics about sales, or send hand written Thank You notes to new customers. The sky is the limit on what you can do with notifications.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Written with &lt;a href=&quot;https://stackedit.io/&quot;&gt;StackEdit&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;</content><author><name>Sai Ramachandran</name></author><summary type="html">What is a webhook anyway?</summary></entry><entry><title type="html">Learn by example - Building your first Shopify webhook</title><link href="https://zeer0.com/b/2019/08/01/building-your-first-shopify-webhook.html" rel="alternate" type="text/html" title="Learn by example - Building your first Shopify webhook" /><published>2019-08-01T11:14:39+05:30</published><updated>2019-08-01T11:14:39+05:30</updated><id>https://zeer0.com/b/2019/08/01/building-your-first-shopify-webhook</id><content type="html" xml:base="https://zeer0.com/b/2019/08/01/building-your-first-shopify-webhook.html">&lt;h2 id=&quot;learn-by-example-building-your-first-shopify-webhook&quot;&gt;Learn by example: Building your first Shopify webhook&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/WaUIhoXgxHcmYItt.png?w=880&quot; alt=&quot;enter image description here&quot; /&gt;&lt;/p&gt;
+&lt;h2 id=&quot;learn-how-to-create-your-first-shopify-webhook&quot;&gt;Learn how to create your first Shopify Webhook&lt;/h2&gt;
+
+&lt;h3 id=&quot;in-5-easy-steps-with-screenshots-and-without-writing-a-single-line-of-code&quot;&gt;…in 5 easy steps with screenshots and without writing a single line of code!&lt;/h3&gt;
+
+&lt;p&gt;In this tutorial, I will show you how to create a Shopify webhook and post your first notification from your Shopify store to a webhook listener.&lt;/p&gt;
+
+&lt;p&gt;If you are more of a video kinda person, here’s a &lt;a href=&quot;https://www.youtube.com/watch?v=AYjy8E1tsbM&quot;&gt;Youtube video&lt;/a&gt; which summarizes this blog post.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;[If you want to learn why Shopify webhooks are so useful, you can read&lt;/em&gt; &lt;a href=&quot;https://zeer0.com/blog/about-shopify-webhooks&quot;&gt;&lt;em&gt;this post&lt;/em&gt;&lt;/a&gt;&lt;em&gt;. It gives even the most non-technical layuser an overview of webhooks and their usefulness.]&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;step-1-log-in-to-your-shopify-stores-admin-dashboard&quot;&gt;Step 1: Log in to your Shopify store’s admin dashboard&lt;/h2&gt;
+
+&lt;p&gt;The first thing you need to do is to log in to your Shopify store’s admin screen.&lt;/p&gt;
+
+&lt;p&gt;In my case, I log in to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;https://chicshop-dev-store.myshopify.com&lt;/code&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/admin&lt;/code&gt;&lt;/strong&gt;. Once you log in, you should be presented with a screen which looks something like this.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/qgqAsqWiMLmUeVHQ.png&quot; alt=&quot;enter image description here&quot; /&gt;&lt;/p&gt;
+&lt;h2 id=&quot;step-2-head-to-the-notifications-screen&quot;&gt;Step 2: Head to the Notifications screen&lt;/h2&gt;
+
+&lt;p&gt;Click Settings, then click on the Notifications link in the middle of the screen. See the screenshot below if you’re lost.
+&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/UArZNviRTjXjtyPO.png&quot; alt=&quot;enter image description here&quot; /&gt;
+Your notifications screen should look like this.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/eNgrlKVRDaoRvuQT.png&quot; alt=&quot;enter image description here&quot; /&gt;
+Scroll to the bottom of the Notifications screen to a section titled Webhooks which looks like this. To summarize, you reached the webhooks section by&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Logging in to your store’s &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/admin&lt;/code&gt;&lt;/strong&gt; dashboard&lt;/li&gt;
+  &lt;li&gt;Clicking on &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Settings&lt;/code&gt;&lt;/strong&gt; on the bottom left of the screen&lt;/li&gt;
+  &lt;li&gt;Clicking on &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Notifications&lt;/code&gt;&lt;/strong&gt; in the middle of the &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Settings&lt;/code&gt;&lt;/strong&gt; screen&lt;/li&gt;
+  &lt;li&gt;Then scrolling to the bottom of the &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Notifications&lt;/code&gt;&lt;/strong&gt; screen to the &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;webhooks&lt;/code&gt;&lt;/strong&gt; section.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/UoiHDbsIGzgVpCAR.png&quot; alt=&quot;enter image description here&quot; /&gt;&lt;/p&gt;
+&lt;h2 id=&quot;step-3-open-beeceptorcom-in-a-new-browser-window&quot;&gt;Step 3: Open beeceptor.com in a new browser window&lt;/h2&gt;
+
+&lt;p&gt;In a new browser window/tab, open &lt;a href=&quot;https://beeceptor.com/&quot;&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;https://beeceptor.com&lt;/code&gt;&lt;/strong&gt;&lt;/a&gt;. Beeceptor is a free tool to receive notifications. For what we are trying to do, you don’t even have to create a profile on Beeceptor!&lt;/p&gt;
+
+&lt;p&gt;Simply opening Beeceptor.com will show you a screen like below.
+&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/XjufGABchpTSGgyL.png&quot; alt=&quot;enter image description here&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;step-4-create-your-first-shopify-webhook&quot;&gt;Step 4: Create your first Shopify webhook!&lt;/h2&gt;
+
+&lt;p&gt;Go back to the Shopify webhooks screen which you reached at the end of Step 2. Click on the &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Create webhook&lt;/code&gt;&lt;/strong&gt; button. This should give you a screen as below.
+&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/vsqDwEPWRqBxUDkh.png&quot; alt=&quot;enter image description here&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Paste the Beeceptor link copied at the end of Step 3 into the URL text box. Then click &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Save webhook&lt;/code&gt;&lt;/strong&gt;. This should result in a screen like the below.
+&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/FnOMuPGjcezhfFpP.png&quot; alt=&quot;enter image description here&quot; /&gt;
+Of course, your webhook signature will be different from mine.&lt;/p&gt;
+
+&lt;h2 id=&quot;step-5---sending-your-first-notification&quot;&gt;Step 5 - Sending your first notification&lt;/h2&gt;
+
+&lt;p&gt;You are now ready to send your first Shopify notification!&lt;/p&gt;
+
+&lt;p&gt;Click on the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;**Send test notification**&lt;/code&gt; link. This posts a dummy notification to Beeceptor. Don’t worry - this is a test notification which does not affect your store in any way.&lt;/p&gt;
+
+&lt;p&gt;This is what your first test notification looks like on Beeceptor.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/rdFsJYfGPYyUGLez.png&quot; alt=&quot;enter image description here&quot; /&gt;&lt;/p&gt;
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;As you can see, Shopify has made it super easy to test webhooks and notifications.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-can-you-do-after-this&quot;&gt;What can you do after this?&lt;/h2&gt;
+
+&lt;p&gt;Now that you are starting to get comfortable with webhooks, the next logical step would be to move off Beeceptor to a middle tier (like &lt;a href=&quot;https://zeer0.com/&quot;&gt;Zeer0&lt;/a&gt;?) which supports attaching workflows to notifications.&lt;/p&gt;
+
+&lt;p&gt;I mean, notifications are useful only if you respond to them.&lt;/p&gt;
+
+&lt;h2 id=&quot;so-what-can-you-do-with-notifications&quot;&gt;So what can you do with notifications?&lt;/h2&gt;
+
+&lt;p&gt;Like I said in the &lt;a href=&quot;https://zeer0.com/blog/about-shopify-webhooks&quot;&gt;other blog on Shopify webhooks&lt;/a&gt;, Shopify has 23 different types of webhooks. You can choose to listen to any or all of them.&lt;/p&gt;
+
+&lt;p&gt;For example, if you want to add new customers to a CRM like Salesforce or Hubspot for better relationship management, you could use the &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Customer creation&lt;/code&gt;&lt;/strong&gt; webhook to link up Hubspot with Shopify.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/MzWfjylqvRAbpDZh.png&quot; alt=&quot;enter image description here&quot; /&gt;
+Or if you want to inform your inventory management team when the inventory level at a specific location dips too low, you can use the &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Inventory level update&lt;/code&gt;&lt;/strong&gt; webhook.&lt;/p&gt;
+
+&lt;p&gt;I would look at all the available webhooks and imagine different ways of using those webhooks to automate some or all of your Shopify workflows.&lt;/p&gt;
+
+&lt;p&gt;Happy automating!&lt;/p&gt;</content><author><name>Sai Ramachandran</name></author><summary type="html">Learn by example: Building your first Shopify webhook</summary></entry></feed>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Learn by example - Building your first Shopify webhook | Zeer0 Blog</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Learn by example - Building your first Shopify webhook" />
+<meta name="author" content="Sai Ramachandran" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Learn by example: Building your first Shopify webhook" />
+<meta property="og:description" content="Learn by example: Building your first Shopify webhook" />
+<link rel="canonical" href="https://zeer0.com/b/2019/08/01/building-your-first-shopify-webhook.html" />
+<meta property="og:url" content="https://zeer0.com/b/2019/08/01/building-your-first-shopify-webhook.html" />
+<meta property="og:site_name" content="Zeer0 Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-08-01T11:14:39+05:30" />
+<script type="application/ld+json">
+{"headline":"Learn by example - Building your first Shopify webhook","dateModified":"2019-08-01T11:14:39+05:30","datePublished":"2019-08-01T11:14:39+05:30","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://zeer0.com/b/2019/08/01/building-your-first-shopify-webhook.html"},"url":"https://zeer0.com/b/2019/08/01/building-your-first-shopify-webhook.html","author":{"@type":"Person","name":"Sai Ramachandran"},"description":"Learn by example: Building your first Shopify webhook","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/b/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zeer0.com/b/feed.xml" title="Zeer0 Blog" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/b/">Zeer0 Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/b/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Learn by example - Building your first Shopify webhook</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-08-01T11:14:39+05:30" itemprop="datePublished">Aug 1, 2019
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">Sai Ramachandran</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="learn-by-example-building-your-first-shopify-webhook">Learn by example: Building your first Shopify webhook</h2>
+
+<p><img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/WaUIhoXgxHcmYItt.png?w=880" alt="enter image description here" /></p>
+<h2 id="learn-how-to-create-your-first-shopify-webhook">Learn how to create your first Shopify Webhook</h2>
+
+<h3 id="in-5-easy-steps-with-screenshots-and-without-writing-a-single-line-of-code">…in 5 easy steps with screenshots and without writing a single line of code!</h3>
+
+<p>In this tutorial, I will show you how to create a Shopify webhook and post your first notification from your Shopify store to a webhook listener.</p>
+
+<p>If you are more of a video kinda person, here’s a <a href="https://www.youtube.com/watch?v=AYjy8E1tsbM">Youtube video</a> which summarizes this blog post.</p>
+
+<p><em>[If you want to learn why Shopify webhooks are so useful, you can read</em> <a href="https://zeer0.com/blog/about-shopify-webhooks"><em>this post</em></a><em>. It gives even the most non-technical layuser an overview of webhooks and their usefulness.]</em></p>
+
+<h2 id="step-1-log-in-to-your-shopify-stores-admin-dashboard">Step 1: Log in to your Shopify store’s admin dashboard</h2>
+
+<p>The first thing you need to do is to log in to your Shopify store’s admin screen.</p>
+
+<p>In my case, I log in to <code class="language-plaintext highlighter-rouge">https://chicshop-dev-store.myshopify.com</code><strong><code class="language-plaintext highlighter-rouge">/admin</code></strong>. Once you log in, you should be presented with a screen which looks something like this.</p>
+
+<p><img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/qgqAsqWiMLmUeVHQ.png" alt="enter image description here" /></p>
+<h2 id="step-2-head-to-the-notifications-screen">Step 2: Head to the Notifications screen</h2>
+
+<p>Click Settings, then click on the Notifications link in the middle of the screen. See the screenshot below if you’re lost.
+<img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/UArZNviRTjXjtyPO.png" alt="enter image description here" />
+Your notifications screen should look like this.</p>
+
+<p><img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/eNgrlKVRDaoRvuQT.png" alt="enter image description here" />
+Scroll to the bottom of the Notifications screen to a section titled Webhooks which looks like this. To summarize, you reached the webhooks section by</p>
+
+<ol>
+  <li>Logging in to your store’s <strong><code class="language-plaintext highlighter-rouge">/admin</code></strong> dashboard</li>
+  <li>Clicking on <strong><code class="language-plaintext highlighter-rouge">Settings</code></strong> on the bottom left of the screen</li>
+  <li>Clicking on <strong><code class="language-plaintext highlighter-rouge">Notifications</code></strong> in the middle of the <strong><code class="language-plaintext highlighter-rouge">Settings</code></strong> screen</li>
+  <li>Then scrolling to the bottom of the <strong><code class="language-plaintext highlighter-rouge">Notifications</code></strong> screen to the <strong><code class="language-plaintext highlighter-rouge">webhooks</code></strong> section.</li>
+</ol>
+
+<p><img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/UoiHDbsIGzgVpCAR.png" alt="enter image description here" /></p>
+<h2 id="step-3-open-beeceptorcom-in-a-new-browser-window">Step 3: Open beeceptor.com in a new browser window</h2>
+
+<p>In a new browser window/tab, open <a href="https://beeceptor.com/"><strong><code class="language-plaintext highlighter-rouge">https://beeceptor.com</code></strong></a>. Beeceptor is a free tool to receive notifications. For what we are trying to do, you don’t even have to create a profile on Beeceptor!</p>
+
+<p>Simply opening Beeceptor.com will show you a screen like below.
+<img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/XjufGABchpTSGgyL.png" alt="enter image description here" /></p>
+
+<h2 id="step-4-create-your-first-shopify-webhook">Step 4: Create your first Shopify webhook!</h2>
+
+<p>Go back to the Shopify webhooks screen which you reached at the end of Step 2. Click on the <strong><code class="language-plaintext highlighter-rouge">Create webhook</code></strong> button. This should give you a screen as below.
+<img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/vsqDwEPWRqBxUDkh.png" alt="enter image description here" /></p>
+
+<p>Paste the Beeceptor link copied at the end of Step 3 into the URL text box. Then click <strong><code class="language-plaintext highlighter-rouge">Save webhook</code></strong>. This should result in a screen like the below.
+<img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/FnOMuPGjcezhfFpP.png" alt="enter image description here" />
+Of course, your webhook signature will be different from mine.</p>
+
+<h2 id="step-5---sending-your-first-notification">Step 5 - Sending your first notification</h2>
+
+<p>You are now ready to send your first Shopify notification!</p>
+
+<p>Click on the <code class="language-plaintext highlighter-rouge">**Send test notification**</code> link. This posts a dummy notification to Beeceptor. Don’t worry - this is a test notification which does not affect your store in any way.</p>
+
+<p>This is what your first test notification looks like on Beeceptor.</p>
+
+<p><img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/rdFsJYfGPYyUGLez.png" alt="enter image description here" /></p>
+<h1 id="conclusion">Conclusion</h1>
+
+<p>As you can see, Shopify has made it super easy to test webhooks and notifications.</p>
+
+<h2 id="what-can-you-do-after-this">What can you do after this?</h2>
+
+<p>Now that you are starting to get comfortable with webhooks, the next logical step would be to move off Beeceptor to a middle tier (like <a href="https://zeer0.com/">Zeer0</a>?) which supports attaching workflows to notifications.</p>
+
+<p>I mean, notifications are useful only if you respond to them.</p>
+
+<h2 id="so-what-can-you-do-with-notifications">So what can you do with notifications?</h2>
+
+<p>Like I said in the <a href="https://zeer0.com/blog/about-shopify-webhooks">other blog on Shopify webhooks</a>, Shopify has 23 different types of webhooks. You can choose to listen to any or all of them.</p>
+
+<p>For example, if you want to add new customers to a CRM like Salesforce or Hubspot for better relationship management, you could use the <strong><code class="language-plaintext highlighter-rouge">Customer creation</code></strong> webhook to link up Hubspot with Shopify.</p>
+
+<p><img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/MzWfjylqvRAbpDZh.png" alt="enter image description here" />
+Or if you want to inform your inventory management team when the inventory level at a specific location dips too low, you can use the <strong><code class="language-plaintext highlighter-rouge">Inventory level update</code></strong> webhook.</p>
+
+<p>I would look at all the available webhooks and imagine different ways of using those webhooks to automate some or all of your Shopify workflows.</p>
+
+<p>Happy automating!</p>
+
+  </div><a class="u-url" href="/b/2019/08/01/building-your-first-shopify-webhook.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/b/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Zeer0 Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Zeer0 Blog</li><li><a class="u-email" href="mailto:sai@zeer0.com">sai@zeer0.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/saiorama"><svg class="svg-icon"><use xlink:href="/b/assets/minima-social-icons.svg#github"></use></svg> <span class="username">saiorama</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>This blog uses Stackedit, an open-source markdown editor. I love it and I&#39;m sure you will too.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

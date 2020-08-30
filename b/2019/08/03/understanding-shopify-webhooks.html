@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>About Shopify Webhooks | Zeer0 Blog</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="About Shopify Webhooks" />
+<meta name="author" content="Sai Ramachandran" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="What is a webhook anyway?" />
+<meta property="og:description" content="What is a webhook anyway?" />
+<link rel="canonical" href="https://zeer0.com/b/2019/08/03/understanding-shopify-webhooks.html" />
+<meta property="og:url" content="https://zeer0.com/b/2019/08/03/understanding-shopify-webhooks.html" />
+<meta property="og:site_name" content="Zeer0 Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-08-03T12:06:39+05:30" />
+<script type="application/ld+json">
+{"headline":"About Shopify Webhooks","dateModified":"2019-08-03T12:06:39+05:30","datePublished":"2019-08-03T12:06:39+05:30","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://zeer0.com/b/2019/08/03/understanding-shopify-webhooks.html"},"url":"https://zeer0.com/b/2019/08/03/understanding-shopify-webhooks.html","author":{"@type":"Person","name":"Sai Ramachandran"},"description":"What is a webhook anyway?","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/b/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://zeer0.com/b/feed.xml" title="Zeer0 Blog" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/b/">Zeer0 Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/b/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">About Shopify Webhooks</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-08-03T12:06:39+05:30" itemprop="datePublished">Aug 3, 2019
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">Sai Ramachandran</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="what-is-a-webhook-anyway">What is a webhook anyway?</h1>
+
+<p>Before we start discussing webhooks, I want to go over a related concept - the client/server architecture.</p>
+
+<p><img src="https://landen.imgix.net/blog_wmVVKGKttSVkmWGQ/assets/hYBMlbzIzMvncWEe.jpg?w=880" alt="enter image description here" /></p>
+
+<h1 id="offering-a-service">Offering a service</h1>
+
+<p>So what is the client/server architecture? A server is something offering a service. For example, a dentist’s office is a server providing services like teeth cleaning, extractions, selling you Invisalign, and more.</p>
+
+<p>If you think abstractly enough, you can classify as a lot of things as servers. A lawyer? Just a server for filing lawsuits and to watch out for you in court. A public transit system? A service aimed at getting you from point A to point B.</p>
+
+<h1 id="client-someone-using-a-service">Client: Someone using a service</h1>
+
+<p>A client is therefore someone who uses a service. If I were to have dental issues, I could choose to be a client of the dentist “server”.</p>
+
+<h2 id="a-matter-of-perspective">A matter of perspective</h2>
+
+<p>This is not to say that a client is usually a person and a server is usually a business. Far from it. Who is a client and who is a server in a relationship is merely a matter of perspective. To someone wishing to sell you (say) insurance products, you are the server. You serve out insurance premiums to them and they provide insurance coverage to you.</p>
+
+<h2 id="server-a-more-nuanced-definition">Server: A more nuanced definition</h2>
+
+<p>If you think even more abstractly about client/servers, it should be apparent that a server has something a client wants. It could be skills, money, information, power - all sorts of things can make you a server.</p>
+
+<h1 id="how-do-clients-and-servers-interact">How do clients and servers interact?</h1>
+
+<p>Now that we understand client/server architectures, let’s talk about the different ways clients and servers can interact.</p>
+
+<p>Say you have applied to the Stanford MBA program. Every morning you open your email to find out your admission status. Did you get in? Will you soon be rubbing shoulders with the best of breed entrepreneurs of the world?</p>
+
+<h2 id="polling">Polling</h2>
+
+<p>This is type of interaction between the <em>client</em> - you - and the <em>server</em> - Stanford, which controls your admissions - is called <strong>polling</strong>. You periodically ask the server if they have new information about your admission status.</p>
+
+<p>Eventually, the big email from Stanford comes. You’re in! You’ve made it to the big leagues. Go YOU!</p>
+
+<h2 id="notificationswebhooks">Notifications/Webhooks</h2>
+
+<p>Now the roles are reversed. You no longer worry about hearing from Stanford. You go about your day without a care in the world knowing that Stanford’s admissions office will call you when need your first semester fees or student loan application on file.</p>
+
+<p>This is state of affairs is analogous to a <strong>webhook</strong> or a <strong>notification</strong>.</p>
+
+<p>A webhook is a way for a server to tell the client to take an action. Of course, the client can choose to ignore the message from the server - like you would if your backup MBA program from the community college next door asked you to fill their forms now that you’re Stanford bound.</p>
+
+<p>It is useful to think of webhooks like the push notification you get on your phone but instead of a push notification sent to an app on your phone, it is directly sent by the server to a listener working on your behalf.</p>
+
+<h1 id="why-webhooks">Why webhooks?</h1>
+
+<p>So why use webhooks at all?</p>
+
+<p>Think about <strong>polling</strong> for a second. You, the client, ask the server if it has anything for you. The server has to check its records, determine that it doesn’t have anything for you, and then respond to you. Both you and the server are doing work in this case. Now multiply this amount of work by requests from all the clients of a server. Imagine the amount of wasted work.</p>
+
+<p>On the other hand, when it comes to webhooks, you only start working when the server tells you that it has something for you. Until then, you’re that cool kid who is Stanford bound and burning it up with friends in the intervening months.</p>
+
+<p>From a workload perspective, webhooks are much less wasteful. Both you and the server work just once - the server tells you that it has something for you and you respond to that notification. Much better than haranguing the server for updates, don’t you think?</p>
+
+<p>Shopify provides both ways of interacting with them. You can keep bugging them for updates or you can wait for them to tell you when something happens.</p>
+
+<h3 id="webhooks-reduce-the-load-on-both-client-and-server">Webhooks reduce the load on both client and server</h3>
+
+<p>Therefore, the biggest argument in favor of webhooks is the reduced workload on both parties. The client and the server only talk to each other when necessary. Otherwise, they’re off doing their own thing.</p>
+
+<h3 id="webhooks-make-the-both-the-client-and-server-a-little-more-secure">Webhooks make the both the client and server a little more secure</h3>
+
+<p>Webhooks also provide an additional layer of security to both the server and the client. Servers have to open only a single point of entry - namely a way for clients to tell them how the server can reach them. On the flip side, the client too only opens a single point of entry - a place to receive notifications from the server.</p>
+
+<p>If ever they want to stop talking to each - maybe because they no longer need to or because one party has been hacked - all they need to do is to stop using that webhook.</p>
+
+<h1 id="how-to-create-webhooks">How to create webhooks?</h1>
+
+<p>This is a great question. It isn’t all peaches and cream in the world of webhooks. When it comes to polling, the client can poll the server using a simple mobile phone app.</p>
+
+<p>In the case of webhooks, the server needs to know where to send a notification which implies that the client will have to be reachable via a single location. To go back to the Stanford story, this is analogous to you giving Stanford with a working phone number where you would be reachable.</p>
+
+<h2 id="webhooks-in-the-case-of-shopify">Webhooks in the case of Shopify</h2>
+
+<p>When it comes to Shopify webhooks, this requirement that clients provide a permanent reachable address isn’t trivial to implement.</p>
+
+<p>This is actually a major downside of webhooks.</p>
+
+<p>You would have to create an entire infrastructure with a public URL in order to receive notifications from Shopify.</p>
+
+<h1 id="what-notifications-does-shopify-provide">What notifications does Shopify provide?</h1>
+
+<p>In any case, assuming you can use a third party service (maybe something like <a href="https://zeer0.com/">Zeer0</a>?) to receive notifications from Shopify, what kinds of notifications does it provide?</p>
+
+<p><a href="https://help.shopify.com/en/api/reference/events/webhook">Shopify has 23 categories of notifications</a> ranging from creation of orders to fulfillments to customers requesting a refund.</p>
+
+<p>What you do with them is up to you. You could choose to ignore them, respond to them, or forward them to a downstream process.</p>
+
+<h1 id="now-what">Now what?</h1>
+
+<p>I hope this brief overview of Webhooks (notifications) has given you a clearer understanding of what they actually are.</p>
+
+<p>In brief, they are a safer way of listening to events happening on your Shopify store and responding to them in any way you please.</p>
+
+<p>Businesses could use notifications to create beautiful invoices, manage their VATs or GST, tell fulfillment centers to prepare an outbound package, collect metrics about sales, or send hand written Thank You notes to new customers. The sky is the limit on what you can do with notifications.</p>
+
+<blockquote>
+  <p>Written with <a href="https://stackedit.io/">StackEdit</a>.</p>
+</blockquote>
+
+
+  </div><a class="u-url" href="/b/2019/08/03/understanding-shopify-webhooks.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/b/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Zeer0 Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Zeer0 Blog</li><li><a class="u-email" href="mailto:sai@zeer0.com">sai@zeer0.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/saiorama"><svg class="svg-icon"><use xlink:href="/b/assets/minima-social-icons.svg#github"></use></svg> <span class="username">saiorama</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>This blog uses Stackedit, an open-source markdown editor. I love it and I&#39;m sure you will too.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
