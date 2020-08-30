@@ -22,8 +22,8 @@ title: Zeer0 Blog
 email: sai@zeer0.com
 description: >- # this means to ignore newlines until "baseurl:"
   This blog uses Stackedit, an open-source markdown editor. I love it and I'm sure you will too.
-baseurl: "/b" # the subpath of your site, e.g. /blog
-url: "https://zeer0.com" # the base hostname & protocol for your site, e.g. http://example.com
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://saiorama.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  saiorama
 destination: b
 # Build settings
@@ -33,7 +33,7 @@ plugins:
   - jekyll-feed
 
 show_excerpts: true
-source: _posts
+
 include:
    - _posts/
 
