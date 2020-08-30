@@ -28,7 +28,7 @@ github_username:  saiorama
 destination: b
 # Build settings
 # theme: minima
-theme: minima
+theme: jekyll-theme-minimal
 plugins:
   - jekyll-feed
 
