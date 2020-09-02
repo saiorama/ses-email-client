@@ -106,17 +106,14 @@
               <div class="container">
                 <div class="field is-block">
                   <div class="control">
-                    <input class="input" type="text" placeholder="AWS Secret Access " v-model="secretAccessKey">
+                    <input class="input" type="password" placeholder="AWS Access Key Id " v-model="accessKeyId">
+                    <sub v-if="accessKeyId">***{{accessKeyId.substring(accessKeyId.length - 5)}}</sub>
                   </div>
                 </div>
                 <div class="field is-block">
                   <div class="control">
-                    <div class="select is-primary" v-if="this.sesRegions">
-                      <select v-model="region">
-                        <option disabled value="">Select AWS region</option>
-                        <option v-for="sesRegion in this.sesRegions.regions" v-if="sesRegion.visible" :selected="sesRegion.id === region" :value="sesRegion.id">{{sesRegion.name}} - {{sesRegion.location}}</option>
-                      </select>
-                    </div>
+                    <input class="input" type="password" placeholder="AWS Secret Access " v-model="secretAccessKey">
+                    <sub v-if="secretAccessKey">***{{secretAccessKey.substring(secretAccessKey.length - 5)}}</sub>
                   </div>
                 </div>
                 <div class="field is-block">
