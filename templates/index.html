@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title>SES Template Display</title>
-    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <!-- <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet"> -->
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.738.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css" integrity="sha256-aPeK/N8IHpHsvPBCf49iVKMdusfobKo2oxF8lRruWJg=" crossorigin="anonymous">
@@ -25,68 +25,54 @@
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
     <div id="app">
-      <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+      <nav class="container navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-          <!-- <a class="navbar-item is-small title" href="/"><img width="112" height="28" src="../images/logo-shape.svg" alt="our logo"></a> -->
-          <a class="navbar-item is-small title" href="/"><img width="112" height="28" src="../images/zeer0.png" alt="our logo"></a>
+          <a class="navbar-item is-small title" href="/"><img width="112" height="28" src="../images/zeer0.png" alt="Zeer0"></a>
+          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" click="awsModalIsVisible = true">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
         </div>
-        <div class="navbar-start">
-          <div class="navbar-item">
-            <div class="field">
-              <div class="control">
-                <input class="input" type="text" placeholder="AWS Key Id" v-model="accessKeyId">
-              </div>
+        <div class="navbar-menu">
+          <div class="navbar-start is-hidden">
+          </div>
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <button class="button is-medium is-primary is-outlined" @click="awsModalIsVisible = true">Add AWS Credentials</button>
             </div>
-          </div>
-          <div class="navbar-item">
-            <div class="field">
-              <div class="control">
-                <input class="input" type="text" placeholder="AWS Secret Access " v-model="secretAccessKey">
-              </div>
-            </div>
-          </div>
-          <div class="navbar-item">
-            <div class="field">
-              <div class="control">
-                <div class="select is-primary" v-if="this.sesRegions">
-                  <select v-model="region">
-                    <option disabled value="">Select AWS region</option>
-                    <option v-for="sesRegion in this.sesRegions.regions" v-if="sesRegion.visible" :selected="sesRegion.id === region" :value="sesRegion.id">{{sesRegion.name}} - {{sesRegion.location}}</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="navbar-item">
-            <label class="checkbox">
-              <input type="checkbox" v-model="dataMustBeSavedLocally"> Remember key, secret, and region
-            </label>
-          </div>
-          <div class="navbar-item">
-            <button class="button is-medium is-primary is-outlined" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates">Get my SES templates</button>
           </div>
         </div>
       </nav>
-
-      <div class="columns">
-        <div class="column is-one-quarter notification box" v-if="templatesLength > 0">
-          <div class="container">
-            <div class="columns is-mobile content">
-              <div class="column">
-                <div v-if="templatesLength === 0">SES templates will appear here...</div>
-                <div v-else>
-                  <button v-for="templateData in this.templates.TemplatesMetadata" @click="getTemplate(templateData.Name)"><a :class="templateData.Name === currentTemplateName && templateIsLoading? 'is-loading' :''" class="button">{{templateData.Name}}</a></button>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div class="container has-text-centered">
+        <div v-if="templatesLength === 0">SES templates will appear here...</div>
+        <div v-else>
+          <span v-for="templateData in this.templates.TemplatesMetadata" @click="getTemplate(templateData.Name)"><a :class="templateData.Name === currentTemplateName && templateIsLoading? 'is-loading' :''" class="button">{{templateData.Name}}</a></span>
         </div>
-        <div class="column" v-if="templatesLength > 0">
-          <div class="notification text-center subtitle is-size-4 has-text-primary-dark"><span>{{currentTemplateName}}</span></div>
-          <div class="text-center" v-if="!iframeSrc"><span>Template will appear here...</span></div>
+        <div class="columns is-centered mt-2" v-if="templatesLength > 0">
+          <div class="column"></div>
+          <div class="column">
+            <button class="button is-medium is-primary is-outlined is-block" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false">Load More templates</button>
+          </div>
+          <div class="column"></div>
+        </div>
+      </div>
+      <div class="modal" :class="currentTemplateModalIsVisible ? 'is-active':''">
+        <div class="modal-background" @click="currentTemplateModalIsVisible = false"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title is-large">{{currentTemplateName}}</p>
+            <button class="modal-close is-large" aria-label="close" @click="currentTemplateModalIsVisible = false"></button>
+          </header>
+          <section class="modal-card-body">
+            <div class="text-center" v-if="!iframeSrc"><span>Template will appear here...</span></div>
             <div v-else>
               <iframe frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="iframeSrc"></iframe>
             </div>
+          </section>
+          <footer class="modal-card-foot">
+            <button class="button is-medium is-primary is-outlined" @click="currentTemplateModalIsVisible = false">Okay!</button>
+          </footer>
         </div>
       </div>
       <div class="modal" :class="privacyPolicyModalIsVisible ? 'is-active':''">
@@ -108,6 +94,54 @@
           </footer>
         </div>
       </div>
+      <div class="modal" :class="awsModalIsVisible ? 'is-active':''">
+        <div class="modal-background" @click="awsModalIsVisible = false"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title is-large">Your AWS Credentials</p>
+            <button class="modal-close is-large" aria-label="close" @click="awsModalIsVisible = false"></button>
+          </header>
+          <section class="modal-card-body">
+            <div class="content is-medium">
+              <div class="container">
+                <div class="field is-block">
+                  <div class="control">
+                    <input class="input" type="text" placeholder="AWS Secret Access " v-model="secretAccessKey">
+                  </div>
+                </div>
+                <div class="field is-block">
+                  <div class="control">
+                    <div class="select is-primary" v-if="this.sesRegions">
+                      <select v-model="region">
+                        <option disabled value="">Select AWS region</option>
+                        <option v-for="sesRegion in this.sesRegions.regions" v-if="sesRegion.visible" :selected="sesRegion.id === region" :value="sesRegion.id">{{sesRegion.name}} - {{sesRegion.location}}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="field is-block">
+                  <div class="control">
+                    <div class="select is-primary" v-if="this.sesRegions">
+                      <select v-model="region">
+                        <option disabled value="">Select AWS region</option>
+                        <option v-for="sesRegion in this.sesRegions.regions" v-if="sesRegion.visible" :selected="sesRegion.id === region" :value="sesRegion.id">{{sesRegion.name}} - {{sesRegion.location}}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="is-block">
+                  <label class="checkbox">
+                    <input type="checkbox" v-model="dataMustBeSavedLocally"> Remember key, secret, and region
+                  </label>
+                </div>
+              </div>
+            </div>
+          </section>
+          <footer class="modal-card-foot">
+            <button class="button is-medium is-primary is-outlined is-block" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false">Get my SES templates</button>
+          </footer>
+        </div>
+      </div>
       <footer class="footer">
         <div class="content has-text-centered">
           <div v-if="templatesLength === 0">
@@ -115,8 +149,10 @@
               <strong>Welcome!</strong> Enter your AWS Key, Secret, and select your AWS SES Region to see your SES Templates.
             </p>
           </div>
-          <p>Your AWS Key, Secret, and region are never transmitted to our server. Here is the rest of our very short <a @click="privacyPolicyModalIsVisible = true">privacy policy</a>.
-          <p>
+          <p>Your AWS Key, Secret, and region are never transmitted to our server. Here is the rest of our very short <a @click="privacyPolicyModalIsVisible = true">privacy policy</a>.</p>
+          <p class="is-hidden-tablet">
+            This page looks much better on a desktop. You can use it here but it isn't ideal.
+          </p>
         </div>
       </footer>
     </div>
@@ -140,6 +176,8 @@
         currentTemplateName: "Template name will appear here...",
         dataMustBeSavedLocally: false,
         privacyPolicyModalIsVisible: false,
+        awsModalIsVisible: false,
+        currentTemplateModalIsVisible: false,
       },
       watch: {
         accessKeyId: function(n, o){
@@ -176,7 +214,7 @@
         }
       },
       methods: {
-        showPrivacyPolicyModal: function(){
+        showPrivacyPolicyModal2: function(){
           this.privacyPolicyModalIsVisible = true;
         },
         updateLocalData: function(){
@@ -220,6 +258,7 @@
                 .then(template => {
                   const blob = new Blob([template.Template.HtmlPart], { type: 'text/html' });
                   vm.iframeSrc = URL.createObjectURL(blob);
+                  vm.currentTemplateModalIsVisible = true;
                   vm.templateIsLoading = false;
                 })
             }
