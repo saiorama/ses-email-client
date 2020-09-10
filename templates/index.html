@@ -57,7 +57,7 @@
           <div class="column"></div>
         </div>
       </div>
-      <div class="modal" :class="currentTemplateModalIsVisible ? 'is-active':''">
+      <div class="modal"  id="currentTemplateModal" :class="currentTemplateModalIsVisible ? 'is-active':''">
         <div class="modal-background" @click="currentTemplateModalIsVisible = false"></div>
         <div class="modal-card">
           <header class="modal-card-head">
@@ -75,7 +75,7 @@
           </footer>
         </div>
       </div>
-      <div class="modal" :class="privacyPolicyModalIsVisible ? 'is-active':''">
+      <div class="modal" id="privacyModal" :class="privacyPolicyModalIsVisible ? 'is-active':''">
         <div class="modal-background" @click="privacyPolicyModalIsVisible = false"></div>
         <div class="modal-card">
           <header class="modal-card-head">
@@ -94,7 +94,7 @@
           </footer>
         </div>
       </div>
-      <div class="modal" :class="awsModalIsVisible ? 'is-active':''">
+      <div class="modal" id="awsCredentialsModal" :class="awsModalIsVisible ? 'is-active':''">
         <div class="modal-background" @click="awsModalIsVisible = false"></div>
         <div class="modal-card">
           <header class="modal-card-head">
@@ -135,7 +135,7 @@
             </div>
           </section>
           <footer class="modal-card-foot">
-            <button class="button is-medium is-primary is-outlined is-block" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false">Get my SES templates</button>
+            <button id="btnGetSesTemplates" class="button is-medium is-primary is-outlined is-block" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false">Get my SES templates</button>
           </footer>
         </div>
       </div>
