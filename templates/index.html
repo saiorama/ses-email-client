@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="favicon.ico">
+    <link rel="icon" href="/favicon.ico">
     <title>SES Template Display</title>
     <!-- <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet"> -->
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.738.0.min.js"></script>
@@ -41,8 +41,8 @@
           </div>
           <div class="navbar-end">
             <div class="navbar-item">
-              <button id="btnGetSesTemplates" class="button is-normal is-info is-block mr-4 ml-4" :class="{'is-loading':templatesAreLoading, 'is-hidden': buttonShouldBeDisabled }" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false"><span class="icon"><i class="fas fa-sync"></i></span><span>{{ buttonShouldBeDisabled ? "All templates downloaded" : (templatesLength > 0 ? "Get More..." :"Get Templates")}}</span></button>
-              <button class="button is-normal is-primary is-outlined" @click="awsModalIsVisible = true">{{!awsCredentialsAreAvailable ? "Add AWS Credentials" : "Change AWS Credentials"}}</button>
+              <button id="btnGetSesTemplates" class="button is-normal is-info is-block mr-4 ml-4" :class="{'is-loading':templatesAreLoading, 'is-hidden': buttonShouldBeDisabled }" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false"><span class="icon"><i class="fas fa-sync"></i></span><span>{{ (templatesLength > 0) ? (buttonShouldBeDisabled ? "All templates downloaded" : "Get More...") :"Get Templates"}}</span></button>
+              <button class="button is-normal is-primary is-outlined" @click="awsModalIsVisible = true">{{!this.awsCredentialsAreAvailable() ? "Add AWS Credentials" : "Change AWS Credentials"}}</button>
             </div>
           </div>
         </div>
@@ -131,7 +131,7 @@
             </div>
           </section>
           <footer class="modal-card-foot">
-            <button id="btnGetSesTemplates" class="button is-normal is-info is-block" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false"><span class="icon"><i class="fas fa-sync"></i></span><span>{{ buttonShouldBeDisabled ? "All templates downloaded" : (templatesLength > 0 ? "Get More..." :"Get Templates")}}</span></button>
+            <button id="btnGetSesTemplates" class="button is-normal is-info is-block" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false"><span class="icon"><i class="fas fa-sync"></i></span><span>{{ (templatesLength > 0) ? (buttonShouldBeDisabled ? "All templates downloaded" : "Get More...") :"Get Templates"}}</span></button>
           </footer>
         </div>
       </div>
