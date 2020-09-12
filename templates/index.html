@@ -41,8 +41,8 @@
           </div>
           <div class="navbar-end">
             <div class="navbar-item">
-              <button id="btnGetSesTemplates" class="button is-medium is-info is-block mr-4 ml-4" :class="{'is-loading':templatesAreLoading, 'is-hidden': buttonShouldBeDisabled }" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false"><span class="icon"><i class="fas fa-sync"></i></span><span>{{ buttonShouldBeDisabled ? "All templates downloaded" : (templatesLength > 0 ? "Get More..." :"Get Templates")}}</span></button>
-              <button class="button is-medium is-primary is-outlined" @click="awsModalIsVisible = true">{{!awsCredentialsAreAvailable ? "Add AWS Credentials" : "Change AWS Credentials"}}</button>
+              <button id="btnGetSesTemplates" class="button is-normal is-info is-block mr-4 ml-4" :class="{'is-loading':templatesAreLoading, 'is-hidden': buttonShouldBeDisabled }" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false"><span class="icon"><i class="fas fa-sync"></i></span><span>{{ buttonShouldBeDisabled ? "All templates downloaded" : (templatesLength > 0 ? "Get More..." :"Get Templates")}}</span></button>
+              <button class="button is-normal is-primary is-outlined" @click="awsModalIsVisible = true">{{!awsCredentialsAreAvailable ? "Add AWS Credentials" : "Change AWS Credentials"}}</button>
             </div>
           </div>
         </div>
@@ -57,8 +57,8 @@
         <div class="modal-background" @click="currentTemplateModalIsVisible = false"></div>
         <div class="modal-card">
           <header class="modal-card-head">
-            <p class="modal-card-title is-large">{{currentTemplateName}}</p>
-            <button class="modal-close is-large" aria-label="close" @click="currentTemplateModalIsVisible = false"></button>
+            <p class="modal-card-title is-medium">{{currentTemplateName}}</p>
+            <button class="modal-close is-medium" aria-label="close" @click="currentTemplateModalIsVisible = false"></button>
           </header>
           <section class="modal-card-body">
             <div class="text-center" v-if="!iframeSrc"><span>Template will appear here...</span></div>
@@ -67,7 +67,7 @@
             </div>
           </section>
           <footer class="modal-card-foot">
-            <button class="button is-medium is-primary is-outlined" @click="currentTemplateModalIsVisible = false">Okay!</button>
+            <button class="button is-normal is-primary is-outlined" @click="currentTemplateModalIsVisible = false">Okay!</button>
           </footer>
         </div>
       </div>
@@ -75,8 +75,8 @@
         <div class="modal-background" @click="privacyPolicyModalIsVisible = false"></div>
         <div class="modal-card">
           <header class="modal-card-head">
-            <p class="modal-card-title is-large">Privacy Policy</p>
-            <button class="modal-close is-large" aria-label="close" @click="privacyPolicyModalIsVisible = false"></button>
+            <p class="modal-card-title is-medium">Privacy Policy</p>
+            <button class="modal-close is-medium" aria-label="close" @click="privacyPolicyModalIsVisible = false"></button>
           </header>
           <section class="modal-card-body">
             <div class="content is-medium">
@@ -86,7 +86,7 @@
             </div>
           </section>
           <footer class="modal-card-foot">
-            <button class="button is-medium is-primary is-outlined" @click="privacyPolicyModalIsVisible = false">Okay!</button>
+            <button class="button is-normal is-primary is-outlined" @click="privacyPolicyModalIsVisible = false">Okay!</button>
           </footer>
         </div>
       </div>
@@ -94,8 +94,8 @@
         <div class="modal-background" @click="awsModalIsVisible = false"></div>
         <div class="modal-card">
           <header class="modal-card-head">
-            <p class="modal-card-title is-large">Your AWS Credentials</p>
-            <button class="modal-close is-large" aria-label="close" @click="awsModalIsVisible = false"></button>
+            <p class="modal-card-title is-medium">Your AWS Credentials</p>
+            <button class="modal-close is-medium" aria-label="close" @click="awsModalIsVisible = false"></button>
           </header>
           <section class="modal-card-body">
             <div class="content is-medium">
@@ -131,7 +131,7 @@
             </div>
           </section>
           <footer class="modal-card-foot">
-            <button id="btnGetSesTemplates" class="button is-medium is-info is-block" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false"><span class="icon"><i class="fas fa-sync"></i></span><span>{{ buttonShouldBeDisabled ? "All templates downloaded" : (templatesLength > 0 ? "Get More..." :"Get Templates")}}</span></button>
+            <button id="btnGetSesTemplates" class="button is-normal is-info is-block" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false"><span class="icon"><i class="fas fa-sync"></i></span><span>{{ buttonShouldBeDisabled ? "All templates downloaded" : (templatesLength > 0 ? "Get More..." :"Get Templates")}}</span></button>
           </footer>
         </div>
       </div>
