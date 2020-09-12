@@ -57,13 +57,26 @@
         <div class="modal-background" @click="currentTemplateModalIsVisible = false"></div>
         <div class="modal-card" style="width: 70vw">
           <header class="modal-card-head">
-            <p class="modal-card-title is-medium">{{currentTemplateName}}</p>
+            <p class="modal-card-title is-medium">{{currentTemplateName}}</p><br>
             <button class="modal-close is-medium" aria-label="close" @click="currentTemplateModalIsVisible = false"></button>
           </header>
           <section class="modal-card-body">
-            <div class="text-center" v-if="!iframeSrc"><span>Template will appear here...</span></div>
+            <div class="text-center" v-if="!iframeSrcHtml"><span>Template will appear here...</span></div>
             <div v-else>
-              <iframe frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="iframeSrc"></iframe>
+              <div class="has-text-centered is-small">
+                Subject: {{currentTemplateSubject}}
+                <div class="control">
+                  <label class="radio">
+                    <input type="radio" name="view-template-type" v-model="viewTemplateType" value="html">
+                    HTML version
+                  </label>
+                  <label class="radio">
+                    <input type="radio" name="view-template-type" v-model="viewTemplateType" value="text-only">
+                    Text-only version
+                  </label>
+                </div>
+              </div>
+              <iframe frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="viewTemplateType == 'html' ? iframeSrcHtml : iframeSrcText"></iframe>
             </div>
           </section>
           <footer class="modal-card-foot">
@@ -167,10 +180,13 @@
         templateIsLoading: undefined,
         templatesAreLoading: undefined,
         currentTemplateName: "Template name will appear here...",
+        currentTemplateSubject: undefined,
+        currentTemplateText: undefined,
         dataMustBeSavedLocally: false,
         privacyPolicyModalIsVisible: false,
         awsModalIsVisible: false,
         currentTemplateModalIsVisible: false,
+        viewTemplateType: "html",
       },
       watch: {
         accessKeyId: function(n, o){
@@ -253,8 +269,11 @@
               vm.currentTemplateName = tName;
               await this.ses.getTemplate(params).promise()
                 .then(template => {
-                  const blob = new Blob([template.Template.HtmlPart], { type: 'text/html' });
-                  vm.iframeSrc = URL.createObjectURL(blob);
+                  const htmlBlob = new Blob([template.Template.HtmlPart], { type: 'text/html' });
+                  vm.iframeSrcHtml = URL.createObjectURL(htmlBlob);
+                  const textBlob = new Blob([template.Template.TextPart], { type: 'text/html' });
+                  vm.iframeSrcText = URL.createObjectURL(textBlob);
+                  vm.currentTemplateSubject = template.Template.SubjectPart;
                   vm.currentTemplateModalIsVisible = true;
                   vm.templateIsLoading = false;
                 })
