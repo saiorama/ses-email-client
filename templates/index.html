@@ -11,6 +11,8 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css" integrity="sha256-aPeK/N8IHpHsvPBCf49iVKMdusfobKo2oxF8lRruWJg=" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js" integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
+    <!-- font awesome 5 free -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -39,7 +41,8 @@
           </div>
           <div class="navbar-end">
             <div class="navbar-item">
-              <button class="button is-medium is-primary is-outlined" @click="awsModalIsVisible = true">Add AWS Credentials</button>
+              <button id="btnGetSesTemplates" class="button is-normal is-info is-block mr-4 ml-4" :class="{'is-loading':templatesAreLoading, 'is-hidden': buttonShouldBeDisabled }" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false"><span class="icon"><i class="fas fa-sync"></i></span><span>{{ buttonShouldBeDisabled ? "All templates downloaded" : (templatesLength > 0 ? "Get More..." :"Get Templates")}}</span></button>
+              <button class="button is-normal is-primary is-outlined" @click="awsModalIsVisible = true">{{!awsCredentialsAreAvailable ? "Add AWS Credentials" : "Change AWS Credentials"}}</button>
             </div>
           </div>
         </div>
@@ -49,20 +52,13 @@
         <div v-else>
           <span v-for="templateData in this.templates.TemplatesMetadata" @click="getTemplate(templateData.Name)"><a :class="templateData.Name === currentTemplateName && templateIsLoading? 'is-loading' :''" class="button">{{templateData.Name}}</a></span>
         </div>
-        <div class="columns is-centered mt-2" v-if="templatesLength > 0">
-          <div class="column"></div>
-          <div class="column">
-            <button class="button is-medium is-primary is-outlined is-block" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false">Load More templates</button>
-          </div>
-          <div class="column"></div>
-        </div>
       </div>
       <div class="modal"  id="currentTemplateModal" :class="currentTemplateModalIsVisible ? 'is-active':''">
         <div class="modal-background" @click="currentTemplateModalIsVisible = false"></div>
         <div class="modal-card">
           <header class="modal-card-head">
-            <p class="modal-card-title is-large">{{currentTemplateName}}</p>
-            <button class="modal-close is-large" aria-label="close" @click="currentTemplateModalIsVisible = false"></button>
+            <p class="modal-card-title is-medium">{{currentTemplateName}}</p>
+            <button class="modal-close is-medium" aria-label="close" @click="currentTemplateModalIsVisible = false"></button>
           </header>
           <section class="modal-card-body">
             <div class="text-center" v-if="!iframeSrc"><span>Template will appear here...</span></div>
@@ -71,7 +67,7 @@
             </div>
           </section>
           <footer class="modal-card-foot">
-            <button class="button is-medium is-primary is-outlined" @click="currentTemplateModalIsVisible = false">Okay!</button>
+            <button class="button is-normal is-primary is-outlined" @click="currentTemplateModalIsVisible = false">Okay!</button>
           </footer>
         </div>
       </div>
@@ -79,8 +75,8 @@
         <div class="modal-background" @click="privacyPolicyModalIsVisible = false"></div>
         <div class="modal-card">
           <header class="modal-card-head">
-            <p class="modal-card-title is-large">Privacy Policy</p>
-            <button class="modal-close is-large" aria-label="close" @click="privacyPolicyModalIsVisible = false"></button>
+            <p class="modal-card-title is-medium">Privacy Policy</p>
+            <button class="modal-close is-medium" aria-label="close" @click="privacyPolicyModalIsVisible = false"></button>
           </header>
           <section class="modal-card-body">
             <div class="content is-medium">
@@ -90,7 +86,7 @@
             </div>
           </section>
           <footer class="modal-card-foot">
-            <button class="button is-medium is-primary is-outlined" @click="privacyPolicyModalIsVisible = false">Okay!</button>
+            <button class="button is-normal is-primary is-outlined" @click="privacyPolicyModalIsVisible = false">Okay!</button>
           </footer>
         </div>
       </div>
@@ -98,8 +94,8 @@
         <div class="modal-background" @click="awsModalIsVisible = false"></div>
         <div class="modal-card">
           <header class="modal-card-head">
-            <p class="modal-card-title is-large">Your AWS Credentials</p>
-            <button class="modal-close is-large" aria-label="close" @click="awsModalIsVisible = false"></button>
+            <p class="modal-card-title is-medium">Your AWS Credentials</p>
+            <button class="modal-close is-medium" aria-label="close" @click="awsModalIsVisible = false"></button>
           </header>
           <section class="modal-card-body">
             <div class="content is-medium">
@@ -135,7 +131,7 @@
             </div>
           </section>
           <footer class="modal-card-foot">
-            <button id="btnGetSesTemplates" class="button is-medium is-primary is-outlined is-block" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false">Get my SES templates</button>
+            <button id="btnGetSesTemplates" class="button is-normal is-info is-block" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false"><span class="icon"><i class="fas fa-sync"></i></span><span>{{ buttonShouldBeDisabled ? "All templates downloaded" : (templatesLength > 0 ? "Get More..." :"Get Templates")}}</span></button>
           </footer>
         </div>
       </div>
@@ -207,10 +203,14 @@
           return this.templates && this.templates.TemplatesMetadata ? this.templates.TemplatesMetadata.length : 0;
         },
         buttonShouldBeDisabled: function(){
-          return this.nextTokenBecameNull || !(this.accessKeyId && this.secretAccessKey && this.region !== "");
-        }
+          return this.nextTokenBecameNull || !this.awsCredentialsAreAvailable();
+        },
       },
       methods: {
+        awsCredentialsAreAvailable: function(){
+          return this.dataMustBeSavedLocally ? localStorage.accessKeyId && localStorage.secretAccessKey && localStorage.region :
+          this.accessKeyId && this.secretAccessKey && this.region
+        },
         showPrivacyPolicyModal2: function(){
           this.privacyPolicyModalIsVisible = true;
         },
