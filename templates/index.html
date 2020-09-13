@@ -30,7 +30,7 @@
       <nav class="container navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
           <a class="navbar-item is-small title" href="/"><img width="112" height="28" src="../images/zeer0.png" alt="Zeer0"></a>
-          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" click="awsModalIsVisible = true">
+          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" @click="awsModalIsVisible = true">
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
@@ -144,8 +144,8 @@
             </div>
           </section>
           <footer class="modal-card-foot">
-            <button id="btnGetSesTemplates" class="button is-normal is-info is-block" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false"><span class="icon"><i class="fas fa-sync"></i></span><span>{{ (templatesLength > 0) ? (buttonShouldBeDisabled ? "All templates downloaded" : "Get More...") :"Get Templates"}}</span></button>
-            <button id="btnSetDemoDetails" class="button is-primary is-info is-block is-outlined" @click="setDemoDetails()"><span class="icon"><i class="fas fa-layer-group"></i></span><span>Use Demo AWS Credentials</span></button>
+            <button id="btnGetSesTemplates" class="button is-normal is-info is-block" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false;"><span class="icon"><i class="fas fa-sync"></i></span><span>{{ (templatesLength > 0) ? (buttonShouldBeDisabled ? "All templates downloaded" : "Get More...") :"Get Templates"}}</span></button>
+            <button id="btnSetDemoDetails" class="button is-primary is-info is-block is-outlined" @click="setDemoDetails(); awsModalIsVisible = false; getTemplates();"> <span class="icon"><i class="fas fa-layer-group"></i></span><span>Use Demo Keys</span></button>
           </footer>
         </div>
       </div>
