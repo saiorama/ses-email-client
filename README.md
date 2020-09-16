@@ -1,10 +1,18 @@
+﻿# SES Templates
+In addition to giving you unlimited email ids on your own domain backed by the world class AWS ecosystem, I have also added support for a neat little feature which lets you view your SES templates directly in the browser.
+
+The code is located inside /templates. Here are some screenshots -
+![SES templates home page](https://raw.githubusercontent.com/saiorama/ses-email-client/feature/1/images/102-240x494.png)
+
+![AWS Credentials Modal](https://raw.githubusercontent.com/saiorama/ses-email-client/feature/1/images/103-240x494.png)
+![Downloaded templates](https://raw.githubusercontent.com/saiorama/ses-email-client/feature/1/images/104-240x494.png)
+
 # SES Email Client
 
 Since AWS SES does not natively provide an email client to read emails neither does it provide IMAP which would let you use a mail client like Thunderbird, I decided to spin up my own email reader just for SES.
 
 *A note on verbiage: below you will find references to **emails*, *email files**, and **eml files**. An email is basically a text file sitting somewhere. Therefore, all three words refer to the what you would commonly call an email. I have tried to minimize confusion where possible but if you find yourself not understanding some of the content in this readme, feel free to raise an issue.*
-
-![](docs/email-client.png)
+![enter image description here](https://raw.githubusercontent.com/saiorama/ses-email-client/master/docs/email-client.png)
 
 ## The Problem
 
@@ -74,3 +82,7 @@ This client uses Foundation CSS, axios, and Vuejs to
 4. retrieve the content of each email
 5. display email subject on the screen
 6. when the user clicks on the an email, show the email content
+
+
+
+> Written with [StackEdit](https://stackedit.io/).
