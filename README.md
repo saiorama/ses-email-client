@@ -2,9 +2,11 @@
 In addition to giving you unlimited email ids on your own domain backed by the world class AWS ecosystem, I have also added support for a neat little feature which lets you view your SES templates directly in the browser.
 
 The code is located inside /templates. Here are some screenshots -
+
 ![SES templates home page](https://raw.githubusercontent.com/saiorama/ses-email-client/feature/1/images/102-240x494.png)
 
 ![AWS Credentials Modal](https://raw.githubusercontent.com/saiorama/ses-email-client/feature/1/images/103-240x494.png)
+
 ![Downloaded templates](https://raw.githubusercontent.com/saiorama/ses-email-client/feature/1/images/104-240x494.png)
 
 # SES Email Client
