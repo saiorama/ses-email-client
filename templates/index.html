@@ -7,7 +7,7 @@
     <link rel="icon" href="/favicon.ico">
     <title>SES Template Display</title>
     <!-- <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet"> -->
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.738.0.min.js"></script>
+    <script src="/js/aws-sdk-2.756.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css" integrity="sha256-aPeK/N8IHpHsvPBCf49iVKMdusfobKo2oxF8lRruWJg=" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js" integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
@@ -46,17 +46,28 @@
           <div class="navbar-start is-hidden">
           </div>
           <div class="navbar-end">
+            <div class="navbar-item has-dropdown is-hoverable">
+              <a class="navbar-link">
+                More
+              </a>
+
+              <div class="navbar-dropdown">
+                <a class="navbar-item" @click="sesStatsModalIsVisible = true; getSesStats();">
+                  Email Stats
+                </a>
+              </div>
+            </div>
+          </div>
             <div class="navbar-item">
               <button id="btnGetSesTemplates" class="button is-normal is-info is-block mr-4 ml-4" :class="{'is-loading':templatesAreLoading, 'is-hidden': buttonShouldBeDisabled }" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false"><span class="icon"><i class="fas fa-sync"></i></span><span>{{ (templatesLength > 0) ? (buttonShouldBeDisabled ? "All templates downloaded" : "Get More...") :"Get Templates"}}</span></button>
               <button class="button is-normal is-primary is-outlined" @click="awsModalIsVisible = true">{{!this.awsCredentialsAreAvailable() ? "Add AWS Credentials" : "Change AWS Credentials"}}</button><sup>or use demo account</sup>
             </div>
-          </div>
         </div>
       </nav>
       <div class="container has-text-centered has-background-link-light">
         <div v-if="templatesLength === 0">SES templates will appear here...</div>
         <div v-else>
-          <span v-for="templateData in this.templates.TemplatesMetadata" @click="getTemplate(templateData.Name)"><a :class="templateData.Name === currentTemplateName && templateIsLoading? 'is-loading' :''" class="button is-block-mobile">{{templateData.Name}}</a></span>
+          <span v-for="templateData in this.templates.TemplatesMetadata" @click="getTemplate(templateData.TemplateName)"><a :class="templateData.TemplateName === currentTemplateName && templateIsLoading? 'is-loading' :''" class="button is-block-mobile">{{templateData.TemplateName}}</a></span>
         </div>
       </div>
       <div class="modal"  id="currentTemplateModal" :class="currentTemplateModalIsVisible ? 'is-active':''">
@@ -155,6 +166,47 @@
           </footer>
         </div>
       </div>
+      <div class="modal" id="sesStatsModal" :class="sesStatsModalIsVisible ? 'is-active':''">
+        <div class="modal-background" style="opacity:75%" @click="sesStatsModalIsVisible = false;"></div>
+        <div class="modal-card" :style="deviceIsMobile ? 'width: 90vw' : ''">
+          <header class="modal-card-head">
+            <p class="modal-card-title is-medium">Email Stats</p>
+            <button class="modal-close is-medium" aria-label="close" @click="awsModalIsVisible = false"></button>
+          </header>
+          <section class="modal-card-body">
+            <div class="content is-normal">
+              <div class="container">
+                <div v-if="!sesStats">
+                  <span>We could not find any email send stats associated with your SES account</span>
+                </div>
+                <div v-else>
+                  <div class="table-container">
+                    <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th v-for="key in sesStatsKeys">{{key}}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="sesStatDate in sortAsDates(Object.keys(sesStats))">
+                          <td>{{sesStatDate}}</td>
+                          <td v-for="key in sesStatsKeys">{{sesStats[sesStatDate][key] ? sesStats[sesStatDate][key] : '-'}}</td>
+                        </tr>
+                      </tbody>
+                      <!-- Your table content -->
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <footer class="modal-card-foot is-block-mobile">
+            <button class="button is-normal is-primary is-outlined" @click="sesStatsModalIsVisible = false">Okay!</button>
+          </footer>
+        </div>
+      </div>
+
       <footer class="footer">
         <div class="content has-text-centered">
           <div v-if="templatesLength === 0">
@@ -184,6 +236,7 @@
         secretAccessKey : undefined,
         region: "",
         ses: undefined,
+        sesv2: undefined,
         templates: undefined,
         nextToken: undefined,
         nextTokenBecameNull: false,
@@ -198,6 +251,9 @@
         dataMustBeSavedLocally: false,
         privacyPolicyModalIsVisible: false,
         awsModalIsVisible: false,
+        sesStats: undefined,
+        sesStatsKeys: undefined,
+        sesStatsModalIsVisible: false,
         currentTemplateModalIsVisible: false,
         viewTemplateType: "html",
         deviceIsMobile: undefined,
@@ -248,9 +304,6 @@
           return this.dataMustBeSavedLocally ? localStorage.accessKeyId && localStorage.secretAccessKey && localStorage.region :
           this.accessKeyId && this.secretAccessKey && this.region;
         },
-        showPrivacyPolicyModal2: function(){
-          this.privacyPolicyModalIsVisible = true;
-        },
         updateLocalData: function(){
           localStorage.accessKeyId = this.dataMustBeSavedLocally ? (this.accessKeyId ? this.accessKeyId : '') : '';
           localStorage.secretAccessKey = this.dataMustBeSavedLocally ? (this.secretAccessKey ? this.secretAccessKey : '') : '';
@@ -264,6 +317,15 @@
         },
         getSESObject: function(refresh) {
           if(this.accessKeyId && this.secretAccessKey && this.region !== ""){
+            if(!this.sesv2 || refresh){
+              this.sesv2 = new AWS.SESV2({
+                apiVersion: '2019-09-27',
+                accessKeyId: this.accessKeyId,
+                secretAccessKey: this.secretAccessKey,
+                region: this.region
+              });
+              this.templates = {};
+            }
             if(!this.ses || refresh){
               this.ses = new AWS.SES({
                 apiVersion: '2010-12-01',
@@ -274,21 +336,24 @@
               this.templates = {};
             }
           } else {
-            this.ses = undefined;
+            this.sesv2 = undefined;
             this.templates = {};
           }
         },
         setTemplateMetadataReactive: function(arr){
           Vue.set(app.templates, 'TemplatesMetadata', arr);
         },
+        sortAsDates: function(array){
+          return array.sort((a, b) => new Date(a) - new Date(b));
+        },
         getTemplate: _.throttle(
           async function(tName){
-            if(this.ses){
+            if(this.sesv2){
               var params = { TemplateName: tName };
               let vm = this;
               vm.templateIsLoading = true;
               vm.currentTemplateName = tName;
-              await this.ses.getTemplate(params).promise()
+              await this.sesv2.getEmailTemplate(params).promise()
                 .then(template => {
                   const htmlBlob = new Blob([template.Template.HtmlPart], { type: 'text/html' });
                   vm.iframeSrcHtml = URL.createObjectURL(htmlBlob);
@@ -302,14 +367,14 @@
           }, 2000, {'leading': true}),
         getTemplates: _.throttle(
           async function(){
-            if(this.ses){
-              var params = { MaxItems: 10 };
+            if(this.sesv2){
+              var params = { PageSize: 10 };
               if(this.templates && this.templates.NextToken){
                 params.NextToken = this.templates.NextToken;
               }
               let vm = this;
               vm.templatesAreLoading = true;
-              await this.ses.listTemplates(params).promise()
+              await this.sesv2.listEmailTemplates(params).promise()
                 .then(templates => {
                   if(!vm.templates.TemplatesMetadata) vm.setTemplateMetadataReactive([]);
                   vm.setTemplateMetadataReactive(_.union(vm.templates.TemplatesMetadata, templates.TemplatesMetadata));
@@ -318,7 +383,29 @@
                   vm.templatesAreLoading = false;
                 })
             }
-          }, 2000, {'leading': true})
+          }, 2000, {'leading': true}),
+        getSesStats: _.throttle(
+          async function(){
+            let x = await this.ses.getSendStatistics().promise()
+            .then(sendStats => {
+              return sendStats.SendDataPoints.reduce((accum, sendDataPoint) => {
+                // console.log(sendDataPoint);
+                let date = sendDataPoint.Timestamp.toLocaleDateString();
+                if(!accum[date]) accum[date] = {};
+                Object.keys(sendDataPoint).map(key => {
+                  if(key !== 'Timestamp') {
+                    if(!accum[date][key]) accum[date][key] = 0;
+                    accum[date][key] += sendDataPoint[key] ? sendDataPoint[key] : 0;
+                    if(!this.sesStatsKeys) this.sesStatsKeys = [];
+                    if(!this.sesStatsKeys.includes(key))this.sesStatsKeys.push(key);
+                  }
+                });
+                return accum;
+              }, [])
+            });
+            this.sesStats = x;
+
+          }, 2000, {'leading': true}),
       }
     })
   </script>
