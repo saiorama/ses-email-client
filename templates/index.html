@@ -67,7 +67,7 @@
       <div class="container has-text-centered has-background-link-light">
         <div v-if="templatesLength === 0">SES templates will appear here...</div>
         <div v-else>
-          <span v-for="templateData in this.templates.TemplatesMetadata" @click="getTemplate(templateData.TemplateName)"><a :class="templateData.TemplateName === currentTemplateName && templateIsLoading? 'is-loading' :''" class="button is-block-mobile">{{templateData.TemplateName}}</a></span>
+          <span v-for="templateData in this.templates.TemplatesMetadata" @click="getTemplate(templateData.Name)"><a :class="templateData.Name === currentTemplateName && templateIsLoading? 'is-loading' :''" class="button is-block-mobile">{{templateData.Name}}</a></span>
         </div>
       </div>
       <div class="modal"  id="currentTemplateModal" :class="currentTemplateModalIsVisible ? 'is-active':''">
@@ -236,7 +236,6 @@
         secretAccessKey : undefined,
         region: "",
         ses: undefined,
-        sesv2: undefined,
         templates: undefined,
         nextToken: undefined,
         nextTokenBecameNull: false,
@@ -299,6 +298,7 @@
           this.accessKeyId = DEMO_AWS_KEY;
           this.secretAccessKey = DEMO_AWS_SECRET;
           this.region = DEMO_AWS_REGION;
+          this.templates = undefined;
         },
         awsCredentialsAreAvailable: function(){
           return this.dataMustBeSavedLocally ? localStorage.accessKeyId && localStorage.secretAccessKey && localStorage.region :
@@ -317,15 +317,6 @@
         },
         getSESObject: function(refresh) {
           if(this.accessKeyId && this.secretAccessKey && this.region !== ""){
-            if(!this.sesv2 || refresh){
-              this.sesv2 = new AWS.SESV2({
-                apiVersion: '2019-09-27',
-                accessKeyId: this.accessKeyId,
-                secretAccessKey: this.secretAccessKey,
-                region: this.region
-              });
-              this.templates = {};
-            }
             if(!this.ses || refresh){
               this.ses = new AWS.SES({
                 apiVersion: '2010-12-01',
@@ -333,11 +324,11 @@
                 secretAccessKey: this.secretAccessKey,
                 region: this.region
               });
-              this.templates = {};
+              this.templates = undefined;
             }
           } else {
-            this.sesv2 = undefined;
-            this.templates = {};
+            this.ses = undefined;
+            this.templates = undefined;
           }
         },
         setTemplateMetadataReactive: function(arr){
@@ -348,12 +339,12 @@
         },
         getTemplate: _.throttle(
           async function(tName){
-            if(this.sesv2){
+            if(this.ses){
               var params = { TemplateName: tName };
               let vm = this;
               vm.templateIsLoading = true;
               vm.currentTemplateName = tName;
-              await this.sesv2.getEmailTemplate(params).promise()
+              await this.ses.getTemplate(params).promise()
                 .then(template => {
                   const htmlBlob = new Blob([template.Template.HtmlPart], { type: 'text/html' });
                   vm.iframeSrcHtml = URL.createObjectURL(htmlBlob);
@@ -367,15 +358,16 @@
           }, 2000, {'leading': true}),
         getTemplates: _.throttle(
           async function(){
-            if(this.sesv2){
-              var params = { PageSize: 10 };
+            if(this.ses){
+              var params = { MaxItems: 10 };
               if(this.templates && this.templates.NextToken){
                 params.NextToken = this.templates.NextToken;
               }
               let vm = this;
               vm.templatesAreLoading = true;
-              await this.sesv2.listEmailTemplates(params).promise()
+              await this.ses.listTemplates(params).promise()
                 .then(templates => {
+                  if(!vm.templates) vm.templates = {};
                   if(!vm.templates.TemplatesMetadata) vm.setTemplateMetadataReactive([]);
                   vm.setTemplateMetadataReactive(_.union(vm.templates.TemplatesMetadata, templates.TemplatesMetadata));
                   Vue.set(vm.templates, 'NextToken', templates.NextToken ? templates.NextToken : undefined);
