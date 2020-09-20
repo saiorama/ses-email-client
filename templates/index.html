@@ -295,15 +295,20 @@
           return this.templates && this.templates.TemplatesMetadata ? this.templates.TemplatesMetadata.length : 0;
         },
         buttonShouldBeDisabled: function(){
-          return (this.templatesLength > 0 && this.nextToken === undefined) || this.nextTokenBecameNull || !this.awsCredentialsAreAvailable();
+          return ((this.templatesLength > 0 && this.nextToken === undefined) || this.nextTokenBecameNull || !this.awsCredentialsAreAvailable()) ? true: false;
         },
       },
       methods: {
+        resetTemplateDetails: function(){
+          this.templates = undefined;
+          this.nextTokenBecameNull = false;
+          this.nextToken = undefined;
+        },
         setDemoDetails: function(){
           this.accessKeyId = DEMO_AWS_KEY;
           this.secretAccessKey = DEMO_AWS_SECRET;
           this.region = DEMO_AWS_REGION;
-          this.templates = undefined;
+          this.resetTemplateDetails();
         },
         awsCredentialsAreAvailable: function(){
           return this.dataMustBeSavedLocally ? localStorage.accessKeyId && localStorage.secretAccessKey && localStorage.region :
@@ -329,11 +334,11 @@
                 secretAccessKey: this.secretAccessKey,
                 region: this.region
               });
-              this.templates = undefined;
+              this.resetTemplateDetails();
             }
           } else {
             this.ses = undefined;
-            this.templates = undefined;
+            this.resetTemplateDetails();
           }
         },
         setTemplateMetadataReactive: function(arr){
