@@ -60,7 +60,7 @@
           </div>
             <div class="navbar-item">
               <button id="btnGetSesTemplates" class="button is-normal is-info is-block mr-4 ml-4" :class="{'is-loading':templatesAreLoading, 'is-hidden': buttonShouldBeDisabled }" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false"><span class="icon"><i class="fas fa-sync"></i></span><span>{{ (templatesLength > 0) ? (buttonShouldBeDisabled ? "All templates downloaded" : "Get More...") :"Get Templates"}}</span></button>
-              <button class="button is-normal is-primary is-outlined" @click="awsModalIsVisible = true">{{!this.awsCredentialsAreAvailable() ? "Add AWS Credentials" : "Change AWS Credentials"}}</button><sup>&nbsp;({{demoCredentialsAreInUse ? "Using demo account":"or Use our demo account"}})</sup>
+              <button class="button is-normal is-primary" @click="awsModalIsVisible = true">{{!this.awsCredentialsAreAvailable() ? "Add AWS Credentials" : "Change AWS Credentials"}}</button><sup>&nbsp;({{demoCredentialsAreInUse ? "Using demo account":"or Use our demo account"}})</sup>
             </div>
         </div>
       </nav>
