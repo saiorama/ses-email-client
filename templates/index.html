@@ -60,7 +60,7 @@
           </div>
             <div class="navbar-item">
               <button id="btnGetSesTemplates" class="button is-normal is-info is-block mr-4 ml-4" :class="{'is-loading':templatesAreLoading, 'is-hidden': buttonShouldBeDisabled }" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false"><span class="icon"><i class="fas fa-sync"></i></span><span>{{ (templatesLength > 0) ? (buttonShouldBeDisabled ? "All templates downloaded" : "Get More...") :"Get Templates"}}</span></button>
-              <button class="button is-normal is-primary is-outlined" @click="awsModalIsVisible = true">{{!this.awsCredentialsAreAvailable() ? "Add AWS Credentials" : "Change AWS Credentials"}}</button><sup>(or use our demo account)</sup>
+              <button class="button is-normal is-primary is-outlined" @click="awsModalIsVisible = true">{{!this.awsCredentialsAreAvailable() ? "Add AWS Credentials" : "Change AWS Credentials"}}</button><sup>&nbsp;({{demoCredentialsAreInUse ? "Using demo account":"or Use our demo account"}})</sup>
             </div>
         </div>
       </nav>
@@ -162,7 +162,7 @@
           </section>
           <footer class="modal-card-foot is-block-mobile">
             <button id="btnGetSesTemplates" class="button is-normal is-info mb-2" :class="templatesAreLoading ? 'is-loading':''" :disabled="buttonShouldBeDisabled" @click="getTemplates(); awsModalIsVisible = false;"><span class="icon"><i class="fas fa-sync"></i></span><span>{{ (templatesLength > 0) ? (buttonShouldBeDisabled ? "All templates downloaded" : "Get More...") :"Get Templates"}}</span></button>
-            <button id="btnSetDemoDetails" :disabled="!demoCredentialsAreInUse" class="button is-primary is-info is-block is-outlined" @click="setDemoDetails(); awsModalIsVisible = false; getTemplates();"> <span class="icon"><i class="fas fa-layer-group"></i></span><span>Use Demo Keys</span></button>
+            <button id="btnSetDemoDetails" :disabled="demoCredentialsAreInUse" class="button is-primary is-info is-block is-outlined" @click="setDemoDetails();"> <span class="icon"><i class="fas fa-layer-group"></i></span><span>Use Demo Keys</span></button>
           </footer>
         </div>
       </div>
@@ -250,7 +250,6 @@
         dataMustBeSavedLocally: false,
         privacyPolicyModalIsVisible: false,
         awsModalIsVisible: false,
-        demoCredentialsAreInUse: false,
         sesStats: undefined,
         sesStatsKeys: undefined,
         sesStatsModalIsVisible: false,
@@ -288,8 +287,9 @@
       },
       computed: {
         demoCredentialsAreInUse: function(){
-          return this.accessKeyId && this.secretAccessKey && this.sesRegion?
-           ((this.accessKeyId === DEMO_AWS_KEY && this.secretAccessKey === DEMO_AWS_SECRET && this.sesRegion === DEMO_AWS_REGION) ? true : false) : false;
+          return (this.accessKeyId && this.accessKeyId === DEMO_AWS_KEY &&
+                this.secretAccessKey && this.secretAccessKey === DEMO_AWS_SECRET &&
+                this.region && this.region === DEMO_AWS_REGION) ? true : false;
         },
         templatesLength: function(){
           return this.templates && this.templates.TemplatesMetadata ? this.templates.TemplatesMetadata.length : 0;
