@@ -55,10 +55,10 @@
 
               <div class="navbar-dropdown">
                 <a class="navbar-item" @click="sesStatsModalIsVisible = true; getSesStats();">
-                  Email Stats
+                  <p><i class="fas fa-chart-bar"></i> Email Stats</p>
                 </a>
                 <a class="navbar-item" @click="showEmailComposeScreen();">
-                  Compose
+                  <p><i class="far fa-edit"></i> Write </p>
                 </a>
               </div>
             </div>
@@ -216,21 +216,34 @@
         <div class="modal-card" :style="deviceIsMobile ? 'width: 90vw' : ''">
           <header class="modal-card-head">
             <p class="modal-card-title is-medium">New Email</p>
+            <button class="button is-normal is-primary is-light" @click="showEmailComposeScreen();"><i class="far fa-edit"></i>&nbsp;&nbsp;Open Mail  Editor</button>
             <button class="modal-close is-medium" aria-label="close" @click="emailComposeModalIsVisible = false"></button>
           </header>
           <section class="modal-card-body">
             <div class="content is-normal">
               <div class="container">
                 <div class="field">
-                  <div class="control">
+                  <div class="control has-icons-left">
                     <input class="input" type="email" placeholder="TO: email" v-model="toEmail">
                     <sub>(only one TO: email at a time)</sub>
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-envelope"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="control has-icons-left">
+                    <input class="input" type="email" placeholder="FROM: email" v-model="fromEmail">
+                    <sub>(Enter a valid FROM email)</sub>
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-envelope"></i>
+                    </span>
                   </div>
                 </div>
                 <div class="field">
                   <div class="control">
-                    <input class="input" type="email" placeholder="FROM: email" v-model="fromEmail">
-                    <sub>Enter a valid FROM email</sub>
+                    <input class="input" type="text" placeholder="Subject..." v-model="emailSubject">
+                    <sub>(Your email subject)</sub>
                   </div>
                 </div>
                 <div class="control">
@@ -241,8 +254,7 @@
           </section>
           <footer class="modal-card-foot is-block-mobile">
             <button class="button is-normal is-info is-outlined" @click="emailComposeModalIsVisible = false">Cancel</button>
-            <button class="button is-normal is-primary is-light" @click="showEmailComposeScreen();"><i class="far fa-edit"></i> Edit</button>
-            <button class="button is-normal is-primary" @click="sendEmail();">Send</button>
+            <button class="button is-normal is-primary" @click="sendEmail();">Send&nbsp;&nbsp;<i class="far fa-paper-plane"></i></button>
             <p :class="emailSendStatus === 'success'? 'has-text-primary' : 'has-text-danger'"><sub> {{emailSendStatusMessage}}</sub></p>
           </footer>
         </div>
@@ -305,6 +317,7 @@
         emailSendStatusMessage: "",
         toEmail: undefined,
         fromEmail: undefined,
+        emailSubject: undefined,
       },
       watch: {
         accessKeyId: function(n, o){
@@ -394,12 +407,14 @@
                   }
                 },
                 Subject: { /* required */
-                  Data: `Test email @ ${Date.now()}`, /* required */
+                  Data: `${this.emailSubject || "(no subject)"}`, /* required */
                   Charset: 'UTF-8'
                 }
               },
               Source: this.fromEmail, /* required */
             };
+            this.emailSendStatus = 'success';
+            this.emailSendStatusMessage = 'Sending...';
             await this.ses.sendEmail(params).promise()
             .then(r => {
               this.emailSendStatus = 'success';
@@ -409,7 +424,7 @@
               console.log(e);
               this.emailSendStatus = 'failed';
               this.emailSendStatusMessage = 'Mail could not be sent';
-              if(e.message.indexOf('not authorized') > -1) this.emailSendStatusMessage += "<br>Check your AWS permissions.";
+              if(e.message.indexOf('not authorized') > -1) this.emailSendStatusMessage += ". Check your AWS permissions.";
               else this.emailSendStatusMessage += '<br>' + e.message;
             })
             .finally(() => {
@@ -417,7 +432,7 @@
             })
           } else {
             this.emailSendStatus = 'failed';
-            this.emailSendStatusMessage = 'TO: or From: Address Missing';
+            this.emailSendStatusMessage = `${!this.toEmail? (!this.fromEmail ? "TO: and FROM:":"TO:") : (!this.fromEmail ? "FROM:":"")} Missing`;
           }
         },
         resetTemplateDetails: function(){
