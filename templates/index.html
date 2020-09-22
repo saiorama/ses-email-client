@@ -8,6 +8,7 @@
     <title>SES Template Display</title>
     <!-- <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet"> -->
     <script src="/js/aws-sdk-2.756.0.min.js"></script>
+    <script src="/js/mermaid.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css" integrity="sha256-aPeK/N8IHpHsvPBCf49iVKMdusfobKo2oxF8lRruWJg=" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js" integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
@@ -25,6 +26,7 @@
         #is-mobile-detector { display: none; }
       }
     </style>
+    <script src="https://unpkg.com/stackedit-js@1.0.7/docs/lib/stackedit.min.js"></script>
   </head>
   <body>
     <!-- Google Tag Manager (noscript) -->
@@ -54,6 +56,9 @@
               <div class="navbar-dropdown">
                 <a class="navbar-item" @click="sesStatsModalIsVisible = true; getSesStats();">
                   Email Stats
+                </a>
+                <a class="navbar-item" @click="showEmailComposeScreen();">
+                  Compose
                 </a>
               </div>
             </div>
@@ -206,7 +211,34 @@
           </footer>
         </div>
       </div>
-
+      <div class="modal" id="emailComposeModal" :class="emailComposeModalIsVisible ? 'is-active':''">
+        <div class="modal-background" style="opacity:75%" @click="emailComposeModalIsVisible = false;"></div>
+        <div class="modal-card" :style="deviceIsMobile ? 'width: 90vw' : ''">
+          <header class="modal-card-head">
+            <p class="modal-card-title is-medium">New Email</p>
+            <button class="modal-close is-medium" aria-label="close" @click="emailComposeModalIsVisible = false"></button>
+          </header>
+          <section class="modal-card-body">
+            <div class="content is-normal">
+              <div class="container">
+                <div class="control">
+                  <input class="input" type="email" placeholder="TO: email" v-model="toEmail">
+                  <sub v-if="secretAccessKey">(only one email at a time)</sub>
+                </div>
+                <div class="control">
+                  <iframe frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="iframeComposedEmail"></iframe>
+                </div>
+              </div>
+            </div>
+          </section>
+          <footer class="modal-card-foot is-block-mobile">
+            <button class="button is-normal is-info is-outlined" @click="emailComposeModalIsVisible = false">Cancel</button>
+            <button class="button is-normal is-primary is-light" @click="showEmailComposeScreen();"><i class="far fa-edit"></i> Edit</button>
+            <button class="button is-normal is-primary" @click="sendEmail();">Send</button>
+            <p :class="emailSendStatus === 'success'? 'has-text-primary' : 'has-text-danger'"><sub> {{emailSendStatusMessage}}</sub></p>
+          </footer>
+        </div>
+      </div>
       <footer class="footer">
         <div class="content has-text-centered">
           <div v-if="templatesLength === 0">
@@ -228,6 +260,7 @@
     let SECRETp1 = '84NN9+x9uN9OVys2', SECRETp2 = '/A6ZqBgcwlFi8NEAz7CU1Dxi'
     let DEMO_AWS_SECRET = `${SECRETp1}${SECRETp2}`;
     let DEMO_AWS_REGION = `ap-south-1`;
+    mermaid.initialize({startOnLoad:true});
     var app = new Vue({
       el: '#app',
       data: {
@@ -254,8 +287,15 @@
         sesStatsKeys: undefined,
         sesStatsModalIsVisible: false,
         currentTemplateModalIsVisible: false,
+        emailComposeModalIsVisible: false,
         viewTemplateType: "html",
         deviceIsMobile: undefined,
+        iframeComposedEmail: undefined,
+        htmlEmailContent: undefined,
+        textEmailContent: "Compose your email using markdown",
+        emailSendStatus: undefined,
+        emailSendStatusMessage: "",
+        toEmail: undefined,
       },
       watch: {
         accessKeyId: function(n, o){
@@ -299,6 +339,78 @@
         },
       },
       methods: {
+        showEmailComposeScreen: function(){
+          const stackedit = new Stackedit({
+            url: 'https://stackedit.io/app'
+          });
+
+          // Open the iframe
+          stackedit.openFile({
+            name: 'Filename', // with an optional filename
+            content: {
+              text: app.textEmailContent // and the Markdown content.
+            }
+          });
+
+          // Listen to StackEdit events and apply the changes to the textarea.
+          stackedit.on('fileChange', (file) => {
+            const htmlBlob = new Blob([file.content.html], { type: 'text/html' });
+            app.htmlEmailContent = file.content.html;
+            app.textEmailContent = file.content.text;
+            app.iframeComposedEmail = URL.createObjectURL(htmlBlob);
+          });
+
+          stackedit.on('close', (file) => {
+            this.emailComposeModalIsVisible = true;
+          });
+        },
+        sendEmail: async function(){
+          if(this.toEmail){
+            var params = {
+              Destination: { /* required */
+                ToAddresses: [
+                  this.toEmail,
+                  /* more items */
+                ]
+              },
+              Message: { /* required */
+                Body: { /* required */
+                  Html: {
+                    Data: this.htmlEmailContent, /* required */
+                    Charset: 'UTF-8'
+                  },
+                  Text: {
+                    Data: this.textEmailContent, /* required */
+                    Charset: 'UTF-8'
+                  }
+                },
+                Subject: { /* required */
+                  Data: `Test email @ ${Date.now()}`, /* required */
+                  Charset: 'UTF-8'
+                }
+              },
+              Source: 'sai@zeer0.com', /* required */
+            };
+            await this.ses.sendEmail(params).promise()
+            .then(r => {
+              this.emailSendStatus = 'success';
+              this.emailSendStatusMessage = 'Mail sent!';
+            })
+            .catch(e => {
+              console.log(e);
+              this.emailSendStatus = 'failed';
+              this.emailSendStatusMessage = 'Mail could not be sent';
+              if(e.message.indexOf('not authorized') > -1) this.emailSendStatusMessage += "<br>Check your AWS permissions.";
+              else this.emailSendStatusMessage += '<br>' + e.message;
+            })
+            .finally(() => {
+              this.emailComposeModalIsVisible = true;
+            })
+          } else {
+            this.emailSendStatus = 'failed';
+            this.emailSendStatusMessage = 'TO: Address Missing';
+          }
+        },
         resetTemplateDetails: function(){
           this.templates = undefined;
           this.nextTokenBecameNull = false;
