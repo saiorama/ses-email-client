@@ -221,9 +221,17 @@
           <section class="modal-card-body">
             <div class="content is-normal">
               <div class="container">
-                <div class="control">
-                  <input class="input" type="email" placeholder="TO: email" v-model="toEmail">
-                  <sub v-if="secretAccessKey">(only one email at a time)</sub>
+                <div class="field">
+                  <div class="control">
+                    <input class="input" type="email" placeholder="TO: email" v-model="toEmail">
+                    <sub>(only one TO: email at a time)</sub>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="control">
+                    <input class="input" type="email" placeholder="FROM: email" v-model="fromEmail">
+                    <sub>Enter a valid FROM email</sub>
+                  </div>
                 </div>
                 <div class="control">
                   <iframe frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="iframeComposedEmail"></iframe>
@@ -296,6 +304,7 @@
         emailSendStatus: undefined,
         emailSendStatusMessage: "",
         toEmail: undefined,
+        fromEmail: undefined,
       },
       watch: {
         accessKeyId: function(n, o){
@@ -346,9 +355,9 @@
 
           // Open the iframe
           stackedit.openFile({
-            name: 'Filename', // with an optional filename
+            name: 'Filename'+Date.now(), // with an optional filename
             content: {
-              text: app.textEmailContent // and the Markdown content.
+              text: app.textEmailContent ? app.textEmailContent : "Compose your email using markdown." // and the Markdown content.
             }
           });
 
@@ -365,7 +374,7 @@
           });
         },
         sendEmail: async function(){
-          if(this.toEmail){
+          if(this.toEmail && this.fromEmail){
             var params = {
               Destination: { /* required */
                 ToAddresses: [
@@ -389,7 +398,7 @@
                   Charset: 'UTF-8'
                 }
               },
-              Source: 'sai@zeer0.com', /* required */
+              Source: this.fromEmail, /* required */
             };
             await this.ses.sendEmail(params).promise()
             .then(r => {
@@ -408,7 +417,7 @@
             })
           } else {
             this.emailSendStatus = 'failed';
-            this.emailSendStatusMessage = 'TO: Address Missing';
+            this.emailSendStatusMessage = 'TO: or From: Address Missing';
           }
         },
         resetTemplateDetails: function(){
