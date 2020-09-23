@@ -27,6 +27,7 @@
       }
     </style>
     <script src="https://unpkg.com/stackedit-js@1.0.7/docs/lib/stackedit.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   </head>
   <body>
     <!-- Google Tag Manager (noscript) -->
@@ -145,6 +146,12 @@
                   <div class="control">
                     <input class="input" type="password" placeholder="AWS Secret Access " v-model="secretAccessKey">
                     <sub v-if="secretAccessKey">***{{secretAccessKey.substring(secretAccessKey.length - 5)}}</sub>
+                  </div>
+                </div>
+                <div class="field is-block">
+                  <div class="control">
+                    <input class="input" type="password" placeholder="Subscription License Key" v-model="productLicenseKey">
+                    <sub v-if="secretAccessKey">***{{productLicenseKey.substring(productLicenseKey.length - 5)}}</sub>
                   </div>
                 </div>
                 <div class="field is-block">
@@ -280,6 +287,10 @@
     let SECRETp1 = '84NN9+x9uN9OVys2', SECRETp2 = '/A6ZqBgcwlFi8NEAz7CU1Dxi'
     let DEMO_AWS_SECRET = `${SECRETp1}${SECRETp2}`;
     let DEMO_AWS_REGION = `ap-south-1`;
+    let DEMO_PRODUCT_LICENSE = `28B5E88E-F87041CA-9E5E58E6-59D5D985`;
+    let DEMO_PRODUCT_ID = `fZLjG`;
+    const API_GW_URL = 'https://api.zeer0.com/v001';
+    const LICENSE_ENDPOINT = "GRL";
     mermaid.initialize({startOnLoad:true});
     var app = new Vue({
       el: '#app',
@@ -318,6 +329,8 @@
         toEmail: undefined,
         fromEmail: undefined,
         emailSubject: undefined,
+        productLicenseKey: undefined,
+        productLicense: undefined,
       },
       watch: {
         accessKeyId: function(n, o){
@@ -340,6 +353,29 @@
             this.nextTokenBecameNull = true;
           }
         },
+        productLicenseKey: async function(n , o){
+          this.getSESObject(n != o);
+          this.updateLocalData();
+          if(n){
+            //const axios = require('axios');
+            const vm = this;
+            await axios.get(`${API_GW_URL}/tools/license-check`, {
+              params: {
+                product: `${DEMO_PRODUCT_ID}`,
+                license: vm.productLicenseKey,
+                endpoint: LICENSE_ENDPOINT,
+              },
+            })
+            .then(function (response) {
+              console.log(response);
+              vm.productLicense = response.data;
+            })
+            .catch(function (error) {
+              vm.productLicense = error.data;
+            });
+          }
+          return false;
+        }
       },
       mounted(){
         let e = document.getElementById("is-mobile-detector");
@@ -351,7 +387,8 @@
         demoCredentialsAreInUse: function(){
           return (this.accessKeyId && this.accessKeyId === DEMO_AWS_KEY &&
                 this.secretAccessKey && this.secretAccessKey === DEMO_AWS_SECRET &&
-                this.region && this.region === DEMO_AWS_REGION) ? true : false;
+                this.region && this.region === DEMO_AWS_REGION && 
+                this.productLicenseKey && this.productLicenseKey === DEMO_PRODUCT_LICENSE) ? true : false;
         },
         templatesLength: function(){
           return this.templates && this.templates.TemplatesMetadata ? this.templates.TemplatesMetadata.length : 0;
@@ -361,6 +398,9 @@
         },
       },
       methods: {
+        licenseIsValid: function(){
+          return (this.productLicense && this.productLicense.success && !this.productLicense.subscription_cancelled_at && !this.productLicense.subscription_failed_at) ? true : false;
+        },
         showEmailComposeScreen: function(){
           const stackedit = new Stackedit({
             url: 'https://stackedit.io/app'
@@ -387,7 +427,7 @@
           });
         },
         sendEmail: async function(){
-          if(this.toEmail && this.fromEmail){
+          if(this.toEmail && this.fromEmail && this.licenseIsValid()){
             var params = {
               Destination: { /* required */
                 ToAddresses: [
@@ -444,21 +484,23 @@
           this.accessKeyId = DEMO_AWS_KEY;
           this.secretAccessKey = DEMO_AWS_SECRET;
           this.region = DEMO_AWS_REGION;
+          this.productLicenseKey = DEMO_PRODUCT_LICENSE;
           this.resetTemplateDetails();
         },
         awsCredentialsAreAvailable: function(){
-          return this.dataMustBeSavedLocally ? localStorage.accessKeyId && localStorage.secretAccessKey && localStorage.region :
-          this.accessKeyId && this.secretAccessKey && this.region;
+          return this.dataMustBeSavedLocally ? localStorage.accessKeyId && localStorage.secretAccessKey && localStorage.region && localStorage.productLicenseKey: this.accessKeyId && this.secretAccessKey && this.region && this.productLicenseKey;
         },
         updateLocalData: function(){
           localStorage.accessKeyId = this.dataMustBeSavedLocally ? (this.accessKeyId ? this.accessKeyId : '') : '';
           localStorage.secretAccessKey = this.dataMustBeSavedLocally ? (this.secretAccessKey ? this.secretAccessKey : '') : '';
           localStorage.region = this.dataMustBeSavedLocally ? (this.region ? this.region : '') : '';
+          localStorage.productLicenseKey = this.dataMustBeSavedLocally ? (this.productLicenseKey ? this.productLicenseKey : '') : '';
         },
         readLocalData: function(){
           this.accessKeyId = localStorage.accessKeyId ? localStorage.accessKeyId : undefined;
           this.secretAccessKey = localStorage.secretAccessKey ? localStorage.secretAccessKey : undefined;
           this.region = localStorage.region ? localStorage.region : "";
+          this.productLicenseKey = localStorage.productLicenseKey ? localStorage.productLicenseKey : "";
           if(this.accessKeyId || this.secretAccessKey || this.region) this.dataMustBeSavedLocally = true;
         },
         getSESObject: function(refresh) {
@@ -485,7 +527,7 @@
         },
         getTemplate: _.throttle(
           async function(tName){
-            if(this.ses){
+            if(this.ses && this.licenseIsValid()){
               var params = { TemplateName: tName };
               let vm = this;
               vm.templateIsLoading = true;
@@ -504,7 +546,7 @@
           }, 2000, {'leading': true}),
         getTemplates: _.throttle(
           async function(){
-            if(this.ses){
+            if(this.ses && this.licenseIsValid()){
               var params = { MaxItems: 10 };
               if(this.templates && this.templates.NextToken){
                 params.NextToken = this.templates.NextToken;
@@ -524,25 +566,26 @@
           }, 2000, {'leading': true}),
         getSesStats: _.throttle(
           async function(){
-            let x = await this.ses.getSendStatistics().promise()
-            .then(sendStats => {
-              return sendStats.SendDataPoints.reduce((accum, sendDataPoint) => {
-                // console.log(sendDataPoint);
-                let date = sendDataPoint.Timestamp.toLocaleDateString();
-                if(!accum[date]) accum[date] = {};
-                Object.keys(sendDataPoint).map(key => {
-                  if(key !== 'Timestamp') {
-                    if(!accum[date][key]) accum[date][key] = 0;
-                    accum[date][key] += sendDataPoint[key] ? sendDataPoint[key] : 0;
-                    if(!this.sesStatsKeys) this.sesStatsKeys = [];
-                    if(!this.sesStatsKeys.includes(key))this.sesStatsKeys.push(key);
-                  }
+            if(this.ses  && this.licenseIsValid()){
+              let x = await this.ses.getSendStatistics().promise()
+                .then(sendStats => {
+                  return sendStats.SendDataPoints.reduce((accum, sendDataPoint) => {
+                    // console.log(sendDataPoint);
+                    let date = sendDataPoint.Timestamp.toLocaleDateString();
+                    if(!accum[date]) accum[date] = {};
+                    Object.keys(sendDataPoint).map(key => {
+                      if(key !== 'Timestamp') {
+                        if(!accum[date][key]) accum[date][key] = 0;
+                        accum[date][key] += sendDataPoint[key] ? sendDataPoint[key] : 0;
+                        if(!this.sesStatsKeys) this.sesStatsKeys = [];
+                        if(!this.sesStatsKeys.includes(key))this.sesStatsKeys.push(key);
+                      }
+                    });
+                    return accum;
+                  }, [])
                 });
-                return accum;
-              }, [])
-            });
-            this.sesStats = x;
-
+                this.sesStats = x;
+            }
           }, 2000, {'leading': true}),
       }
     })
