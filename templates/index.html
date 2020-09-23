@@ -28,6 +28,7 @@
     </style>
     <script src="https://unpkg.com/stackedit-js@1.0.7/docs/lib/stackedit.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://gumroad.com/js/gumroad.js"></script>
   </head>
   <body>
     <!-- Google Tag Manager (noscript) -->
@@ -60,6 +61,10 @@
                 </a>
                 <a class="navbar-item" @click="showEmailComposeScreen();">
                   <p><i class="far fa-edit"></i> Write </p>
+                </a>
+                <hr class="dropdown-divider">
+                <a href="https://gum.co/fZLjG" class="navbar-item" data-toggle="tooltip" title="Pricing" target="_blank" data-gumroad-single-product="true"> 
+                  Subscribe
                 </a>
               </div>
             </div>
@@ -151,7 +156,7 @@
                 <div class="field is-block">
                   <div class="control">
                     <input class="input" type="password" placeholder="Subscription License Key" v-model="productLicenseKey">
-                    <sub v-if="secretAccessKey">***{{productLicenseKey.substring(productLicenseKey.length - 5)}}</sub>
+                    <sub v-if="secretAccessKey">***{{productLicenseKey.substring(productLicenseKey.length - 5)}}. <a href="https://gum.co/fZLjG"   data-toggle="tooltip" title="Pricing" target="_blank" data-gumroad-single-product="true"> Subscribe</a></sub>
                   </div>
                 </div>
                 <div class="field is-block">
