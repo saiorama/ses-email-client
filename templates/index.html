@@ -102,9 +102,41 @@
                     <input type="radio" name="view-template-type" v-model="viewTemplateType" value="text-only">
                     Text-only version
                   </label>
+                  <label class="radio">
+                    <input type="radio" name="view-template-type" v-model="viewTemplateType" value="view-vars">
+                    <span v-pre>Template Variables</span>
+                  </label>
                 </div>
               </div>
-              <iframe frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="viewTemplateType == 'html' ? iframeSrcHtml : iframeSrcText"></iframe>
+              <iframe v-if="viewTemplateType == 'html' || viewTemplateType == 'text-only'" frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="viewTemplateType == 'html' ? iframeSrcHtml : iframeSrcText"></iframe>
+              <div v-else class="has-text-centered">
+                <div class="table-container">
+                  <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                    <thead>
+                      <tr>
+                        <th>Variables used in HTML version</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(htmlVar, index) in htmlVars">
+                        <td>{{htmlVar}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                    <thead>
+                      <tr>
+                        <th>Variables used in Text-only version</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(textVar, index) in textVars">
+                        <td>{{textVar}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </section>
           <footer class="modal-card-foot">
@@ -296,6 +328,7 @@
     let DEMO_PRODUCT_ID = `fZLjG`;
     const API_GW_URL = 'https://api.zeer0.com/v001';
     const LICENSE_ENDPOINT = "GRL";
+    const TEMPLATE_VARS_REGEX = /{{[\s]*[#/]?[a-zA-Z][a-zA-Z0-9\.]*[\s]*[a-zA-Z0-9\.]*[\s]*}}/g;
     mermaid.initialize({startOnLoad:true});
     var app = new Vue({
       el: '#app',
@@ -336,6 +369,8 @@
         emailSubject: undefined,
         productLicenseKey: undefined,
         productLicense: undefined,
+        htmlVars: undefined,
+        textVars: undefined,
       },
       watch: {
         accessKeyId: function(n, o){
@@ -372,7 +407,6 @@
               },
             })
             .then(function (response) {
-              console.log(response);
               vm.productLicense = response.data;
             })
             .catch(function (error) {
@@ -544,6 +578,8 @@
                   const textBlob = new Blob([template.Template.TextPart], { type: 'text/html' });
                   vm.iframeSrcText = URL.createObjectURL(textBlob);
                   vm.currentTemplateSubject = template.Template.SubjectPart;
+                  vm.htmlVars = template.Template.HtmlPart.match(TEMPLATE_VARS_REGEX);
+                  vm.textVars = template.Template.TextPart.match(TEMPLATE_VARS_REGEX);
                   vm.currentTemplateModalIsVisible = true;
                   vm.templateIsLoading = false;
                 })
