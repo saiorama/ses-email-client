@@ -29,6 +29,7 @@
     <script src="https://unpkg.com/stackedit-js@1.0.7/docs/lib/stackedit.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://gumroad.com/js/gumroad.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
   </head>
   <body>
     <!-- Google Tag Manager (noscript) -->
@@ -106,10 +107,14 @@
                     <input type="radio" name="view-template-type" v-model="viewTemplateType" value="view-vars">
                     <span v-pre>Template Variables</span>
                   </label>
+                  <label class="radio">
+                    <input type="radio" name="view-template-type" v-model="viewTemplateType" value="test-template">
+                    <span v-pre>Test Template</span>
+                  </label>
                 </div>
               </div>
               <iframe v-if="viewTemplateType == 'html' || viewTemplateType == 'text-only'" frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="viewTemplateType == 'html' ? iframeSrcHtml : iframeSrcText"></iframe>
-              <div v-else class="has-text-centered">
+              <div v-else-if="viewTemplateType === 'view-vars'" class="has-text-centered">
                 <div class="table-container">
                   <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
                     <thead>
@@ -136,6 +141,11 @@
                     </tbody>
                   </table>
                 </div>
+              </div>
+              <div v-else class="has-text-centered">
+                <textarea class="textarea" placeholder="Add full JSON template data here..." v-model="templateDataJson"></textarea>
+                <button id="btnCheckTemplateData" class="button is-normal is-info mb-2" :class="templatesAreLoading ? 'is-loading':''" @click="showTemplateWithData();"><span class="icon"><i class="fas fa-sync"></i></span><span>&nbsp;&nbsp;View your template</span></button>
+                 <iframe frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="templateBlob"></iframe>
               </div>
             </div>
           </section>
@@ -371,6 +381,9 @@
         productLicense: undefined,
         htmlVars: undefined,
         textVars: undefined,
+        compiledTemplate: undefined,
+        templateDataJson: undefined,
+        templateBlob: undefined,
       },
       watch: {
         accessKeyId: function(n, o){
@@ -437,6 +450,10 @@
         },
       },
       methods: {
+        showTemplateWithData: function(){
+          const htmlBlob = new Blob([this.compiledTemplate(JSON.parse(this.templateDataJson))], { type: 'text/html' });
+          this.templateBlob = URL.createObjectURL(htmlBlob);
+        },
         licenseIsValid: function(){
           return (this.productLicense && this.productLicense.success && !this.productLicense.subscription_cancelled_at && !this.productLicense.subscription_failed_at) ? true : false;
         },
@@ -582,6 +599,14 @@
                   vm.textVars = template.Template.TextPart.match(TEMPLATE_VARS_REGEX);
                   vm.currentTemplateModalIsVisible = true;
                   vm.templateIsLoading = false;
+                  vm.compiledTemplate = Handlebars.compile(template.Template.HtmlPart);
+                  vm.templateDataJson = {};
+                  vm.htmlVars.map(v => {
+                    let key = v.replaceAll("{", "").replaceAll("}", "").replaceAll(" ", "");
+                    vm.templateDataJson[key] = "-";
+                    if(key.indexOf("#") > -1 || key.indexOf("/") > -1) vm.templateDataJson[key] = "<ctrl-statement>";
+                  });
+                  vm.templateDataJson = JSON.stringify(vm.templateDataJson, null, 2);
                 })
             }
           }, 2000, {'leading': true}),
