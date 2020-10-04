@@ -1,0 +1,76 @@
+.steps-block {
+  --block-background: white;
+  --block-text-color: var(--text-primary);
+  background: var(--block-background);
+  color: var(--block-text-color);
+}
+
+.block__header {
+  margin-bottom: 4rem;
+}
+
+.block__pre-title {
+  color: var(--primary);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.block__title {
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1.4;
+}
+
+.block__paragraph {
+  font-size: 1rem;
+  line-height: 1.5;
+  opacity: .9;
+}
+
+.the-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.the-step__content {
+  padding: 0 1.4rem;
+  text-align: center;
+}
+
+.the-step__symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 4.25rem;
+  width: 4.25rem;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: white;
+  border: 1px solid var(--primary);
+  border-radius: var(--elements-roundness);
+}
+
+.the-step__title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+@media(min-width: 992px) {
+  .the-step__title {
+    font-size: 1.5rem;
+    line-height: 1.5;
+  }
+}
+
+.the-step__paragraph {
+  font-size: 1rem;
+  opacity: .9;
+  line-height: 1.5;
+}
