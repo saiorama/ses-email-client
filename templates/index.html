@@ -278,8 +278,17 @@
               <div class="container">
                 <div class="field">
                   <div class="control has-icons-left">
-                    <input class="input" type="email" placeholder="TO: email" v-model="toEmail">
-                    <sub>(only one TO: email at a time)</sub>
+                    <input class="input" type="email" placeholder="TO: email1; email2;" v-model="toEmail">
+                    <sub>(Separate multiple TO: emails with semi-colons;)</sub>
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-envelope"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="control has-icons-left">
+                    <input class="input" type="email" placeholder="CC: : email3; email4;" v-model="ccEmail">
+                    <sub>(Separate multiple CC: emails with semi-colons;)</sub>
                     <span class="icon is-small is-left">
                       <i class="fas fa-envelope"></i>
                     </span>
@@ -388,6 +397,8 @@
         emailSendStatus: undefined,
         emailSendStatusMessage: "",
         toEmail: undefined,
+        ccEmail: undefined,
+        bccEmail: undefined,
         fromEmail: undefined,
         emailSubject: undefined,
         productLicenseKey: undefined,
@@ -499,10 +510,18 @@
           if(this.toEmail && this.fromEmail && this.licenseIsValid()){
             var params = {
               Destination: { /* required */
-                ToAddresses: [
+                ToAddresses: this.toEmail && this.toEmail.split(";").length > 0 ? this.toEmail.split(";") : [
                   this.toEmail,
                   /* more items */
-                ]
+                ],
+                CcAddresses: this.ccEmail && this.ccEmail.split(";").length > 0 ? this.ccEmail.split(";") : [
+                  this.ccEmail,
+                  /* more items */
+                ],
+                BccAddresses: this.bccEmail && this.bccEmail.split(";").length > 0 ? this.bccEmail.split(";") : [
+                  this.bccEmail,
+                  /* more items */
+                ],
               },
               Message: { /* required */
                 Body: { /* required */
