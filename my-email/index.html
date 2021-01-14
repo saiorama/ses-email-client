@@ -214,7 +214,7 @@
       const API_GW_URL = 'https://api.zeer0.com/v001';
       const EMAIL_CONTENT_URL = `${API_GW_URL}/email`;
       const EMAILS_LIST_URL = `${API_GW_URL}/email/today`; //just today's emails
-      const DEFAULT_FQDN = HOST.startsWith('localhost') ? 'zeer0.com' : HOST;
+      const DEFAULT_FQDN = HOST.startsWith('localhost') ? 'ramachandr.in' : HOST;
       const LOGIN_REDIRECT_URL = `${ORIGIN}${PATHNAME}`;
       const LOGOUT_REDIRECT_URL = `${ORIGIN}${PATHNAME}`;
       const COGNITO_URL1 = 'https://auth.zeer0.com'; 
@@ -242,6 +242,7 @@
             toEmail: undefined,
             ccEmail: undefined,
             fromEmail: undefined,
+            sender: undefined,
             emailSubject: undefined,
             iframeComposedEmail: undefined,
             emailSendStatus: undefined,
@@ -282,24 +283,22 @@
             }
           },
           currentEmail: function(neww, old){
-            this.fromEmail = undefined;
+            this.sender = undefined;
             this.toEmail = undefined;
             this.ccEmail = undefined;
             this.emailSubject = undefined;
             if(neww && neww.emailContent){
-              this.toEmail = neww.emailContent.to ? neww.emailContent.to.text : undefined;
-              if(this.toEmail) this.toEmail.split(ADDRESS_DELIM).length > 0 ? this.toEmail.split(ADDRESS_DELIM) : this.toEmail;
-              this.ccEmail = neww.emailContent.cc ? neww.emailContent.cc.text : undefined;
-              if(this.ccEmail) this.ccEmail.split(ADDRESS_DELIM).length > 0 ? this.ccEmail.split(ADDRESS_DELIM) : this.ccEmail;
               this.emailSubject = neww.emailContent.subject || "(no subject)";
-              app.htmlEmailContent = neww.emailContent.html?neww.emailContent.html:undefined;
-              app.textEmailContent = neww.emailContent.text?neww.emailContent.text:undefined;
-              if(neww.emailContent.from && neww.emailContent.from.value[0].address){
-                let x = neww.emailContent.from.value[0].address;
-                let parts = x.split(EMAIL_ADDRESS_DELIM);
-                let domain = parts[1];
-                if(domain === HOST) this.fromEmail = neww.emailContent.from.value[0].address;
-              }
+              this.toEmail = this.makeTo();
+              this.ccEmail = this.makeCc();
+              this.fromEmail = this.makeFrom()[0];
+              if(this.toEmail.indexOf(this.fromEmail) > -1) this.toEmail.splice(this.toEmail.indexOf(this.fromEmail), 1);
+              if(this.ccEmail.indexOf(this.fromEmail) > -1) this.ccEmail.splice(this.ccEmail.indexOf(this.fromEmail), 1);
+              let duplicates = this.toEmail.filter((email) => this.ccEmail.indexOf(email) > -1);
+              duplicates.map(d => this.ccEmail.splice(this.ccEmail.indexOf(d), 1));
+              this.toEmail = this.toEmail.join(ADDRESS_DELIM);
+              this.ccEmail = this.ccEmail.join(ADDRESS_DELIM);
+              this.sender = this.getSender();
             }
           },
           htmlEmailContent: function(neww, old){
@@ -330,6 +329,47 @@
           },
         },
         methods:{
+          makeAddressList: function(type){
+            let ec = this.currentEmail.emailContent;
+            let key = type.toLowerCase();
+            if([`to`, `cc`, `from`].includes(key) && 
+            ec[key] &&
+            ec[key].value){
+              return ec[key].value.reduce((accum, v) => {
+                accum.push(v.address);
+                return accum;
+              }, []);
+            }
+            return [];
+          },
+          makeTo: function(){
+            let toList = this.makeAddressList(`to`);
+            let from = this.getSender(`from`);
+            if(toList && from){
+              if(toList.indexOf(from) === -1){
+                toList.push(from);
+              }
+            }
+            return toList;
+          },
+          makeCc: function(){
+            let ccList = this.makeAddressList(`cc`);
+            let from = this.getSender(`from`);
+            if(ccList && from){
+              if(ccList.indexOf(from) === -1){
+                ccList.push(from);
+              }
+            }
+            return ccList;
+          },
+          makeFrom: function(){
+            return [...this.makeAddressList(`to`), ...this.makeAddressList(`cc`)]
+            .filter(email => email.indexOf(`${EMAIL_ADDRESS_DELIM}${HOST}`) > -1);
+          },
+          getSender: function(){
+            let from = this.makeAddressList(`from`);
+            return from && from.length === 1 ? from[0] : undefined;
+          },
           friendlyDate: function(d){
             return moment(d).fromNow();
           },
@@ -388,6 +428,7 @@
             return this.authDetails && this.tokenIsValid(this.authDetails.id_token);
           },
           redirectToLogin: function(){
+            console.log(this.loginUrl);
             window.location.href = this.loginUrl;
           },
           logout: function() {
