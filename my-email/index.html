@@ -22,7 +22,7 @@
       <nav class="container navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
           <a class="navbar-item is-small title" href="/"><img width="112" height="28" src="../images/zeer0.png" alt="Zeer0"></a>
-          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" @click="awsModalIsVisible = true">
+          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" @click.prevent="awsModalIsVisible = true">
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
@@ -33,10 +33,10 @@
           </div>
           <div class="navbar-end">
             <div class="navbar-item is-hoverable">
-              <a class="navbar-item" v-if="authTokenIsValid()">
+              <a class="navbar-item" v-if="authTokenIsValid()" @click.prevent="getEmails()">
                 Refresh Email List
               </a>
-              <a class="navbar-item" @click="showEmailComposeScreen" v-if="authTokenIsValid()">
+              <a class="navbar-item" @click.prevent="showEmailComposeScreen(true)" v-if="authTokenIsValid()">
                 <p><i class="far fa-edit"></i> Compose </p>
               </a>
               </div>
@@ -94,16 +94,16 @@
         </div>
         <div class="column is-one-quarter is-size-5">
           <!-- email actions-->
-          <a class="button" href="#" @click="emailComposeModalIsVisible = true;">Reply All</a>
+          <a class="button" href="#" @click.prevent="emailComposeModalIsVisible = true;">Reply All</a>
             <a class="button" href="#">Delete</a>
         </div>
       </div>
       <div class="modal" id="awsCredentialsModal" :class="awsModalIsVisible ? 'is-active':''">
-        <div class="modal-background" style="opacity:75%" @click="awsModalIsVisible = false"></div>
+        <div class="modal-background" style="opacity:75%" @click.prevent="awsModalIsVisible = false"></div>
         <div class="modal-card" :style="deviceIsMobile ? 'width: 90vw' : ''">
           <header class="modal-card-head">
             <p class="modal-card-title is-medium">Your AWS Credentials</p>
-            <button class="modal-close is-medium" aria-label="close" @click="awsModalIsVisible = false"></button>
+            <button class="modal-close is-medium" aria-label="close" @click.prevent="awsModalIsVisible = false"></button>
           </header>
           <section class="modal-card-body">
             <div class="content is-medium">
@@ -144,12 +144,12 @@
         </div>
       </div>
       <div class="modal" id="emailComposeModal" :class="emailComposeModalIsVisible ? 'is-active':''">
-        <div class="modal-background" style="opacity:75%" @click="emailComposeModalIsVisible = false;"></div>
+        <div class="modal-background" style="opacity:75%" @click.prevent="emailComposeModalIsVisible = false;"></div>
         <div class="modal-card" :style="deviceIsMobile ? 'width: 90vw' : ''">
           <header class="modal-card-head">
-            <p class="modal-card-title is-medium">New Email</p>
-            <button class="button is-normal is-primary is-light" @click="showEmailComposeScreen();"><i class="far fa-edit"></i>&nbsp;&nbsp;Open Mail  Editor</button>
-            <button class="modal-close is-medium" aria-label="close" @click="emailComposeModalIsVisible = false"></button>
+            <p class="modal-card-title is-medium">New Email: Frontpage</p>
+            <button :disabled="!htmlEmailContent && !textEmailContent" class="button is-normal is-primary" @click.prevent="sendEmail();">Send&nbsp;&nbsp;<i class="far fa-paper-plane"></i></button>
+            <p :class="emailSendStatus === 'success'? 'has-text-primary' : 'has-text-danger'"><sub> {{emailSendStatusMessage}}</sub></p>
           </header>
           <section class="modal-card-body">
             <div class="content is-normal">
@@ -190,17 +190,15 @@
               </div>
               <div class="field">
                 <div class="control">
-                  <!-- <iframe  @click="showEmailComposeScreen()" frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="iframeComposedEmail"></iframe> -->
-                  <embed height="100vh" width="100vw" v-bind:src="iframeComposedEmail" @click="showEmailComposeScreen()" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;">
+                  <embed height="100vh" width="100vw" v-bind:src="iframeComposedEmail" @click.prevent="showEmailComposeScreen()" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;">
                   </embed>
                 </div>
               </div>
             </div>
           </section>
           <footer class="modal-card-foot is-block-mobile">
-            <button class="button is-normal is-info is-outlined" @click="emailComposeModalIsVisible = false">Cancel</button>
-            <button class="button is-normal is-primary" @click.prevent="sendEmail();">Send&nbsp;&nbsp;<i class="far fa-paper-plane"></i></button>
-            <p :class="emailSendStatus === 'success'? 'has-text-primary' : 'has-text-danger'"><sub> {{emailSendStatusMessage}}</sub></p>
+            <button class="button is-normal is-info is-outlined" @click.prevent="emailComposeModalIsVisible = false">Cancel</button>
+            <button class="button is-normal is-primary is-light" @click.prevent="showEmailComposeScreen();"><i class="far fa-edit"></i>&nbsp;&nbsp;Write</button>
           </footer>
         </div>
       </div>
@@ -364,7 +362,7 @@
           },
           makeFrom: function(){
             return [...this.makeAddressList(`to`), ...this.makeAddressList(`cc`)]
-            .filter(email => email.indexOf(`${EMAIL_ADDRESS_DELIM}${HOST}`) > -1);
+            .filter(email => email.indexOf(`${EMAIL_ADDRESS_DELIM}${HOST}`) > -1 || email.indexOf(`@ramachandr.in`) > -1);
           },
           getSender: function(){
             let from = this.makeAddressList(`from`);
@@ -385,6 +383,7 @@
                   secretAccessKey: this.secretAccessKey,
                   region: this.region
                 });
+                this.getEmails();
               }
             } else {
               this.ses = undefined;
@@ -499,16 +498,20 @@
               }
             }
           },
-          showEmailComposeScreen: function(){
+          showEmailComposeScreen: function(clear){
             const stackedit = new Stackedit({
               url: 'https://stackedit.io/app'
             });
-
+            let startingText = clear ? "" : (app.currentEmail ? 
+                    (app.currentEmail.emailContent ? 
+                    (app.currentEmail.emailContent.text?`\n---------\n${app.currentEmail.emailContent.text}`:`<hr>${app.currentEmail.emailContent.html}`) 
+                    : "Compose your email using markdown.") 
+                    : "Compose your email using markdown.");
             // Open the iframe
             stackedit.openFile({
               name: 'Filename'+Date.now(), // with an optional filename
               content: {
-                text: app.currentEmail ? (app.currentEmail.emailContent ? (app.currentEmail.emailContent.text?`\n---------\n${app.currentEmail.emailContent.text}`:`<hr>${app.currentEmail.emailContent.html}`) : "Compose your email using markdown.") : "Compose your email using markdown." // and the Markdown content.
+                text: startingText
               }
             });
 
