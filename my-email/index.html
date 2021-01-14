@@ -148,7 +148,7 @@
         <div class="modal-card" :style="deviceIsMobile ? 'width: 90vw' : ''">
           <header class="modal-card-head">
             <p class="modal-card-title is-medium">New Email: Frontpage</p>
-            <button :disabled="!htmlEmailContent && !textEmailContent" class="button is-normal is-primary" @click.prevent="sendEmail();">Send&nbsp;&nbsp;<i class="far fa-paper-plane"></i></button>
+            <button :disabled="!toEmail || !sender" class="button is-normal is-primary" @click.prevent="sendEmail();">Send&nbsp;&nbsp;<i class="far fa-paper-plane"></i></button>
             <p :class="emailSendStatus === 'success'? 'has-text-primary' : 'has-text-danger'"><sub> {{emailSendStatusMessage}}</sub></p>
           </header>
           <section class="modal-card-body">
@@ -174,7 +174,7 @@
                 </div>
                 <div class="field">
                   <div class="control has-icons-left">
-                    <input class="input" type="email" placeholder="FROM: email" v-model="fromEmail">
+                    <input class="input" type="email" placeholder="FROM: email" v-model="sender">
                     <sub>(Enter a valid FROM email)</sub>
                     <span class="icon is-small is-left">
                       <i class="fas fa-envelope"></i>
@@ -199,6 +199,7 @@
           <footer class="modal-card-foot is-block-mobile">
             <button class="button is-normal is-info is-outlined" @click.prevent="emailComposeModalIsVisible = false">Cancel</button>
             <button class="button is-normal is-primary is-light" @click.prevent="showEmailComposeScreen();"><i class="far fa-edit"></i>&nbsp;&nbsp;Write</button>
+            <p class="has-text-primary"><sub> (You can change FRONTPAGE values later)</sub></p>
           </footer>
         </div>
       </div>
@@ -281,22 +282,9 @@
             }
           },
           currentEmail: function(neww, old){
-            this.sender = undefined;
-            this.toEmail = undefined;
-            this.ccEmail = undefined;
-            this.emailSubject = undefined;
+            this.clearEmailDestinations();
             if(neww && neww.emailContent){
-              this.emailSubject = neww.emailContent.subject || "(no subject)";
-              this.toEmail = this.makeTo();
-              this.ccEmail = this.makeCc();
-              this.fromEmail = this.makeFrom()[0];
-              if(this.toEmail.indexOf(this.fromEmail) > -1) this.toEmail.splice(this.toEmail.indexOf(this.fromEmail), 1);
-              if(this.ccEmail.indexOf(this.fromEmail) > -1) this.ccEmail.splice(this.ccEmail.indexOf(this.fromEmail), 1);
-              let duplicates = this.toEmail.filter((email) => this.ccEmail.indexOf(email) > -1);
-              duplicates.map(d => this.ccEmail.splice(this.ccEmail.indexOf(d), 1));
-              this.toEmail = this.toEmail.join(ADDRESS_DELIM);
-              this.ccEmail = this.ccEmail.join(ADDRESS_DELIM);
-              this.sender = this.getSender();
+              this.setEmailDestinations();
             }
           },
           htmlEmailContent: function(neww, old){
@@ -498,15 +486,42 @@
               }
             }
           },
+          clearEmailDestinations: function(){
+            this.sender = undefined;
+            this.toEmail = undefined;
+            this.ccEmail = undefined;
+            this.fromEmail = undefined;
+            this.emailSubject = undefined;
+          },
+          setEmailDestinations: function() {
+            if(this.currentEmail){
+              this.emailSubject = this.currentEmail.emailContent.subject || "(no subject)";
+              this.toEmail = this.makeTo();
+              this.ccEmail = this.makeCc();
+              this.fromEmail = this.makeFrom()[0];
+              if(this.toEmail.indexOf(this.fromEmail) > -1) this.toEmail.splice(this.toEmail.indexOf(this.fromEmail), 1);
+              if(this.ccEmail.indexOf(this.fromEmail) > -1) this.ccEmail.splice(this.ccEmail.indexOf(this.fromEmail), 1);
+              let duplicates = this.toEmail.filter((email) => this.ccEmail.indexOf(email) > -1);
+              duplicates.map(d => this.ccEmail.splice(this.ccEmail.indexOf(d), 1));
+              this.toEmail = this.toEmail.length > 0 ? this.toEmail.join(ADDRESS_DELIM) : undefined;
+              this.ccEmail = this.ccEmail.length > 0 ? this.ccEmail.join(ADDRESS_DELIM) : undefined;
+              this.sender = this.getSender();
+            }
+          },
           showEmailComposeScreen: function(clear){
             const stackedit = new Stackedit({
               url: 'https://stackedit.io/app'
             });
-            let startingText = clear ? "" : (app.currentEmail ? 
+            let startingText = app.currentEmail ? 
                     (app.currentEmail.emailContent ? 
                     (app.currentEmail.emailContent.text?`\n---------\n${app.currentEmail.emailContent.text}`:`<hr>${app.currentEmail.emailContent.html}`) 
                     : "Compose your email using markdown.") 
-                    : "Compose your email using markdown.");
+                    : "Compose your email using markdown.";
+            this.setEmailDestinations();
+            if(clear){
+              startingText = "";
+              this.clearEmailDestinations();
+            }
             // Open the iframe
             stackedit.openFile({
               name: 'Filename'+Date.now(), // with an optional filename
@@ -526,7 +541,7 @@
             });
           },
           sendEmail: async function(event){
-            if(this.toEmail && this.fromEmail){
+            if(this.toEmail && this.sender){
               var params = {
                 Destination: { /* required */
                   ToAddresses: this.toEmail && this.toEmail.split(ADDRESS_DELIM).length > 0 ? this.toEmail.split(ADDRESS_DELIM) : [
@@ -545,20 +560,20 @@
                 Message: { /* required */
                   Body: { /* required */
                     Html: {
-                      Data: this.htmlEmailContent, /* required */
+                      Data: this.htmlEmailContent ?? "<br>", /* required */
                       Charset: 'UTF-8'
                     },
                     Text: {
-                      Data: this.textEmailContent, /* required */
+                      Data: this.textEmailContent ?? "\n", /* required */
                       Charset: 'UTF-8'
                     }
                   },
                   Subject: { /* required */
-                    Data: `${this.emailSubject || "(no subject)"}`, /* required */
+                    Data: `${this.emailSubject ?? "(no subject)"}`, /* required */
                     Charset: 'UTF-8'
                   }
                 },
-                Source: this.fromEmail, /* required */
+                Source: this.sender, /* required */
               };
               this.emailSendStatus = 'success';
               this.emailSendStatusMessage = 'Sending...';
