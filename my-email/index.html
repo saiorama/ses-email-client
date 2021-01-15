@@ -415,7 +415,6 @@
             return this.authDetails && this.tokenIsValid(this.authDetails.id_token);
           },
           redirectToLogin: function(){
-            console.log(this.loginUrl);
             window.location.href = this.loginUrl;
           },
           logout: function() {
@@ -475,7 +474,8 @@
                 vm.emailSet = values.sort((a, b) => -a.Key.localeCompare(b.Key));
               });
             } else {
-              this.statusMsg = 'Either access token or domain is missing. Have you forgotten to log in?';
+              this.statusMsg = 'Please login again...';
+              this.redirectToLogin();
             }
           },
           replyAll: async function() {
