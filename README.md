@@ -1,90 +1,66 @@
-﻿# SES Templates
-In addition to giving you unlimited email ids on your own domain backed by the world class AWS ecosystem, I have also added support for a neat little feature which lets you view your SES templates directly in the browser.
+This project aims to make it a bit easier to work with AWS SES (Simple Email Service). For technical details, scroll to the bottom of this page.
 
-The code is located inside /templates. Here are some screenshots -
+# Why do we need this?
 
-![SES templates home page](https://raw.githubusercontent.com/saiorama/ses-email-client/feature/1/images/102-240x494.png)
+You can look at AWS SES in two ways -
 
-![AWS Credentials Modal](https://raw.githubusercontent.com/saiorama/ses-email-client/feature/1/images/103-240x494.png)
+## SES for Marketing
+One, SES is a transactional email service. You can use it to run marketing campaigns and broadcast messages to people interested in hearing from you. A vast majority of SES customers use SES this way. This use of SES is similar to using Mailchimp or SendGrid. 
 
-![Downloaded templates](https://raw.githubusercontent.com/saiorama/ses-email-client/feature/1/images/104-240x494.png)
+To be most effective, emails must to look good and should be built for scale. This is where email templates come in. You design a beautiful email, then convert it into a template by adding placeholders for customer specific data and thus, achieve email at scale. 
 
-# SES Email Client
+The other aspect of using SES this way is that you would like to know how your broadcast message did. How many people saw it? How many interacted with it? Did some emails bounce or were they all delivered? Are people complaining about receiving spam from you?
 
-Since AWS SES does not natively provide an email client to read emails neither does it provide IMAP which would let you use a mail client like Thunderbird, I decided to spin up my own email reader just for SES.
+Such performance metrics are the backbone of any transactional email service.
 
-*A note on verbiage: below you will find references to **emails*, *email files**, and **eml files**. An email is basically a text file sitting somewhere. Therefore, all three words refer to the what you would commonly call an email. I have tried to minimize confusion where possible but if you find yourself not understanding some of the content in this readme, feel free to raise an issue.*
-![enter image description here](https://raw.githubusercontent.com/saiorama/ses-email-client/master/docs/email-client.png)
+Unfortunately, SES has very mediocre offerings for templating and viewing marketing performance. For example, it is not possible to preview your email templates in SES. Neither can you test your email with some dummy data to see how the email looks.
 
-## The Problem
+### What can this project do right now?
+With this project, I have tried to make it easier for SES customers to view their templates, find template placeholders, and preview it right in the browser without having to send themselves emails.
 
-I have a domain (example.com) with it's MX records configured to point to AWS SES. Being a transactional email service provider, SES does not provide a client to read emails. 
+I have also surfaced some basic stats about your email campaigns - how many emails were sent? Any bounces? Any complaints? Little things like that. If you have other gripes about transactional SES, let me know by raising an issue.
 
-This is proving to be a challenge for someone like me who is using SES for non-business purposes.
+## SES as your inbox
 
-### My Hack
+The other,less common use case for SES is as your personal inbox or as a mail provider for your company. Note that SES itself does NOT provide any help to achieve this. They don't even give us a mail server from where we can download our emails. Projects like [this](https://github.com/arithmetric/aws-lambda-ses-forwarder) (Arithmetric) allow you to use SES to send and receive SES emails in Gmail or any other mail client.
 
-To get around the issue of SES not providing an email client, I forward emails sent to example.com to an email inbox which does have a client - like gmail. 
+While such tools exist, I am building this project to be truly self contained. I don't want to use a third party client like Gmail to send and receive email. This tool is fully serverless and runs only on the user's browser from where it interacts with AWS to retrieve emails (from S3) and 
 
-To be honest, this feels wrong. On the one hand, I set up my own email to avoid using google's products and on the other, I am using a google product (gmail) to read my emails. 
+### What can this project do right now?
 
-Additionally, the entire purpose to moving away from Google - i.e. to avoid giving them my data - is lost when I use their gmail client to read my emails.
+Right now, I can do the following things with this client:
 
-## The Solution
-
-SES Email Client is the v0.0.1 of a client for SES!
-
-## The Architecture 
-
-Before I started working on email-magicker, the lay of the land of my email set up was as follows:
-
-1. S3 - all emails received by SES on my behalf are deposited into an S3 bucket with a specific prefix. So, emails sent to example.com go into <BUCKET_NAME>/example.com. Emails are of **.eml** format
-2. SNS - When an email is received by SES, I fire off a notification to a different email account I own to let me know that an email was received.
-3. Auto-forward - I use [this github project](https://github.com/arithmetric/aws-lambda-ses-forwarder) to forward emails to my gmail inbox
-
-After implementing ses-email-client, my architecture has evolved a little. The overview is as below.
-
-![](docs/ses-email-client.png)
-### New Lambdas Functions
-
-#### Rename email (.eml) file name: 
-
-AWS does not provide a way to filter S3 files so it is impossible to query S3 for the most recently received emails. This is because the email files are have long random alphanumeric names which don't follow any logical and discernable sort ordering. 
-
-To get around this limitation and to make it easier to query S3 for emails received on or after a certain date, I added a lambda function which pre-pends the email receipt date in following format ```yyyy-mm-dd-unix_epoch-```. So, if email with eml file name abcdefghijklmno1234567890zzz was received on June 26th at 10:00 AM, I rename that file to ```2020-06-26-1593165600-abcdefghijklmno1234567890zzz```. 
-
-To further normalize the new file name, I use UTC year, month, and date.
-
-#### Emails received today 
-
-This lambda function returns a list of emails file names (after conversion as described above) received ```today```. Keep in mind that I use UTC time to make it possible to filter emails by date. 
-
-Obviously, it should be quite straightforward to filter by a different receipt date. 
-
-API Gateway integration: This lambda is integrated with API Gateway and is protected using an API Key. The endpoint is `/email/today`.
-
-Sample usage: *GET /email/today?domain=example.com*
-
-#### Email headers and content
-
-My final Lambda returns the headers and content of a specific email. 
-
-API Gateway integration: This lambda is integrated with API Gateway and is protected using an API Key. The endpoint is `/email`. 
-
-Sample usage: *GET /email?domain=example.com&id=2020-06-26-1593165600-abcdefghijklmno1234567890zzz&type=html*
-
-### Email UI
-
-Obviously, I can't be building an email client without, well, building a UI which is ```email/index.html```.
-
-This client uses Foundation CSS, axios, and Vuejs to 
-1. authenticate the user using AWS Cognito. Force log in if the user is not logged in.
-2. read the domain for which the user wants to retrieve emails from the website URL
-3. retrieve the list of emails (up to 100 emails) received today
-4. retrieve the content of each email
-5. display email subject on the screen
-6. when the user clicks on the an email, show the email content
+1. sort received emails by date and time
+2. authenticate the user using AWS Cognito. Force log in if the user is not logged in.
+3. retrieve the list of emails received today and yesterday
+4. retrieve the content of each email from S3
+5. convert the raw email into human readable pretty HTML or Text
+6. highlight emails as SPAM or containing a virus
+7. show user email content
+8. reply-all to everyone in TO and CC. Write rich text using markdown.
+9. auto-populate the FROM address depending on the domain
+10. compose new rich text (markdown) emails
+11. send emails to recipients 
 
 
+My goal is to have a fully functional email client running directly on SES and S3 without having to resort to lambda forwarders or using Gmail as an SMTP client.
 
-> Written with [StackEdit](https://stackedit.io/).
+### Future plans for SES as my inbox?
+
+I want to build a commenting system around email to make emails more collaborative.
+
+# Technical Details
+
+The demo site for seeing your SES templates, testing out SES templates in your browser, and generally using SES as a marketing tool is at https://zeer0.com/templates
+
+If you want to build your own SES email client, you are welcome to fork this project.
+1. to learn how I sort emails by time and date to allow easy retrieval, look at the [lambdas directory](https://github.com/saiorama/ses-email-client/tree/master/lambdas)
+2. follow any online tutorials on using Cognito
+3. look at this [lambda](https://github.com/saiorama/ses-email-client/blob/master/lambdas/get-eml-contents.js) to understand how I retrieve an email's content
+4. look at this [lambda](https://github.com/saiorama/ses-email-client/blob/master/lambdas/get-eml-file-ids-s3.js) to understand how I retrieve an email list
+5. the javascript inside my-email/index.html handles Cognito, spam/virus highlighting
+6. composing rich text/markdown emails is handled using stackedit.io
+
+One thing to note is that my email client makes some assumptions about the location of my S3 bucket and the key path where my received emails reside. Therefore, this code is not truly usable until you tweak params and ensure that your emails sit in an S3 bucket under a key path that makes sense to you.
+
+I'm happy to help anyone who wishes to use this project to build their own SES inbox.
