@@ -40,7 +40,7 @@ Right now, I can do the following things with this client:
 8. reply-all to everyone in TO and CC. Write rich text using markdown.
 9. auto-populate the FROM address depending on the domain
 10. compose new rich text (markdown) emails
-11. send emails to recipients 
+11. get a shareable link for email
 
 
 My goal is to have a fully functional email client running directly on SES and S3 without having to resort to lambda forwarders or using Gmail as an SMTP client.
