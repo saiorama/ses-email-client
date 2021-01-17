@@ -95,7 +95,11 @@
         <div class="column is-one-quarter is-size-5">
           <!-- email actions-->
           <a class="button" href="#" @click.prevent="emailComposeModalIsVisible = true;">Reply All</a>
-            <a class="button" href="#">Delete</a>
+          <input type="hidden" id="shareable-link" :value="shareableUrl">
+          <a class="button" href="#" @click.prevent="copyToClipboard()"><span class="icon"><i class="fas fa-share-alt"></i></span><span>Share This Email</span></a>
+          <p>
+            <sub><span class="is-size-7" v-if="shareableLinkMsg">({{this.shareableLinkMsg}})</span></sub>
+          </p>
         </div>
       </div>
       <div class="modal" id="awsCredentialsModal" :class="awsModalIsVisible ? 'is-active':''">
@@ -213,7 +217,7 @@
       const API_GW_URL = 'https://api.zeer0.com/v001';
       const EMAIL_CONTENT_URL = `${API_GW_URL}/email`;
       const EMAILS_LIST_URL = `${API_GW_URL}/email/today`; //just today's emails
-      const DEFAULT_FQDN = HOST.startsWith('localhost') ? 'ramachandr.in' : HOST;
+      const DEFAULT_FQDN = HOST.startsWith('localhost') ? 'zeer0.com' : HOST;
       const LOGIN_REDIRECT_URL = `${ORIGIN}${PATHNAME}`;
       const LOGOUT_REDIRECT_URL = `${ORIGIN}${PATHNAME}`;
       const COGNITO_URL1 = 'https://auth.zeer0.com'; 
@@ -228,6 +232,7 @@
         data(){
           return {
             fqdn: DEFAULT_FQDN,
+            baseUrl: `${ORIGIN}${PATHNAME}`,
             statusMsg: 'Email contents will appear here',
             emailContent: undefined,
             emailSet: undefined,
@@ -235,6 +240,7 @@
             loginUrl: COGNITO_LOGIN_URL,
             logoutUrl: COGNITO_LOGOUT_URL,
             currentEmail: undefined,
+            currentEmailId: undefined,
             htmlEmailContent: undefined,
             textEmailContent: undefined,
             emailComposeModalIsVisible: undefined,
@@ -254,6 +260,7 @@
             awsModalIsVisible: undefined,
             sesRegions: undefined,
             dataMustBeSavedLocally: undefined,
+            shareableLinkMsg: undefined,
           }
         },
         mounted(){
@@ -263,6 +270,9 @@
           this.readLocalData();
         },
         computed: {
+          shareableUrl: function(){
+            return `${ORIGIN}${PATHNAME}/get.html?emailId=${this.currentEmailId}`;
+          },
           iframeSrc: function(){
             if(this.emailContent){
               const blob = new Blob([this.emailContent], { type: 'text/html' });
@@ -315,6 +325,14 @@
           },
         },
         methods:{
+          copyToClipboard: function() {
+            var copyText = document.getElementById("shareable-link");
+            copyText.type = 'text';
+            copyText.select();
+            document.execCommand("copy");
+            copyText.type = 'hidden';
+            this.shareableLinkMsg = "Copied email url. Now, bookmark or share the url with others."
+          },
           makeAddressList: function(type){
             let ec = this.currentEmail.emailContent;
             let key = type.toLowerCase();
@@ -428,6 +446,7 @@
           },
           showEmail: function(emlId){
             this.currentEmail = this.emailSet.find((e) => e.Key === emlId);
+            if(this.currentEmail) this.currentEmailId = emlId.substring(this.fqdn.length + 1);
             this.emailContent = `We could not download the contents of this email ${emlId}.<br> This usually means the email isn't properly formatted. Your email admin should be able to help.`;
             if(this.currentEmail && this.currentEmail.emailContent){
               this.emailContent = this.currentEmail.emailContent.text;
