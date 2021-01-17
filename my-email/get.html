@@ -1,0 +1,159 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Emails</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css" integrity="sha256-aPeK/N8IHpHsvPBCf49iVKMdusfobKo2oxF8lRruWJg=" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js" integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <script src="/js/aws-sdk-2.756.0.min.js"></script>
+  </head>
+  <body>
+    <form id="email-contents">
+      <nav class="container navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a class="navbar-item is-small title" href="/"><img width="112" height="28" src="../images/zeer0.png" alt="Zeer0"></a>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+        <div class="navbar-menu">
+          <div class="navbar-start is-hidden">
+          </div>
+          <div class="navbar-end">
+            <div class="navbar-item is-hoverable">
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item">
+          </div>
+        </div>
+      </nav>
+      <div class="columns">
+        <div class="column is-four-fifths">
+          <!-- email content-->
+          <div class="" id="email-content">
+            <h5 class="has-text-weight-light">Email</h5>
+            <span v-if="!iframeSrc" class="has-text-weight-light">{{ statusMsg }}</span>
+            <div v-else>
+              <h6 class="has-text-weight-light" v-if="attachments.length > 0">Attachments</h6>
+              <ul class="menu">
+                <li v-for="(attachment, idx) in attachments" style='cursor: pointer' :key="`attachment-idx-`+idx" :id="`attachment-idx-`+idx" class='button'>
+                  <a :href="`${attachment.contentLocation}`" download>{{attachment.filename}}</a>
+                </li>
+              </ul>
+              <iframe frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="iframeSrc"></iframe>
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-fifth is-size-6 has-text-weight-light">
+          <!-- email actions-->
+          <p>Discuss</p>
+        </div>
+      </div>
+    </form>
+    <script>
+      const ADDRESS_DELIM = ",";
+      const EMAIL_ADDRESS_DELIM = "@";
+      const ORIGIN = (new URL(document.location)).origin;
+      const HOST = (new URL(document.location)).host;
+      const PATHNAME = (new URL(document.location)).pathname.replace(/\/+$/, '');
+      const API_GW_URL = 'https://api.zeer0.com/v001';
+      const EMAIL_CONTENT_URL = `${API_GW_URL}/get`;
+      const DEFAULT_FQDN = HOST.startsWith('localhost') ? 'zeer0.com' : HOST;
+      var app = new Vue({
+        el: '#email-contents',
+        data(){
+          return {
+            fqdn: DEFAULT_FQDN,
+            statusMsg: 'Email contents will appear here',
+            emailContent: undefined,
+            emailSet: [],
+            currentEmail: undefined,
+            htmlEmailContent: undefined,
+            textEmailContent: undefined,
+            toEmail: undefined,
+            ccEmail: undefined,
+            fromEmail: undefined,
+            sender: undefined,
+            emailSubject: undefined,
+            iframeComposedEmail: undefined,
+            deviceIsMobile: undefined,
+            emailSendStatusMessage: undefined,
+          }
+        },
+        async mounted(){
+          //from query string, get the email id
+          //getEmail with email id
+          var urlParams = new URLSearchParams(window.location.search);
+          if(urlParams.has('emailId')){
+            this.emailSet = [await this.getEmail(urlParams.get('emailId'))];
+          }
+        },
+        computed: {
+          iframeSrc: function(){
+            if(this.emailContent){
+              const blob = new Blob([this.emailContent], { type: 'text/html' });
+              return URL.createObjectURL(blob);
+            }
+            return undefined;
+          },
+          attachments: function(){
+            // console.log(`looking for attachments @ emailContent.attachments ${Object.keys(this.currentEmail.emailContent)}`);
+            return this.currentEmail.attachments;
+          }
+        },
+        watch: {
+          emailSet: function(neww, old) {
+            if(neww && neww.length > 0){
+              this.showEmail(neww[0]);
+            }
+          },
+          currentEmail: function(neww, old){
+          },
+          htmlEmailContent: function(neww, old){
+            if(neww){
+              const htmlBlob = new Blob([neww], { type: 'text/html' });
+              app.iframeComposedEmail = URL.createObjectURL(htmlBlob);
+            }
+          },
+        },
+        methods:{
+          getSender: function(){
+            let from = this.makeAddressList(`from`);
+            return from && from.length === 1 ? from[0] : undefined;
+          },
+          friendlyDate: function(d){
+            return moment(d).fromNow();
+          },
+          showEmail: function(email){
+            this.currentEmail = email;
+            this.emailContent = `We could not download the contents of this email.<br>`;
+            if(this.currentEmail){
+              this.emailContent = this.currentEmail.text;
+              if(this.currentEmail.html) this.emailContent = this.currentEmail.html;
+              else if(this.currentEmail.textAsHtml) this.emailContent = this.currentEmail.textAsHtml;
+            }
+          },
+          getEmail: async function(emlId) {
+            let vm = this;
+            return await axios({
+              url: `${EMAIL_CONTENT_URL}?domain=${this.fqdn}&id=${emlId}`,
+            })
+            .then( (response) => {
+              return response.data;
+            })
+            .catch(e => {
+              return undefined;
+            });
+          },
+        }
+      })
+    </script>
+  </body>
+</html>
