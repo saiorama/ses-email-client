@@ -26,6 +26,7 @@
     "zeer0-repo": "git+https://github.com/saiorama/zeer0-repo.git"
   },
   "dependencies": {
-    "aws-sdk": "^2.719.0"
+    "aws-sdk": "^2.719.0",
+    "axios": "^0.21.1"
   }
 }
