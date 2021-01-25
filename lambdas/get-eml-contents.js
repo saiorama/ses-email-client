@@ -45,17 +45,22 @@ let attachmentsMetadata = (bucket, key, attachments) => {
     });
 };
 
+const ALLOWED_KEYS = process.env.ALLOWED_KEYS;
 exports.handler = async (event, context, callback) => {
     console.log(event);
+    let extendedData = false;
+    if(event.resource && event.resource.toLowerCase() === process.env.EXTENDED_RESOURCE){
+        extendedData = true;
+    }
     
     //domain=zeer0.com&id=82vundohoan4rb4poes26r8rda5sb5vbgh9s3vo1&type=html&format=raw
     const params = event.queryStringParameters;
     
-    // don't allow web based clients to read emails from any domain other than localhost
-    // allow curl-type clients to query random domains by including domain=xyz in querystring
+    // allow reads only if headers.Origin or referer is set and is not `localhost`
     if((event.headers.origin || event.headers.referrer) && getHostnameFromUrl(event.headers.origin || event.headers.referer) !== 'localhost'){
         params.domain = getHostFromUrl(event.headers.origin || event.headers.referrer);
     }
+    //and belongs to the list of allowed domains
     if(params.domain && ALLOWED_DOMAINS.includes(params.domain) && params.id){
         var getParams = {
             Bucket: BUCKET_NAME,
@@ -69,6 +74,7 @@ exports.handler = async (event, context, callback) => {
         })
         .then(d => {
             let x = JSON.parse(JSON.stringify(RESPONSE));
+            x.headers['Access-Control-Allow-Origin'] = event.headers.origin || event.headers.referrer;
             x.statusCode = 200;
             let y = JSON.parse(JSON.stringify(d));
             y.headers = {};
@@ -84,6 +90,14 @@ exports.handler = async (event, context, callback) => {
                 if(params.format && params.format.toLowerCase() === 'raw'){
                     x.body = d[params.type.toLowerCase()];
                 } 
+            }
+            if(!extendedData){
+                x.body = {};
+                x.body.attachments = [];
+                ALLOWED_KEYS.split(",").map(key => {
+                    x.body[key] = y[key];
+                });
+                x.body = JSON.stringify(x.body);
             }
             return x;
         })
