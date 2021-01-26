@@ -46,10 +46,11 @@ let attachmentsMetadata = (bucket, key, attachments) => {
 };
 
 const ALLOWED_KEYS = process.env.ALLOWED_KEYS;
+const ALLOWED_RESOURCES = process.env.EXTENDED_RESOURCES.replace(' ', '').split(',');
 exports.handler = async (event, context, callback) => {
     console.log(event);
     let extendedData = false;
-    if(event.resource && event.resource.toLowerCase() === process.env.EXTENDED_RESOURCE){
+    if(event.resource && ALLOWED_RESOURCES.includes(event.resource)){
         extendedData = true;
     }
     
