@@ -1,0 +1,224 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>S3 Email</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css" integrity="sha256-aPeK/N8IHpHsvPBCf49iVKMdusfobKo2oxF8lRruWJg=" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js" integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <script src="/js/aws-sdk-2.756.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js" integrity="sha512-L03kznCrNOfVxOUovR6ESfCz9Gfny7gihUX/huVbQB9zjODtYpxaVtIaAkpetoiyV2eqWbvxMH9fiSv5enX7bw==" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
+    <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+  </head>
+  <body>
+    <form id="email-contents">
+      <input type="hidden" id="shareable-link" :value="shareableUrl">
+      <nav class="container navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item is-small title" href="/"><img width="112" height="28" src="/images/zeer0.png" alt="Zeer0"></a>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+        <div class="navbar-menu">
+          <div class="navbar-start is-hidden">
+          </div>
+          <div class="navbar-end">
+            <div class="navbar-item is-hoverable">
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item">
+          </div>
+        </div>
+      </nav>
+      <div class="columns">
+        <div class="column is-four-fifths">
+            <b-field>
+                <b-input placeholder="Publicly accessible email file typically from S3" v-model="publicUrl"></b-input>
+            </b-field>
+            <b-button @click="retrieveEmail()" class="is-primary is-light">Show Email Below</b-button>
+          <!-- email content-->
+          <div class="" id="email-content">
+            <!-- <h5 class="has-text-weight-light">Email</h5> -->
+            <span v-if="!iframeSrc" class="has-text-weight-light">{{ statusMsg }}</span>
+            <div v-else>
+              <h6 class="has-text-weight-light" v-if="attachments.length > 0">Attachments</h6>
+              <ul class="menu">
+                <li v-for="(attachment, idx) in attachments" style='cursor: pointer' :key="`attachment-idx-`+idx" :id="`attachment-idx-`+idx" class='button'>
+                  <a :href="`${attachment.contentLocation}`" download>{{attachment.filename}}</a>
+                </li>
+              </ul>
+              <embed style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="iframeSrc">
+              </embed>
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-fifth is-size-6 has-text-weight-light">
+            <b-message title="You should know..." type="is-danger" aria-close-label="Close message">
+                To support this feature, your email will be retrieved from S3 and parsed on our servers before it is displayed here. If you are not comfortable with this, you can <a href="/#contact">contact us</a> to host this feature on your own server.
+            </b-message>
+          <!-- email actions-->
+          <div class="control">
+            <a :href="iframeSrc" :download="`${emailSubject}.html`" class="button is-link is-outlined" title="download email"><i class="fas fa-cloud-download-alt"></i></a>
+            <!-- <a v-if="shareableUrl" :href="iframeSrc" class="button is-link is-outlined" title="copy email shortlink" @click.prevent="copyToClipboard()"><i class="fas fa-share-alt"></i></a> -->
+            <a :href="iframeSrc" class="button is-link is-outlined" title="discuss email" @click.prevent="showCommentSection = true"><i class="far fa-comment-alt"></i></a>
+          </div>
+          <div class="control" v-if="showCommentSection">
+            <textarea id="markdown-comments-area" @input="updateComments" v-model="newComment" class="textarea is-primary is-small" placeholder="(Add comments using markdown)"></textarea>
+            <button class="button is-normal is-primary is-fullwidth" @click.prevent="saveComment()">Save Comment</button>
+            <p v-html="commentPreview" class="has-background-light is-size-7"></p>
+            <p v-html="comments" class="has-background-white is-size-7"></p>
+          </div>
+        </div>
+      </div>
+    </form>
+    <script>
+      const API_GW_URL = 'https://api.zeer0.com/v001';
+      const EMAIL_CONTENT_URL = `${API_GW_URL}/public`;
+      const DEFAULT_COMMENT = "(preview your comment here...)";
+      var app = new Vue({
+        el: '#email-contents',
+        data(){
+          return {
+            statusMsg: 'Email contents will appear here',
+            publicUrl: undefined,
+            emailContent: undefined,
+            emailSet: [],
+            currentEmail: undefined,
+            htmlEmailContent: undefined,
+            textEmailContent: undefined,
+            toEmail: undefined,
+            ccEmail: undefined,
+            fromEmail: undefined,
+            sender: undefined,
+            emailSubject: undefined,
+            iframeComposedEmail: undefined,
+            deviceIsMobile: undefined,
+            comments: undefined,
+            commentPreview: DEFAULT_COMMENT,
+            newComment: undefined,
+            currentEmailId: undefined,
+            showdownConverter: undefined,
+            shareableUrl: undefined,
+            showCommentSection: undefined,
+          }
+        },
+        async mounted(){
+          var url = new URL(window.location);
+          var urlParams = new URLSearchParams(window.location.search);
+          if(urlParams.has('publicUrl')){
+            this.emailSet = [await this.getEmail(urlParams.get('publicUrl'))];
+          }
+          this.showdownConverter = new showdown.Converter();
+        },
+        computed: {
+          iframeSrc: function(){
+            if(this.emailContent){
+              const blob = new Blob([this.emailContent], { type: 'text/html' });
+              return URL.createObjectURL(blob);
+            }
+            return undefined;
+          },
+          attachments: function(){
+            return this.currentEmail.attachments;
+          }
+        },
+        watch: {
+          emailSet: function(neww, old) {
+            if(neww && neww.length > 0){
+              this.showEmail(neww[0]);
+              this.emailSubject = neww[0].subject;
+            }
+          },
+          currentEmail: function(neww, old){
+          },
+          htmlEmailContent: function(neww, old){
+            if(neww){
+              const htmlBlob = new Blob([neww], { type: 'text/html' });
+              app.iframeComposedEmail = URL.createObjectURL(htmlBlob);
+            }
+          },
+          emailSubject: function(neww, old){
+            if(neww) document.title = neww;
+          }
+        },
+        methods:{
+          showSnackbar : function(msg, type, actionText){
+            this.$buefy.notification.open({
+              message: msg || '',
+              type: type || 'is-dark',
+              position: 'is-bottom',
+              actionText: actionText || 'Hello',
+              indefinite: false,
+              onAction: () => {
+                  // this.$toast.open({
+                  //     message: 'Action pressed',
+                  //     queue: false
+                  // })
+              }
+            })
+          },
+          retrieveEmail: async function(){
+            try{
+                let u = new URL(this.publicUrl);
+                this.showSnackbar('Downloading your email.Hang on...');
+                this.emailSet = [await this.getEmail(this.publicUrl)];
+            }catch(e){
+                this.showSnackbar('Have you entered a valid URL for your email?');
+            }
+          },
+          updateComments: function(){
+            this.commentPreview = this.showdownConverter.makeHtml(this.newComment);
+          },
+          saveComment: function(){
+            this.showSnackbar(`Oops! We haven't implemented this yet! Check back in a couple of days.`);
+            this.showCommentSection = false;
+            if(this.newComment){
+              //post updated comments json to S3
+            }
+          },
+          getSender: function(){
+            let from = this.makeAddressList(`from`);
+            return from && from.length === 1 ? from[0] : undefined;
+          },
+          friendlyDate: function(d){
+            return moment(d).fromNow();
+          },
+          showEmail: function(email){
+            this.currentEmail = email;
+            this.emailContent = `We could not download this email. Is it publicly visible?`;
+            if(this.currentEmail){
+              this.emailContent = this.currentEmail.text;
+              if(this.currentEmail.html) this.emailContent = this.currentEmail.html;
+              else if(this.currentEmail.textAsHtml) this.emailContent = this.currentEmail.textAsHtml;
+              if(this.currentEmail.comments) this.comments = this.currentEmail.comments;
+            }
+            else{
+                this.showSnackbar(this.emailContent, 'is-warning');
+            }
+          },
+          getEmail: async function(emlId) {
+            let vm = this;
+            return await axios({
+              url: `${EMAIL_CONTENT_URL}?publicUrl=${emlId}`,
+            })
+            .then( (response) => {
+              vm.currentEmailId = emlId;
+              return response.data;
+            })
+            .catch(e => {
+              return undefined;
+            });
+          },
+        }
+      })
+    </script>
+  </body>
+</html>
