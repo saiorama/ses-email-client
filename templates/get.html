@@ -39,14 +39,25 @@
         </div>
       </nav>
       <div class="columns">
-        <div class="column is-four-fifths">
+        <div class="column is-four-fifths has-text-centered">
+          <div class="container is-fluid">
             <b-field label="S3 file location (public)">
-                <b-input placeholder="https://s3.amazonaws.com/BUCKET/PATH/email-file-name" v-model="publicUrl"></b-input>
+                <b-input placeholder="https://s3.amazonaws.com/BUCKET/PATH/email-file-name" v-model="publicUrl" class="is-centered"></b-input>
             </b-field>
-            <p><sup>(url format: https://s3.amazonaws.com/BUCKET/PATH/email-file-name)</sup></p>
-            <b-button @click="retrieveEmail()" class="is-primary is-light">Show Email Below</b-button>
+            <p>
+              <b-button @click="retrieveEmail()" class="is-primary is-light">Show Email Below</b-button>
+              <!-- <sup> -->
+                <b-tooltip type="is-dark" multilined :triggers="['click']" :auto-close="['outside', 'escape']">
+                  <template v-slot:content>
+                    https://s3.amazonaws.com/BUCKET/PATH/email-file-name OR url of any .eml file
+                  </template>
+                  <i class="fas fa-info-circle"></i>
+                </b-tooltip>
+              <!-- </sup> -->
+            </p>
+          </div>
           <!-- email content-->
-          <div class="" id="email-content">
+          <div class="container is-fluid" id="email-content">
             <!-- <h5 class="has-text-weight-light">Email</h5> -->
             <span v-if="!iframeSrc" class="has-text-weight-light">{{ statusMsg }}</span>
             <div v-else>
@@ -61,10 +72,10 @@
             </div>
           </div>
         </div>
-        <div class="column is-one-fifth is-size-6 has-text-weight-light">
-            <b-message title="You should know..." type="is-danger" aria-close-label="Close message">
-                To support this feature, your email will be retrieved from S3 and parsed on our servers before it is displayed here. If you are not comfortable with this, you can <a href="/#contact">contact us</a> to host this feature on your own server.
-            </b-message>
+        <div class="column is-one-fifth is-size-6 has-text-weight-light container is-fluid">
+          <b-message title="You should know..." type="is-danger" aria-close-label="Close message">
+              To support this feature, your email will be retrieved from S3 and parsed on our servers before it is displayed here. If you are not comfortable with this, you can <a href="/#contact">contact us</a> to host this feature on your own server.
+          </b-message>
           <!-- email actions-->
           <div class="control">
             <a :href="iframeSrc" :download="`${emailSubject}.html`" class="button is-link is-outlined" title="download email"><i class="fas fa-cloud-download-alt"></i></a>
@@ -88,7 +99,7 @@
         el: '#email-contents',
         data(){
           return {
-            statusMsg: 'Email contents will appear here.',
+            statusMsg: 'Email contents will appear here (< 5mb)',
             publicUrl: undefined,
             emailContent: undefined,
             emailSet: [],
