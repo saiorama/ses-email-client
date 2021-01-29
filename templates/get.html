@@ -46,15 +46,14 @@
             </b-field>
             <p>
               <b-button @click="retrieveEmail()" class="is-primary is-light">Show Email Below</b-button>
-              <!-- <sup> -->
-                <b-tooltip type="is-dark" multilined :triggers="['click']" :auto-close="['outside', 'escape']">
-                  <template v-slot:content>
-                    https://s3.amazonaws.com/BUCKET/PATH/email-file-name OR url of any .eml file
-                  </template>
-                  <i class="fas fa-info-circle"></i>
-                </b-tooltip>
-              <!-- </sup> -->
+              <b-tooltip type="is-dark" multilined :triggers="['click']" :auto-close="['outside', 'escape']">
+                <template v-slot:content>
+                  https://s3.amazonaws.com/BUCKET/PATH/email-file-name OR url of any .eml file
+                </template>
+                <i class="fas fa-info-circle"></i>
+              </b-tooltip>
             </p>
+            <p><b-button @click="retrieveDemoEmail()" class="is-text is-white">Try with a demo email</b-button></p>
           </div>
           <!-- email content-->
           <div class="container is-fluid" id="email-content">
@@ -95,6 +94,7 @@
       const API_GW_URL = 'https://api.zeer0.com/v001';
       const EMAIL_CONTENT_URL = `${API_GW_URL}/public`;
       const DEFAULT_COMMENT = "(preview your comment here...)";
+      const ZEER0_DEMO_EMAIL_URL = "https://zeer0.com/demo/7l1nkds0hcl551kivjhor1v7j1sj5sqa7ih303g1";
       var app = new Vue({
         el: '#email-contents',
         data(){
@@ -185,6 +185,10 @@
             }catch(e){
                 this.showSnackbar('Have you entered a valid URL for your email?');
             }
+          },
+          retrieveDemoEmail: function(){
+            this.publicUrl = ZEER0_DEMO_EMAIL_URL;
+            return this.retrieveEmail();
           },
           updateComments: function(){
             this.commentPreview = this.showdownConverter.makeHtml(this.newComment);
