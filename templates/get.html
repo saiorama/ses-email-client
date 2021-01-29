@@ -40,9 +40,10 @@
       </nav>
       <div class="columns">
         <div class="column is-four-fifths">
-            <b-field>
-                <b-input placeholder="Publicly accessible email file (typically from S3)" v-model="publicUrl"></b-input>
+            <b-field label="S3 file location (public)">
+                <b-input placeholder="https://s3.amazonaws.com/BUCKET/PATH/email-file-name" v-model="publicUrl"></b-input>
             </b-field>
+            <p><sup>(url format: https://s3.amazonaws.com/BUCKET/PATH/email-file-name)</sup></p>
             <b-button @click="retrieveEmail()" class="is-primary is-light">Show Email Below</b-button>
           <!-- email content-->
           <div class="" id="email-content">
@@ -87,7 +88,7 @@
         el: '#email-contents',
         data(){
           return {
-            statusMsg: 'Email contents will appear here',
+            statusMsg: 'Email contents will appear here.',
             publicUrl: undefined,
             emailContent: undefined,
             emailSet: [],
