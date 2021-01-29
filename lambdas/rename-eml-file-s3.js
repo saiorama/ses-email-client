@@ -18,7 +18,7 @@ let addRedirect = async (s3Filename, redirectUrl) => {
 <html class="no-js" lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta http-equiv="Refresh" content="0; url='${redirectUrl}'" />
+    <meta http-equiv="Refresh" content="0; url='${redirectUrl}&shortlink=${s3Filename}'" />
   </head>
   <body>
   </body>
@@ -27,7 +27,7 @@ let addRedirect = async (s3Filename, redirectUrl) => {
     console.log(`Adding redirect to ${redirectUrl} to ${REDIRECT_FILES_LOCATION}`);
     return await s3.putObject({
         Bucket: REDIRECT_FILES_LOCATION,
-        Key: `r/${s3Filename}`,
+        Key: `r/${s3Filename}/index.html`,
         Body: htmlContent,
         ContentType: `text/html`})
     .promise();
@@ -40,6 +40,7 @@ let s3ObjectMustBeRenamed = (key) => {
     return key.split(DELIM).length === 2;
 };
 
+const REDIRECT_DOMAINS_LIST = process.env.ADD_REDIRECT_FOR_DOMAINS_CSV.toLowerCase().replace(' ', '').split(',');
 exports.handler = async (event, context, callback) => {
     console.log(JSON.stringify(event));
     
@@ -85,18 +86,25 @@ exports.handler = async (event, context, callback) => {
             console.log(response.body);
         })
         .then(async () => {
-            return addRedirect(redirectFilename, getEmailUrl(domain, NEW_KEY.split(DELIM)[1]));
+            if(REDIRECT_DOMAINS_LIST.includes(domain.toLowerCase())){
+              return addRedirect(redirectFilename, getEmailUrl(domain, NEW_KEY.split(DELIM)[1]));
+            }
         })
         .then(async () => {
             var params = {
                 Message: JSON.stringify({
                     Bucket: `${BUCKET_NAME}`,
                     Key: `${NEW_KEY}`,
-                    RedirectUrl: getRedirectUrl(domain, redirectFilename)
                 }),
                 Subject: 'ERN-Email renamed',
                 TopicArn: `${process.env['EMAIL_SNS_TOPIC_ARN']}`
             };
+            if(REDIRECT_DOMAINS_LIST.includes(domain.toLowerCase())){
+                let x = JSON.parse(params.Message);
+                x[`RedirectUrl`] = getRedirectUrl(domain, redirectFilename);
+                params.Message = JSON.stringify(x);
+            }
+            console.log('publishing to SNS:', JSON.stringify(params));
             return await sns.publish(params).promise();
         })
         .then(d => console.log(d))
