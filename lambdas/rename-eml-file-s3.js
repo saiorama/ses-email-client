@@ -1,4 +1,5 @@
 var AWS = require('aws-sdk');
+const crypto = require('crypto');
 AWS.config.update({region: 'us-east-1'});
 
 var s3 = new AWS.S3({signatureVersion: 'v4'});
@@ -10,9 +11,18 @@ var OLD_KEY; //= '/chicshop/013j1dmq7vd3d9ohj9660oo46rbo3i84jno64n01';
 var NEW_KEY; // = '/chicshop/013j1dmq7vd3d9ohj9660oo46rbo3i84jno64n01.eml';
 var DELIM = "/";
 const REDIRECT_URL_LEN = 8;
-let getRandomStringOfLength = (len) => Math.random().toString(16).substr(2, 2+len);
 let getRedirectUrl = (domain, str) => `https://${REDIRECT_FILES_LOCATION}/r/${str}`;
 let getEmailUrl = (domain, emailId) => `https://${domain}/email/get.html?emailId=${emailId}`;
+let getStringHash = (str, alg, format) => crypto.createHash(alg || 'sha256').update(str).digest(format || 'hex');
+let addPageIdFile = async (s3Filename, emailId) => {
+    let sha256 = getStringHash(`${s3Filename}-${emailId}`); 
+    return await s3.putObject({
+        Bucket: REDIRECT_FILES_LOCATION,
+        Key: `r/${s3Filename}/${process.env.PAGE_ID_PREFIX}-${sha256}.txt`,
+        Body: sha256,
+        ContentType: `text/html`})
+    .promise();
+};
 let addRedirect = async (s3Filename, redirectUrl) => {
     let htmlContent = `<!doctype html>
 <html class="no-js" lang="en">
@@ -62,7 +72,8 @@ exports.handler = async (event, context, callback) => {
         NEW_KEY = `${filepath}${DELIM}${prefix}-${date.getTime()}-${filename}`;
         console.log(BUCKET_NAME);
         let domain = NEW_KEY.split(DELIM)[0];
-        let redirectFilename = getRandomStringOfLength(REDIRECT_URL_LEN);
+        let emlId = NEW_KEY.split(DELIM)[1];
+        let redirectFilename = getStringHash(emlId).substr(0, REDIRECT_URL_LEN);
         console.log(NEW_KEY);
         await s3.copyObject({
             Bucket: `${BUCKET_NAME}`,
@@ -87,6 +98,7 @@ exports.handler = async (event, context, callback) => {
         })
         .then(async () => {
             if(REDIRECT_DOMAINS_LIST.includes(domain.toLowerCase())){
+              await addPageIdFile(redirectFilename, emlId);
               return addRedirect(redirectFilename, getEmailUrl(domain, NEW_KEY.split(DELIM)[1]));
             }
         })
