@@ -4,8 +4,18 @@ const moment = require('moment');
 AWS.config.update({region: 'us-east-1'});
 
 var s3 = new AWS.S3({signatureVersion: 'v4'});
-//HTTP verb must be POST
-//POST body should supply all the fields in COMMENT_BODY_FIELDS
+const createResponse = (status, body) => {
+    return {
+        statusCode: status || 400,
+        headers: {
+            "Access-Control-Allow-Origin" : "*", // Required for CORS support to work
+            'Access-Control-Allow-Credentials': true
+        },
+        body: JSON.stringify(body || {msg: 'no data'}).replace(EMOJI_REGEX, '##'),
+    };
+};
+
+const EMOJI_REGEX = /\p{Emoji_Presentation}/gu;
 
 exports.handler = async (event) => {
     console.log(event);
@@ -13,18 +23,15 @@ exports.handler = async (event) => {
     if(eventIsValid(event)){
         switch (event.httpMethod.toUpperCase()){
             case 'POST':
-                let body = JSON.parse(event.body);
+                let body = JSON.parse(event.body.replace(EMOJI_REGEX, ''));
                 return await writeCommentToS3(body)
                 .then(r => {
                     if(r) console.log(r);
-                    return {
-                         statusCode: r ? 200 : 400,
-                         body: JSON.stringify({msg: (`comment ${r ? 'saved' : 'ignored'}`)})
-                    };
+                    return createResponse(r ? 200 : 400, {msg: (`comment ${r ? 'saved' : 'ignored'}`)});
                 })
                 .catch(e => {
                     console.log(e);
-                    return response;
+                    return createResponse();
                 });
             case 'GET':
               let s3Filename = event.queryStringParameters.short_link;
@@ -37,31 +44,26 @@ exports.handler = async (event) => {
                         return getS3File(REDIRECT_FILES_LOCATION, comment.Key);
                       }));
                   }
-                  return ["no comments"];
+                  return [];
               })
               .then(comments => {
-                    return {
-                         statusCode: 200,
-                         body: JSON.stringify({'comments': comments}) 
-                    };
+                    return createResponse(200, {'comments': comments});
               })
               .catch(e => {
                   console.log(e);
-                  return {
-                      statusCode: 400,
-                      body: JSON.stringify({msg: 'error'})
-                  };
+                  return createResponse(400, {msg: 'invalid data'});
               });
         }
     }
     console.log(`Event is invalid`);
-    return response;
+    return createResponse(400, {msg: 'invalid data'});
 };
 
 let writeCommentToS3 = async (body) => {
     if(body.short_link && body.thread_identifier){
         let s3Filename = body.short_link;
-        let pageIdFilename = `r/${s3Filename}/${PAGE_ID_PREFIX}-${body.thread_identifier}`;
+        let thread_identifier = getStringHash(`${body.short_link}-${body.page_url}`);
+        let pageIdFilename = `r/${s3Filename}/${PAGE_ID_PREFIX}-${thread_identifier}`;
         //There should be a file inside the S3 bucket with the 
         //same prefix as PAGE_ID_PREFIX-thread_identifier
         return await listS3Files(REDIRECT_FILES_LOCATION, pageIdFilename)
@@ -123,11 +125,6 @@ let getS3File = async (bucket, key) => {
     });
 };
 
-const response = {
-    statusCode: 400,
-    body: JSON.stringify({msg: 'invalid request'})
-};
-
 let getStringHash = (str, algo, format) => {
     return crypto.createHash(algo || 'sha256')
     .update(str)
@@ -145,9 +142,10 @@ let eventIsValid = (event) => {
                 let notInBody = COMMENT_BODY_FIELDS.find(f => !Object.keys(body).includes(f));
                 if(!notInBody){
                     console.log('found all required fields');
-                    let x = getStringHash(`${body.short_link}-${body.page_url}`);
-                    console.log(`String hash = ${x}, thread_id = ${body.thread_identifier}`);
-                    return x === body.thread_identifier;
+                    // let x = getStringHash(`${body.short_link}-${body.page_url}`);
+                    // console.log(`String hash = ${x}, thread_id = ${body.thread_identifier}`);
+                    // return x === body.thread_identifier;
+                    return true;
                 }
                 console.log(`missing required fields ${notInBody}`);
                 return false;
