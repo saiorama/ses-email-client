@@ -1,0 +1,342 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="{{#MAIL-DESCRIPTION#}}"/>
+    <title>{{#MAIL-TITLE#}}</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css" integrity="sha256-aPeK/N8IHpHsvPBCf49iVKMdusfobKo2oxF8lRruWJg=" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js" integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <script src="/js/aws-sdk-2.756.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js" integrity="sha512-L03kznCrNOfVxOUovR6ESfCz9Gfny7gihUX/huVbQB9zjODtYpxaVtIaAkpetoiyV2eqWbvxMH9fiSv5enX7bw==" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
+    <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script>
+  </head>
+  <body>
+    <form id="email-contents">
+      <input type="hidden" id="shareable-link" :value="shareableUrl">
+      <nav class="container navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a class="navbar-item is-small title" href="/"><h2 class="highlight">Moogle!</h2></a>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+        <div class="navbar-menu">
+          <div class="navbar-start is-hidden">
+          </div>
+          <div class="navbar-end">
+            <div class="navbar-item is-hoverable">
+              </div>
+            </div>
+          </div>
+          <div class="navbar-item">
+          </div>
+        </div>
+      </nav>
+      <div class="columns">
+        <div class="column is-four-fifths">
+          <!-- email content-->
+          <div class="" id="email-content">
+            <!-- <h5 class="has-text-weight-light">Email</h5> -->
+            <span v-if="!iframeSrc" class="has-text-weight-light">{{ statusMsg }}</span>
+            <b-skeleton width="20%" v-if="!iframeSrc" :animated="animated"></b-skeleton>
+            <b-skeleton width="40%" v-if="!iframeSrc" :animated="animated"></b-skeleton>
+            <b-skeleton width="60%" v-if="!iframeSrc" :animated="animated"></b-skeleton>
+            <b-skeleton width="20%" v-if="!iframeSrc" :animated="animated"></b-skeleton>
+            <div v-if="iframeSrc">
+              <h6 class="has-text-weight-light" v-if="attachments.length > 0">Attachments</h6>
+              <ul class="menu">
+                <li v-for="(attachment, idx) in attachments" style='cursor: pointer' :key="`attachment-idx-`+idx" :id="`attachment-idx-`+idx" class='button'>
+                  <a :href="`${attachment.contentLocation}`" download>{{attachment.filename}}</a>
+                </li>
+              </ul>
+              <embed style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100vh;width:100%;" height="100vh" width="100vw" v-bind:src="iframeSrc">
+              </embed>
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-fifth is-size-6 has-text-weight-light">
+          <!-- email actions-->
+          <div class="control">
+            <a :href="iframeSrc" :download="`${emailSubject}.html`" class="button is-link is-outlined" title="download email"><i class="fas fa-cloud-download-alt"></i></a>
+            <a v-if="shareableUrl" :href="iframeSrc" class="button is-link is-outlined" title="copy email shortlink" @click.prevent="copyToClipboard()"><i class="fas fa-share-alt"></i></a>
+            <a :href="iframeSrc" class="button is-link is-outlined" title="discuss email" @click.prevent="showCommentSection = true"><i class="far fa-comment-alt"></i></a>
+          </div>
+          <div class="control pr-2" v-if="showCommentSection">
+            <b-field label="Your name">
+              <b-input v-model="commenterName"></b-input>
+            </b-field>
+            <textarea id="markdown-comments-area" @input="updateComments" v-model="newComment" class="textarea is-primary is-small" placeholder="(Add comments using markdown. No emojis though.)"></textarea>
+            <!-- <button class="button is-normal is-primary is-fullwidth" :class="{'is-loading' : loadingComments}" @click.prevent="saveComment()">Save Comment</button> -->
+            <div class="columns is-gapless">
+              <div class="column is-11">
+                <button class="button is-normal is-primary is-fullwidth my-1" :class="{'is-loading' : loadingComments}" @click.prevent="saveComment()">Save Comment</button>
+              </div>
+              <div class="column">
+                <span class="icon-text">
+                  <span class="icon">
+                    <i class="fas fa-info-circle" @click.prevent="isMarkdownModalActive = true"></i>
+                  </span>
+                </span>
+              </div>
+            </div>
+            <span v-html="commentPreview" class="has-background-light is-size-7 my-2 py-2"></span>
+            <div class="is-size-7 my-2 py-2" :class="{'has-background-light' : idx%2 === 0, 'has-background-white' : idx%2 === 1}" v-for="(comment,idx) in comments">
+              <p class="has-text-weight-semibold">{{comment.commenter_name}} @ {{ friendlyDate(comment.commented_at)}}</p>
+              <p class="has-text-weight-light " v-html="comment.html_part"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <b-modal has-modal-card v-model="isMarkdownModalActive">
+          <div class="card">
+              <div class="card-content">
+                  <div class="content">
+                    <h3>Markdown Cheatsheet</h3>
+                    <ul>
+                      <li>**Bold** : <strong>Bold</strong></li>
+                      <li>*Italics*: <em>Italics</em></li>
+                      <li>[Link Text](https://moogle.cc): <a href="/">Link Text</a></li>
+                      <li>We don't yet support emojis</li>
+                    </ul>
+                  </div>
+              </div>
+          </div>
+      </b-modal>
+      </div>
+    </form>
+    <script>
+      // import {Snackbar} from 'vulmajs';
+      const ADDRESS_DELIM = ",";
+      const EMAIL_ADDRESS_DELIM = "@";
+      const ORIGIN = (new URL(document.location)).origin;
+      const HOST = (new URL(document.location)).host;
+      const PATHNAME = (new URL(document.location)).pathname.replace(/\/+$/, '');
+      const API_GW_URL = 'https://api.zeer0.com/v001';
+      const EMAIL_CONTENT_URL = `${API_GW_URL}/show-mail`;
+      const EMAIL_COMMENTS_URL = `${API_GW_URL}/tools/comments`;
+      const DEFAULT_FQDN = HOST.startsWith('localhost') ? 'moogle.cc' : HOST;
+      const DEFAULT_COMMENT = "(preview your comment here...)";
+      const DEFAULT_COMMENTER_NAME = "I am a Snooper";
+      const DEFAULT_COMMENTER_ID = "Snooper_Dog";
+      const SHORT_LINK = "{{#SHORT-LINK#}}";
+      const PAGE_ID = "{{#PAGE-ID#}}";
+      var app = new Vue({
+        el: '#email-contents',
+        data(){
+          return {
+            fqdn: DEFAULT_FQDN,
+            statusMsg: 'Email contents will appear here',
+            emailContent: undefined,
+            emailSet: [],
+            currentEmail: undefined,
+            htmlEmailContent: undefined,
+            textEmailContent: undefined,
+            toEmail: undefined,
+            ccEmail: undefined,
+            fromEmail: undefined,
+            sender: undefined,
+            emailSubject: undefined,
+            iframeComposedEmail: undefined,
+            deviceIsMobile: undefined,
+            comments: undefined,
+            commentPreview: DEFAULT_COMMENT,
+            newComment: undefined,
+            currentEmailId: undefined,
+            showdownConverter: undefined,
+            shareableUrl: undefined,
+            showCommentSection: undefined,
+            comments: undefined,
+            commenterName: undefined,
+            commenterId: undefined,
+            loadingComments: undefined,
+            isMarkdownModalActive: false,
+          }
+        },
+        async mounted(){
+          //from query string, get the email id
+          //getEmail with email id
+          if(this.pageId){
+            this.emailSet = [await this.getEmail(this.pageId)];
+          }
+          if(this.shortLink){
+            this.shareableUrl = `${this.url.origin}/r/${this.shortLink}`;
+          }
+          this.showdownConverter = new showdown.Converter();
+          this.showSnackbar('Retrieved your mail');
+          this.showCommentSection = true;
+          this.loadingComments = true;
+          this.getComments();
+        },
+        computed: {
+          iframeSrc: function(){
+            if(this.emailContent){
+              const blob = new Blob([this.emailContent], { type: 'text/html' });
+              return URL.createObjectURL(blob);
+            }
+            return undefined;
+          },
+          attachments: function(){
+            return this.currentEmail.attachments;
+          },
+          shortLink: () => {
+            return SHORT_LINK;
+          },
+          pageId: () => {
+            return PAGE_ID;
+          },
+          url: () => {
+            return new URL(window.location);
+          },
+        },
+        watch: {
+          emailSet: async function(neww, old) {
+            if(neww && neww.length > 0){
+              this.showEmail(neww[0]);
+              // this.getComments();
+              this.emailSubject = neww[0].subject;
+            }
+          },
+          currentEmail: function(neww, old){
+          },
+          htmlEmailContent: function(neww, old){
+            if(neww){
+              const htmlBlob = new Blob([neww], { type: 'text/html' });
+              app.iframeComposedEmail = URL.createObjectURL(htmlBlob);
+            }
+          },
+          emailSubject: function(neww, old){
+            if(neww) document.title = neww;
+          },
+        },
+        methods:{
+          copyToClipboard: function() {
+            var copyText = document.getElementById("shareable-link");
+            copyText.type = 'text';
+            copyText.select();
+            document.execCommand("copy");
+            copyText.type = 'hidden';
+            this.showSnackbar('Link has been copied to clipboard');
+          },
+          showSnackbar : function(msg, type, actionText){
+            this.$buefy.notification.open({
+              message: msg || '',
+              type: type || 'is-dark',
+              position: 'is-bottom',
+              actionText: actionText || 'Hello',
+              indefinite: false,
+              onAction: () => {
+                  // this.$toast.open({
+                  //     message: 'Action pressed',
+                  //     queue: false
+                  // })
+                }
+            })
+          },
+          getComments: function(){
+            if(this.shortLink){
+              let vm = this;
+              this.loadingComments = true;
+              return axios({
+                url: `${EMAIL_COMMENTS_URL}?short_link=${this.shortLink}`,
+              })
+              .then( (response) => {
+                if(response.data && response.data.comments){
+                  vm.comments = response.data.comments.map(comment => JSON.parse(comment));
+                  vm.comments.reverse();
+                }
+                this.loadingComments = undefined;
+              })
+              .catch(e => {
+                this.loadingComments = undefined;
+                return undefined;
+              });
+            }
+          },
+          updateComments: function(){
+            this.commentPreview = this.showdownConverter.makeHtml(this.newComment);
+          },
+          clearCommentAndPreview: function(){
+            this.loadingComments = undefined;
+            this.newComment = undefined;
+            this.commentPreview = DEFAULT_COMMENT;
+          },
+          saveComment: _.debounce(function(){
+            this.loadingComments = true;
+            if(this.newComment){
+              //post updated comments json to S3
+              let x = {
+                  "thread_identifier": `${this.shortLink}-${Date.now()}`,
+                  "comment_id": 'NEW',
+                  "update_type": 'NEW',
+                  "short_link": this.shortLink,
+                  "page_url": this.pageId,
+                  "commenter_name": this.commenterName || DEFAULT_COMMENTER_NAME,
+                  "commenter_id": this.commenterId || DEFAULT_COMMENTER_ID,
+                  "commented_at":  Date.now(),
+                  "html_part": this.commentPreview,
+                  "text_part": this.newComment
+              }
+              return axios({
+                method: "POST",
+                url: EMAIL_COMMENTS_URL,
+                data: x
+              })
+              .then(response => {
+                this.showSnackbar('Your comment was saved');
+              })
+              .then(() => this.getComments())
+              .then(() => this.clearCommentAndPreview())
+              .catch(e => {
+                this.loadingComments = undefined;
+                this.showSnackbar('Your comment could not be saved!', 'is-danger');
+              });
+            }
+            this.showSnackbar(`Have you entered a comment?`, 'is-warning');
+          }, 1500, {'leading': false}),
+          getSender: function(){
+            let from = this.makeAddressList(`from`);
+            return from && from.length === 1 ? from[0] : undefined;
+          },
+          friendlyDate: function(d){
+            return moment(d).fromNow();
+          },
+          showEmail: function(email){
+            this.currentEmail = email;
+            this.emailContent = `We could not download the contents of this email.<br>`;
+            if(this.currentEmail){
+              this.emailContent = this.currentEmail.text;
+              if(this.currentEmail.html) this.emailContent = this.currentEmail.html;
+              else if(this.currentEmail.textAsHtml) this.emailContent = this.currentEmail.textAsHtml;
+              if(this.currentEmail.comments) this.comments = this.currentEmail.comments;
+            }
+          },
+          getEmail: async function(emlId) {
+            let vm = this;
+            return await axios({
+              url: `${EMAIL_CONTENT_URL}?domain=${this.fqdn}&id=${emlId}`,
+            })
+            .then( (response) => {
+              vm.currentEmailId = emlId;
+              return response.data;
+            })
+            .catch(e => {
+              return undefined;
+            });
+          },
+          friendlyDate: function(d){
+            return moment(d).fromNow();
+          },
+        }
+      })
+    </script>
+  </body>
+</html>
