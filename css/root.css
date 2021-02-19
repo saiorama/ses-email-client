@@ -1,7 +1,7 @@
 :root {
-  --primary: #5e22e6;
+  --primary: #f88379;
   --secondary: #0a1f44;
-  --primary-invert: #fff;
+  --primary-invert: #3c3737;
   --secondary-invert: #fff;
 
   /* DEFAULT COLOR OF TEXTS */
@@ -49,7 +49,7 @@ button:focus {
 .btn {
   font-size: .87rem;
   padding: .8rem 1.6rem;
-  border-radius: var(--elements-roundness);
+  /* border-radius: var(--elements-roundness); */
   transition: .2s all;
 }
 
