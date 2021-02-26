@@ -216,7 +216,7 @@
       const PATHNAME = (new URL(document.location)).pathname.replace(/\/+$/, '');
       const API_GW_URL = 'https://api.zeer0.com/v001';
       const EMAIL_CONTENT_URL = `${API_GW_URL}/email`;
-      const EMAILS_LIST_URL = `${API_GW_URL}/email/today`; //just today's emails
+      const EMAILS_LIST_URL = `${API_GW_URL}/email/list`;
       const DEFAULT_FQDN = HOST.startsWith('localhost') ? 'zeer0.com' : HOST;
       const LOGIN_REDIRECT_URL = `${ORIGIN}${PATHNAME}`;
       const LOGOUT_REDIRECT_URL = `${ORIGIN}${PATHNAME}`;
@@ -490,7 +490,7 @@
                 vm.statusMsg = "Hooray! You haven't received any emails today. Lucky you!";
               })
               .then(values => {
-                vm.emailSet = values.sort((a, b) => -a.Key.localeCompare(b.Key));
+                vm.emailSet = values.sort((a, b) => a.Key.localeCompare(b.Key));
               });
             } else {
               this.statusMsg = 'Please login again...';
