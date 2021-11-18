@@ -1,4 +1,9 @@
-This project aims to make it a bit easier to work with AWS SES (Simple Email Service). For technical details, scroll to the bottom of this page.
+As of 18-NOV-2021, this repository is no longer actively supported. Here's my other [repo](https://github.com/moogle-cc/email) which can be used as an AWS SES client for your domain.
+
+
+# DEPRECATION - This project is getting sunsetted soon. See above for link to my other similar project.
+======================
+~This project aims to make it a bit easier to work with AWS SES (Simple Email Service). For technical details, scroll to the bottom of this page.
 
 # Why do we need this?
 
@@ -63,4 +68,4 @@ If you want to build your own SES email client, you are welcome to fork this pro
 
 One thing to note is that my email client makes some assumptions about the location of my S3 bucket and the key path where my received emails reside. Therefore, this code is not truly usable until you tweak params and ensure that your emails sit in an S3 bucket under a key path that makes sense to you.
 
-I'm happy to help anyone who wishes to use this project to build their own SES inbox.
+I'm happy to help anyone who wishes to use this project to build their own SES inbox.~
